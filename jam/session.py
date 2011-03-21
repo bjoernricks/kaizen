@@ -22,6 +22,8 @@ import sys
 import inspect
 import logging
 
+from jam.buildsystem import Configure, CMake
+
 class SessionConfig(object):
 
     def __init__(self):
@@ -29,6 +31,7 @@ class SessionConfig(object):
         self.jam_download_cache = "/opt/local/jam/cache"
         self.jam_sessions = "/opt/local/jam/session"
         self.jam_destroot = "/opt/local/jam/destroot"
+        self.jam_build_cache
 
 
 class SessionManager(object):
@@ -105,6 +108,18 @@ class Session(object):
     depends = []
     url = []
     patches = []
+    version = ""
+    revision = "1"
+    hash = {}
+    args = []
+
+    def __init__(self, config):
+        self.config = config
+        class_name = __class__.__name__.lower()
+        session_dir = os.path.join(config.jam_build_cache, classname,
+                                   version + "-" + revision)
+        self.src_dir = os.path.join(session_dir, "src")
+        self.build_dir os.path.join(session_dir, "build")
 
     def configure(self):
         pass
@@ -118,6 +133,17 @@ class Session(object):
     def unpatch(self):
         pass
 
+    def destroot(self):
+        pass
+
+class ConfigureSession(Session):
+    
+    def configure(self):
+        args.append("--prefix=" + self.config.jam_prefix)
+        Configure(args, self.src_dir, self_builddir)
+
+class CMakeSession(Session):
+    pass
 
 class SessionLoader(object):
 
