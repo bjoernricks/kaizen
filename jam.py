@@ -19,11 +19,14 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+import logging
+
+import jam.download
 
 from optparse import OptionParser
 
 def main():
-    usage = "usage: %prog [options] comand {arguments}"
+    usage = "usage: %prog [options] command {arguments}"
 
     parser = OptionParser(usage)
     parser.add_option("--config", dest="config", help="Path to the config file")
@@ -31,11 +34,25 @@ def main():
                       help="Enable debug output")
     parser.add_option("-v", "--verbose", action="store_true", dest="verbose",
                       help="Enable verbose output")
-    parser.add_option("--version", help="Print version information"
+    parser.add_option("--version", help="Print version information")
 
     (options, args) = parser.parse_args()
 
     if not args:
         parser.print_help()
+        return
+
+    logger = logging.getLogger("jam")
+    logger.addHandler(logging.StreamHandler())
+
+    if options.debug:
+        logger.setLevel(logging.DEBUG)
+
+    command = args[0]
+
+    if command == 'download':
+        download = jam.download.FileDownload(args[1], args[2])
+        download.download()
+
 
 main()
