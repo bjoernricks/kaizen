@@ -18,9 +18,10 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+import os.path
 import hashlib # requires python 2.5
 
-class Hash(Object):
+class Hash(object):
 
     def __init__(self, filename):
         self.filename = filename
@@ -51,3 +52,5 @@ class Hash(Object):
         f.close()
         return m.hexdigest()
 
+def realpath(path):
+    return os.path.abspath(os.path.expanduser(path))
