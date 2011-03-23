@@ -18,20 +18,50 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+import os
 import sys
 import inspect
 import logging
+import os.path
 
-from jam.buildsystem import Configure, CMake
+from jam.utils import realpath
+from jam.buildsystem import Configure, CMake, Make
+
+class SessionError(Exception):
+
+    def __init__(self, session_name, value):
+        self.session_name = session_name
+        self.value = value
+
+    def __str__(self):
+        return "Error in session '%s': %s" % (self.session_name, self.value)
 
 class SessionConfig(object):
 
-    def __init__(self):
-        self.jam_prefix = "/opt/local"
-        self.jam_download_cache = "/opt/local/jam/cache"
-        self.jam_sessions = "/opt/local/jam/session"
-        self.jam_destroot = "/opt/local/jam/destroot"
-        self.jam_build_cache
+    def __init__(self, config={}):
+        self.config = {}
+
+        # set default values
+        self.config["debug"] = False
+        self.config["verbose"] = False
+        self.config["jam_prefix"] = "/opt/local"
+
+        self.config.update(config)
+        prefix = self.get("jam_prefix")
+        jam_dir = os.path.join(prefix, "jam")
+
+        if not self.config.get("jam_download_cache", None):
+            self.config["jam_download_cache"] =  os.path.join(jam_dir, "cache")
+        if not self.config.get("jam_sessions", None):
+            self.config["jam_sessions"] =  os.path.join(jam_dir, "session")
+        if not self.config.get("jam_destroot", None):
+            self.config["jam_destroot"] = os.path.join(jam_dir, "destroot")
+        if not self.config.get("jam_build_cache", None):
+            self.config["jam_build_cache"] = os.path.join(jam_dir, "cache")
+
+    def get(self, value):
+        # TODO: raise error if value not found
+        return self.config[value]
 
 
 class SessionManager(object):
@@ -39,68 +69,124 @@ class SessionManager(object):
     url = []
     patches = []
 
-    def __init__(self, name, config):
+    def __init__(self, config, name):
         self.config = config
         self.session_name = name
+        self.session_loader = SessionLoader(config)
+        self.session = self.session_loader.load(name + "." + name)
+        print self.session.version
+        if not self.session:
+            raise SessionError(self.session_name,
+                               "Could not load session from '%s'" %
+                               self.config.get("jam_sessions"))
+        self.session_instance = None
         self.log = logging.getLogger("jam.sessionmanager")
 
-    def create_cache_dirs(self):
+    def create_destroot_dir(self):
         name = self.session_name
-        cache_dir = os.path.join(self.config.download_cache(), name)
-        os.makedirs(cache_dir)
-        self.log.debug("create cache dirs in %s", cache_dir)
-        data_dir = os.path.join(cache_dir, "data")
-        self.log.debug("create cache datadir in %s", data_dir)
-        os.mkdir(self.datadir)
-        patch_dir = os.path.join(cache_dir, "patches")
-        self.log.debug("create cache patchdir in %s", patch_dir)
-        os.mkdir(self.patch_dir)
+        destroot_dir = os.path.join(self.config.get("jam_destroot"), name)
+        if not os.path.exists(destroot_dir):
+            os.makedirs(destroot_dir)
+        self.log.debug("creating destroot dir in %s", destroot_dir)
+        self.dest_dir = os.path.join(destroot_dir, self.session.version + "-"
+                                 + self.session.revision)
+        if not os.path.exists(self.dest_dir):
+            self.log.debug("creating destroot dir %s", self.dest_dir)
+            os.mkdir(self.dest_dir)
 
-        return (data_dir, patch_dir)
+    def create_download_cache_dirs(self):
+        name = self.session_name
+        cache_dir = os.path.join(self.config.get("jam_download_cache"), name)
+        if not os.path.exists(cache_dir):
+            os.makedirs(cache_dir)
+        self.log.debug("creating download cache dirs in %s", cache_dir)
+        self.data_dir = os.path.join(cache_dir, "data")
+        if not os.path.exists(self.data_dir):
+            self.log.debug("creating download cache datadir in %s", self.data_dir)
+            os.mkdir(self.data_dir)
+        self.patch_dir = os.path.join(cache_dir, "patches")
+        if not os.path.exists(self.patch_dir):
+            self.log.debug("creating download cache patchdir in %s", self.patch_dir)
+            os.mkdir(self.patch_dir)
+
+    def create_build_cache_dirs(self):
+        name = self.session_name
+        cache_dir = os.path.join(self.config.get("jam_build_cache"), name,
+                                 self.session.version + "-" + self.session.revision)
+        if not os.path.exists(cache_dir):
+            os.makedirs(cache_dir)
+        self.log.debug("creating build cache dirs in %s", cache_dir)
+        self.src_dir = os.path.join(cache_dir, "source")
+        if not os.path.exists(self.src_dir):
+            self.log.debug("creating build cache sourcedir %s", self.src_dir)
+            os.mkdir(self.src_dir)
+        self.build_dir = os.path.join(cache_dir, "build")
+        if not os.path.exists(self.build_dir):
+            self.log.debug("creating build cache buildir %s", self.build_dir)
+            os.mkdir(self.build_dir)
+
+    def get_session_instance(self):
+        if not self.session_instance:
+            self.session_instance = self.session(self.config, self.src_dir,
+                                                 self.build_dir, self.dest_dir)
+        return self.session_instance
+       
 
     def download(self):
-        self.log.info("%s: download", self.sessionname)
-        (data_dir, patch_dir) = self.create_cache_dirs()
+        self.log.info("%s: download", self.session_name)
+        self.create_download_cache_dirs()
 
         for url in self.url:
             dl = Downloader(url) 
-            dl.copy(data_dir)
+            dl.copy(self.data_dir)
         for patch in self.patches:
             dl = Downloader(patch)
-            dl.copy(patch_dir)
+            dl.copy(self.patch_dir)
 
     def extract(self):
-        pass
+        self.download()
+        self.log.info("%s: extract", self.session_name)
+        # TODO: create directories in their phases
+        self.create_build_cache_dirs()
+        self.create_destroot_dir()
 
     def archive(self):
-        pass
+        self.log.info("%s: archive", self.session_name)
 
     def configure(self):
-        pass
+        self.patch()
+        self.log.info("%s: configure", self.session_name)
+        self.get_session_instance().configure()
 
     def build(self):
-        pass
+        self.configure()
+        self.log.info("%s: build", self.session_name)
+        self.get_session_instance().build()
 
     def destroot(self):
-        pass
+        self.build()
+        self.log.info("%s: destroot", self.session_name)
+        #self.create_destroot_dir()
+        self.get_session_instance().destroot()
 
     def install(self):
-        pass
+        self.log.info("%s: install", self.session_name)
 
     def uninstall(self):
-        pass
+        self.log.info("%s: uninstall", self.session_name)
 
     def activate(self):
-        pass
+        self.log.info("%s: activate", self.session_name)
 
     def deactivate(self):
-        pass
+        self.log.info("%s: deactivate", self.session_name)
 
     def patch(self):
-        pass
+        self.extract()
+        self.log.info("%s: patch", self.session_name)
 
     def unpatch(self):
-        pass
+        self.log.info("%s: unpatch", self.session_name)
 
 
 class Session(object):
@@ -109,17 +195,15 @@ class Session(object):
     url = []
     patches = []
     version = ""
-    revision = "1"
+    revision = ""
     hash = {}
     args = []
 
-    def __init__(self, config):
+    def __init__(self, config, build_dir, src_dir, dest_dir):
         self.config = config
-        class_name = __class__.__name__.lower()
-        session_dir = os.path.join(config.jam_build_cache, classname,
-                                   version + "-" + revision)
-        self.src_dir = os.path.join(session_dir, "src")
-        self.build_dir os.path.join(session_dir, "build")
+        self.build_dir = build_dir
+        self.src_dir = src_dir
+        self.dest_dir = dest_dir
 
     def configure(self):
         pass
@@ -127,23 +211,37 @@ class Session(object):
     def build(self):
         pass
 
-    def patch(self):
-        pass
-
-    def unpatch(self):
-        pass
-
     def destroot(self):
         pass
 
-class ConfigureSession(Session):
-    
-    def configure(self):
-        args.append("--prefix=" + self.config.jam_prefix)
-        Configure(args, self.src_dir, self_builddir)
 
-class CMakeSession(Session):
-    pass
+class MakeSession(Session):
+
+    def build(self):
+        Make(self.build_dir, self.config.get("debug")).run()
+
+    def destroot(self):
+        Make(self.build_dir, self.config.get("debug")).install(self.dest_dir)
+
+
+class ConfigureSession(MakeSession):
+
+    def configure(self):
+        self.args.append("--prefix=" + self.config.get("jam_prefix"))
+        Configure(self.args, self.src_dir, self.build_dir,
+                  self.config.get("debug")).run()
+
+
+class CMakeSession(MakeSession):
+
+    def configure(self):
+        self.args.append("-DCMAKE_INSTALL_PREFIX=" + self.config.get("jam_prefix"))
+        self.args.append("-DCMAKE_COLOR_MAKEFILE=TRUE")
+        if self.config.get("verbose"):
+            self.args.append("-DCMAKE_VERBOSE_MAKEFILE=TRUE")
+        CMake(self.args, self.src_dir, self_builddir,
+              self.config.get("debug")).run()
+
 
 class SessionLoader(object):
 
@@ -153,17 +251,16 @@ class SessionLoader(object):
         self.add_path()
 
     def add_path(self):
-        path = self.config.jam_sessions
+        path = realpath(self.config.get("jam_sessions"))
         if not path in sys.path:
             sys.path.append(path)
 
     def module(self, name):
         try:
             return __import__(name, globals(), locals(), ['*'])
-        except ImportError:
-            self.log.warn("Could not import module '%s'", name)
+        except ImportError as error:
+            self.log.warn("Could not import module '%s'. %s", name, error)
             return None
-    
 
     def classes(self, modulename, parentclass=None):
         classes = []
@@ -189,6 +286,6 @@ class SessionLoader(object):
             self.log.warning("Could not load any session with name '%s'",
                              sessionname)
             return None
-        session = sessions[0]()
+        session = sessions[0]
         self.log.info("Loaded session '%s'", sessionname)
         return session
