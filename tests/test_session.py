@@ -39,12 +39,17 @@ logging.getLogger("jam").addHandler(NullHandler())
 class TestConfig(object):
 
     def __init__(self):
-        self.jam_sessions = os.path.join(test_dir, "session")
+        self.config = {}
+        self.config["jam_sessions"] = os.path.join(test_dir, "session")
+
+    def get(self, value):
+        return self.config.get(value, None)
 
 class SessionLoaderTest(unittest.TestCase):
 
     def test_load(self):
-        loader = SessionLoader(TestConfig())
+        config = TestConfig()
+        loader = SessionLoader(config)
 
         module = loader.module("testsession")
         self.assertTrue(module)
@@ -58,8 +63,11 @@ class SessionLoaderTest(unittest.TestCase):
 
         session = loader.load("testsession")
         self.assertTrue(session)
-        self.assertTrue(session.build())
-        self.assertEquals(1, session.my_method())
+        instance = session(config=config, src_dir="session",
+                           build_dir="session")
+        self.assertTrue(instance)
+        self.assertTrue(instance.build())
+        self.assertEquals(1, instance.my_method())
 
         session = loader.load("notestsession")
         self.assertFalse(session)

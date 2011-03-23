@@ -2,11 +2,11 @@ import jam.session
 
 class TestSession(jam.session.Session):
 
-    def __init__(self):
-        pass
-
     def build(self):
         return True
+
+    def configure(self):
+        pass
 
     def my_method(self):
         return 1
