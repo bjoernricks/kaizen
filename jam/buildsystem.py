@@ -18,12 +18,19 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+import os.path
+
+import jam.run
+
+from jam.utils import realpath
+
 class BuildSystem(object):
 
-    def __init__(self, args, src_dir, build_dir):
+    def __init__(self, args, src_dir, build_dir, verbose=False):
         self.args = args
         self.src_dir = src_dir
-        self.buil_dir = build_dir
+        self.build_dir = build_dir
+        self.verbose = verbose
 
     def run(self):
         pass
@@ -31,9 +38,33 @@ class BuildSystem(object):
 class Configure(BuildSystem):
     
     def run(self):
-        pass
+        cmd = ["configure"]
+        cmd.extend(self.args)
+        cmd.append(realpath(self.src_dir))
+        jam.run.call(cmd, not self.verbose, cwd=realpath(self.build_dir))
 
 class CMake(BuildSystem):
 
     def run(self):
-        pass
+        cmd = ["cmake"]
+        cmd.extend(args)
+        cmd.append(realpath(self.src_dir))
+        jam.run.call(cmd, not self.verbose, cwd=realpath(self.build_dir))
+
+class Make(object):
+
+    def __init__(self, dir, verbose=False):
+        self.dir = dir
+        self.verbose = verbose
+
+    def run(self, args=[]):
+        cmd = ["make"]
+        cmd.extend(args)
+        jam.run.call(cmd, not self.verbose, cwd=realpath(self.dir))
+
+    def install(self, dest_dir=None):
+        cmd = []
+        if dest_dir:
+            cmd.append("DESTDIR=" + dest_dir)
+        cmd.append("install")
+        self.run(args)
