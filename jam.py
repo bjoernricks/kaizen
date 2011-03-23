@@ -22,6 +22,7 @@
 import logging
 
 import jam.download
+import jam.session
 
 from optparse import OptionParser
 
@@ -30,11 +31,13 @@ def main():
 
     parser = OptionParser(usage)
     parser.add_option("--config", dest="config", help="Path to the config file")
+    parser.add_option("--sessions", help="Path to sessions")
     parser.add_option("-d", "--debug", action="store_true", dest="debug",
                       help="Enable debug output")
     parser.add_option("-v", "--verbose", action="store_true", dest="verbose",
                       help="Enable verbose output")
-    parser.add_option("--version", help="Print version information")
+    parser.add_option("--version", action="store_true",
+                      help="Print version information")
 
     (options, args) = parser.parse_args()
 
@@ -45,13 +48,28 @@ def main():
     logger = logging.getLogger("jam")
     logger.addHandler(logging.StreamHandler())
 
+    config = {}
     if options.debug:
         logger.setLevel(logging.DEBUG)
+        config["debug"] = True
+
+    if options.verbose:
+        config["verbose"] = True
+
+    if options.sessions:
+        config["jam_sessions"] = options.sessions
+
+    session_config = jam.session.SessionConfig(config)
 
     command = args[0]
 
-    if command == 'download':
-        download = jam.download.FileDownload(args[1], args[2])
+    manager = jam.session.SessionManager(session_config, args[1])
+    if command == "build":
+       manager.build()
+    elif command == "extract":
+        manager.extract()
+    elif command == "download":
+        download = jam.download.Downloader(args[1], args[2])
         download.download()
 
 
