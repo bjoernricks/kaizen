@@ -83,7 +83,7 @@ def capture_output(command, **kw):
     return output
 
 def capture_stdout(command, **kw):
-    """Return the stdout and stderr of the command as a string
+    """Return the stdout of the command as a string
 
     The command should be given as a list of strings to avoid problems
     with shell quoting.  If the command exits with a return code other
