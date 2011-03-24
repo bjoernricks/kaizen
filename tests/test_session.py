@@ -63,8 +63,8 @@ class SessionLoaderTest(unittest.TestCase):
 
         session = loader.load("testsession")
         self.assertTrue(session)
-        instance = session(config=config, src_dir="session",
-                           build_dir="session")
+        instance = session(config, "session",
+                           "session", "session")
         self.assertTrue(instance)
         self.assertTrue(instance.build())
         self.assertEquals(1, instance.my_method())
@@ -72,9 +72,32 @@ class SessionLoaderTest(unittest.TestCase):
         session = loader.load("notestsession")
         self.assertFalse(session)
 
+    def test_load_derived(self):
+        config = TestConfig()
+        loader = SessionLoader(config)
+
+        module = loader.module("derivedsession")
+        self.assertTrue(module)
+        self.assertEquals("derivedsession", module.__name__)
+
+        classes = loader.classes("derivedsession")
+        self.assertEquals(1, len(classes))
+
+        sessions = loader.sessions("derivedsession")
+        self.assertEquals(1, len(sessions))
+
+        session = loader.load("derivedsession")
+        self.assertTrue(session)
+        self.assertEquals("1.0.abc", session.version)
+        instance = session(config, "session",
+                           "session", "session")
+        self.assertTrue(instance)
+
+
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(SessionLoaderTest("test_load"))
+    suite.addTest(SessionLoaderTest("test_load_derived"))
 
     return suite
 
