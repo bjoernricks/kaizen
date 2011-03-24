@@ -93,11 +93,34 @@ class SessionLoaderTest(unittest.TestCase):
                            "session", "session")
         self.assertTrue(instance)
 
+    def test_load_sub(self):
+
+        config = TestConfig()
+        loader = SessionLoader(config)
+
+        module = loader.module("subtest.subsession")
+        self.assertTrue(module)
+        self.assertEquals("subtest.subsession", module.__name__)
+
+        classes = loader.classes("subtest.subsession")
+        self.assertEquals(1, len(classes))
+
+        sessions = loader.sessions("subtest.subsession")
+        self.assertEquals(1, len(sessions))
+
+        session = loader.load("subtest.subsession")
+        self.assertTrue(session)
+        self.assertEquals("x.y.z", session.version)
+        instance = session(config, "session",
+                           "session", "session")
+        self.assertTrue(instance)
+
 
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(SessionLoaderTest("test_load"))
     suite.addTest(SessionLoaderTest("test_load_derived"))
+    suite.addTest(SessionLoaderTest("test_load_sub"))
 
     return suite
 
