@@ -79,6 +79,12 @@ class SessionManager(object):
             raise SessionError(self.session_name,
                                "Could not load session from '%s'" %
                                self.config.get("jam_sessions"))
+        validator = SessionValidator()
+        if not validator.validate(self.session):
+            raise SessionError(self.session_name,
+                               "Loaded invalid session from '%s'. Errors: %s" %
+                               (self.config.get("jam_sessions"),
+                               "\n".join(validator.errors)))
         self.session_instance = None
         self.log = logging.getLogger("jam.sessionmanager")
 
@@ -298,9 +304,9 @@ class SessionValidator(object):
         valid = True
         if not "version" in session.__dict__:
             valid = False
-            self.errors.append("Session '%s' has not version." % session.__name__)
+            self.errors.append("Session '%s' has no version." % session.__name__)
 
-        if not session.version:
+        elif not session.version:
             valid = False
             self.errors.append("Session '%s' version not set." % session.__name__)
 
