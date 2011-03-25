@@ -2,6 +2,8 @@ import jam.session
 
 class TestSession(jam.session.Session):
 
+    version = "1.0"
+
     def build(self):
         return True
 

@@ -74,7 +74,7 @@ class SessionManager(object):
         self.session_name = name
         self.session_loader = SessionLoader(config)
         self.session = self.session_loader.load(name + "." + name)
-        print self.session.version
+        # TODO: check session
         if not self.session:
             raise SessionError(self.session_name,
                                "Could not load session from '%s'" %
@@ -287,5 +287,21 @@ class SessionLoader(object):
                              sessionname)
             return None
         session = sessions[0]
-        self.log.info("Loaded session '%s'", sessionname)
+        self.log.info("Loaded session '%s'", session.__name__)
         return session
+
+class SessionValidator(object):
+
+    errors = []
+
+    def validate(self, session):
+        valid = True
+        if not "version" in session.__dict__:
+            valid = False
+            self.errors.append("Session '%s' has not version." % session.__name__)
+
+        if not session.version:
+            valid = False
+            self.errors.append("Session '%s' version not set." % session.__name__)
+
+        return valid

@@ -28,7 +28,10 @@ import logging
 test_dir = os.path.dirname(__file__)
 sys.path.append(os.path.join(test_dir, os.pardir))
 
-from jam.session import SessionLoader
+from jam.session import SessionLoader, Session, SessionValidator
+
+class MySession(Session):
+    pass
 
 class NullHandler(logging.Handler):
     def emit(self, record):
@@ -115,12 +118,46 @@ class SessionLoaderTest(unittest.TestCase):
                            "session", "session")
         self.assertTrue(instance)
 
+        module = loader.module("subtest.derivedsession")
+        self.assertTrue(module)
+        self.assertEquals("subtest.derivedsession", module.__name__)
+
+        classes = loader.classes("subtest.derivedsession")
+        self.assertEquals(1, len(classes))
+
+        sessions = loader.sessions("subtest.derivedsession")
+        self.assertEquals(1, len(sessions))
+
+        session = loader.load("subtest.derivedsession")
+        self.assertTrue(session)
+        self.assertEquals("olla", session.version)
+        instance = session(config, "session",
+                           "session", "session")
+        self.assertTrue(instance)
+
+class SessionValidatorTest(unittest.TestCase):
+
+    def setUp(self):
+        self.config = TestConfig()
+        self.loader = SessionLoader(self.config)
+        self.validator = SessionValidator()
+
+    def test_validate(self):
+        session = self.loader.load("testsession")
+        self.assertTrue(session)
+        self.assertTrue(self.validator.validate(session))
+
+        session = self.loader.load("invalidsession")
+        self.assertTrue(session)
+        self.assertFalse(self.validator.validate(session))
+
 
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(SessionLoaderTest("test_load"))
     suite.addTest(SessionLoaderTest("test_load_derived"))
     suite.addTest(SessionLoaderTest("test_load_sub"))
+    suite.addTest(SessionValidatorTest("test_validate"))
 
     return suite
 
