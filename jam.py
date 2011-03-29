@@ -69,8 +69,6 @@ def main():
     elif command == "extract":
         manager.extract()
     elif command == "download":
-        download = jam.download.Downloader(args[1], args[2])
-        download.download()
-
+        manager.download()
 
 main()
