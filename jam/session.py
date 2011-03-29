@@ -26,6 +26,7 @@ import os.path
 
 from jam.utils import realpath
 from jam.buildsystem import Configure, CMake, Make
+from jam.download import Downloader
 
 class SessionError(Exception):
 
@@ -136,15 +137,16 @@ class SessionManager(object):
             self.session_instance = self.session(self.config, self.src_dir,
                                                  self.build_dir, self.dest_dir)
         return self.session_instance
-       
 
     def download(self):
         self.log.info("%s: download", self.session_name)
         self.create_download_cache_dirs()
 
-        for url in self.url:
-            dl = Downloader(url) 
+        if self.session.url:
+            self.log.info("Copying source file from '%s'." % self.session.url)
+            dl = Downloader(self.session.url) 
             dl.copy(self.data_dir)
+            dl.verify(self.session.hash)
         for patch in self.patches:
             dl = Downloader(patch)
             dl.copy(self.patch_dir)
