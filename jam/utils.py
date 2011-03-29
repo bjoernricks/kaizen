@@ -25,21 +25,22 @@ class Hash(object):
 
     def __init__(self, filename):
         self.filename = filename
-        self.md5 = None
-        self.sha1 = None
+        self.md5_value = None
+        self.sha1_value = None
 
     def md5(self):
-        if not self.md5:
-            self.md5 = self._calculate_hash(hashlib.md5)
-        return self.md5
+        if not self.md5_value:
+            self.md5_value = self._calculate_hash(hashlib.md5)
+        return self.md5_value
+
     def sha1(self):
-        if not self.sha1:
-            self.sha1 = self._calculate_hash(hashlibs.sha1)
-        return self.sha1
+        if not self.sha1_value:
+            self.sha1_value = self._calculate_hash(hashlibs.sha1)
+        return self.sha1_value
 
     def _calculate_hash(self, hashalgorithm):
-        """ calculates a hashof a file """
-        if not os.path.isfile(filename):
+        """ calculates a hash of a file """
+        if not os.path.isfile(self.filename):
             raise RuntimeError("Could not calculate hash. File not found: %s"
                                 % self.filename)
         f = file(self.filename, 'rb')
