@@ -70,8 +70,9 @@ class SessionManager(object):
     url = []
     patches = []
 
-    def __init__(self, config, name):
+    def __init__(self, config, name, force=False):
         self.config = config
+        self.force = force
         self.session_name = name
         self.session_loader = SessionLoader(config)
         self.session = self.session_loader.load(name + "." + name)
@@ -145,7 +146,7 @@ class SessionManager(object):
         if self.session.url:
             self.log.info("Copying source file from '%s'." % self.session.url)
             dl = Downloader(self.session.url) 
-            dl.copy(self.data_dir)
+            dl.copy(self.data_dir, self.force)
             dl.verify(self.session.hash)
         for patch in self.patches:
             dl = Downloader(patch)

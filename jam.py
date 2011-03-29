@@ -36,6 +36,8 @@ def main():
                       help="Enable debug output")
     parser.add_option("-v", "--verbose", action="store_true", dest="verbose",
                       help="Enable verbose output")
+    parser.add_option("-f", "--force", action="store_true", dest="force",
+                     help="Force an action e.g. re-download sources")
     parser.add_option("--version", action="store_true",
                       help="Print version information")
 
@@ -63,7 +65,8 @@ def main():
 
     command = args[0]
 
-    manager = jam.session.SessionManager(session_config, args[1])
+    manager = jam.session.SessionManager(session_config, args[1],
+                                         force=options.force)
     if command == "build":
        manager.build()
     elif command == "extract":
