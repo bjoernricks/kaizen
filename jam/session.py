@@ -22,6 +22,8 @@ import os
 import sys
 import inspect
 import logging
+import tarfile
+import zipfile
 import os.path
 
 from jam.utils import realpath
@@ -88,6 +90,7 @@ class SessionManager(object):
                                (self.config.get("jam_sessions"),
                                "\n".join(validator.errors)))
         self.session_instance = None
+        self.download_file = None 
         self.log = logging.getLogger("jam.sessionmanager")
 
     def create_destroot_dir(self):
@@ -138,6 +141,22 @@ class SessionManager(object):
             self.session_instance = self.session(self.config, self.src_dir,
                                                  self.build_dir, self.dest_dir)
         return self.session_instance
+    
+    def extract_file(self, file_name, dest_dir):
+        if not os.path.isfile(file_name):
+            self.log.error("Unable to extract file. '%s' is does not exit or \
+                            is not a file." % file_name)
+            return
+        if tarfile.is_tarfile(file_name):
+            self.log.debug("Extracting tar file '%s' to '%s'" %
+                          (file_name, dest_dir))
+            file = tarfile.open(file_name)
+            file.extractall(dest_dir)
+        elif zipfile.is_zipfile(file_name):
+            self.log.debug("Extracting zip file '%s' to '%s'" %
+                          (file_name, dest_dir))
+            file = zipfile.ZipFile(file_name)
+            file.extractall(dest_fir)
 
     def download(self):
         self.log.info("%s: download", self.session_name)
@@ -146,7 +165,7 @@ class SessionManager(object):
         if self.session.url:
             self.log.info("Copying source file from '%s'." % self.session.url)
             dl = Downloader(self.session.url) 
-            dl.copy(self.data_dir, self.force)
+            self.download_file = dl.copy(self.data_dir, self.force)
             dl.verify(self.session.hash)
         for patch in self.patches:
             dl = Downloader(patch)
@@ -158,6 +177,10 @@ class SessionManager(object):
         # TODO: create directories in their phases
         self.create_build_cache_dirs()
         self.create_destroot_dir()
+        if self.download_file:
+            self.extract_file(self.download_file, self.src_dir)
+        else:
+            self.log.info("Nothing to extract.")
 
     def archive(self):
         self.log.info("%s: archive", self.session_name)
