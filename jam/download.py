@@ -86,6 +86,7 @@ class Downloader:
             self.downloader.copy(filename)
         else:
             self.log.debug("'%s' has been downloaded already" % self.filename)
+        return filename
 
     def verify(self, hashes):
         hashcalc = Hash(self.filename)
