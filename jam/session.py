@@ -231,11 +231,13 @@ class Session(object):
     hash = {}
     args = []
     name = ""
-    src_path = name + "-" + version
+    src_path = None
 
-    def __init__(self, config, build_dir, src_dir, dest_dir):
+    def __init__(self, config, src_dir, build_dir, dest_dir):
         self.config = config
         self.build_dir = build_dir
+        if self.src_path is None:
+            self.src_path = self.name + "-" + self.version
         self.src_dir = os.path.join(src_dir, self.src_path)
         self.dest_dir = dest_dir
 
