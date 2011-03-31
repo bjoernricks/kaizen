@@ -19,6 +19,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import os.path
+import logging
 
 import jam.run
 
@@ -30,7 +31,9 @@ class BuildSystem(object):
         self.args = args
         self.src_dir = src_dir
         self.build_dir = build_dir
+        self.cwd_dir = realpath(build_dir)
         self.verbose = verbose
+        self.log = logging.getLogger("jam.buildsystem")
 
     def run(self):
         pass
@@ -41,7 +44,8 @@ class Configure(BuildSystem):
         cmd = ["configure"]
         cmd.extend(self.args)
         cmd.append(realpath(self.src_dir))
-        jam.run.call(cmd, not self.verbose, cwd=realpath(self.build_dir))
+        self.log.debug("Configure run '%s' in '%s'" % (cmd, self.cwd_dir))
+        jam.run.call(cmd, not self.verbose, cwd=self.cwd_dir)
 
 class CMake(BuildSystem):
 
@@ -49,7 +53,8 @@ class CMake(BuildSystem):
         cmd = ["cmake"]
         cmd.extend(args)
         cmd.append(realpath(self.src_dir))
-        jam.run.call(cmd, not self.verbose, cwd=realpath(self.build_dir))
+        self.log.debug("CMake run '%s' in '%s'" % (cmd, self.cwd_dir))
+        jam.run.call(cmd, not self.verbose, cwd=self.cwd_dir)
 
 class Make(object):
 
@@ -60,7 +65,8 @@ class Make(object):
     def run(self, args=[]):
         cmd = ["make"]
         cmd.extend(args)
-        jam.run.call(cmd, not self.verbose, cwd=realpath(self.dir))
+        self.log.debug("Make run '%s' in '%s'" % (cmd, self.cwd_dir))
+        jam.run.call(cmd, not self.verbose, cwd=self.cwd_dir)
 
     def install(self, dest_dir=None):
         cmd = []
