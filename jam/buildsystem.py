@@ -41,9 +41,8 @@ class BuildSystem(object):
 class Configure(BuildSystem):
     
     def run(self):
-        cmd = ["configure"]
+        cmd = [os.path.join(self.src_dir, "configure")]
         cmd.extend(self.args)
-        cmd.append(realpath(self.src_dir))
         self.log.debug("Configure run '%s' in '%s'" % (cmd, self.cwd_dir))
         jam.run.call(cmd, not self.verbose, cwd=self.cwd_dir)
 
@@ -60,7 +59,9 @@ class Make(object):
 
     def __init__(self, dir, verbose=False):
         self.dir = dir
+        self.cwd_dir = realpath(dir)
         self.verbose = verbose
+        self.log = logging.getLogger("jam.make")
 
     def run(self, args=[]):
         cmd = ["make"]
