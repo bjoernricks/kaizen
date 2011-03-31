@@ -3,6 +3,7 @@ import jam.session
 class TestSession(jam.session.Session):
 
     version = "1.0"
+    name = "test"
 
     def build(self):
         return True

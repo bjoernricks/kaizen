@@ -151,6 +151,10 @@ class SessionValidatorTest(unittest.TestCase):
         self.assertTrue(session)
         self.assertFalse(self.validator.validate(session))
 
+        session = self.loader.load("sessionwithoutname")
+        self.assertTrue(session)
+        self.assertFalse(self.validator.validate(session))
+
 
 def suite():
     suite = unittest.TestSuite()

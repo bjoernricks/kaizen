@@ -227,14 +227,16 @@ class Session(object):
     url = []
     patches = []
     version = ""
-    revision = ""
+    revision = "0"
     hash = {}
     args = []
+    name = ""
+    src_path = name + "-" + version
 
     def __init__(self, config, build_dir, src_dir, dest_dir):
         self.config = config
         self.build_dir = build_dir
-        self.src_dir = src_dir
+        self.src_dir = os.path.join(src_dir, self.src_path)
         self.dest_dir = dest_dir
 
     def configure(self):
@@ -328,12 +330,21 @@ class SessionValidator(object):
 
     def validate(self, session):
         valid = True
-        if not "version" in session.__dict__:
-            valid = False
-            self.errors.append("Session '%s' has no version." % session.__name__)
-
-        elif not session.version:
-            valid = False
-            self.errors.append("Session '%s' version not set." % session.__name__)
+        try:
+            if not session.version:
+                valid = False
+                self.errors.append("Session '%s' version not set." %
+                                   session.__name__)
+        except AttributeError as error:
+            self.errors.append("Session '%s' has no attribute version." %
+                               session.__name__)
+        try:
+            if not session.name:
+                valid = False
+                self.errors.append("Session '%s' name not set." %
+                                   session.__name__)
+        except AttributeError as error:
+            self.errors.append("Session '%s' has not attribute name." %
+                               session.__name__)
 
         return valid
