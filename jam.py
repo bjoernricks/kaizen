@@ -71,5 +71,9 @@ def main():
         manager.extract()
     elif command == "download":
         manager.download()
+    elif command == "destroot":
+        manager.destroot()
+    elif command == "install":
+        manager.install()
 
 main()
