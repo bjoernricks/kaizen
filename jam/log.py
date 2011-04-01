@@ -50,10 +50,9 @@ class Logger(object):
                         self.INFO:    [ 'info',   self.COLOR_GREEN ],
                         self.WARNING: [ 'warn',   self.COLOR_RED   ],
                         self.ERROR:   [ 'error',  self.COLOR_RED   ], }
-        self.color = False
         self.level = self.INFO
-        self.get_color = self.get_coloroff = self._color_dummy
         self.name = name
+        self.set_color(self._is_tty())
 
     def set_level(self, level):
         self.level = level
@@ -70,16 +69,7 @@ class Logger(object):
         return False
 
     def set_color(self, color):
-        if type(color) == type(True):
-            self.color = color
-        else:
-            if color.is_on():
-                self.color = True
-            elif color.is_auto():
-                self.color = self._is_tty()
-            else:
-                self.color = False
-
+        self.color = color
         if self.color:
             self.get_color = self._color
             self.get_coloroff = self._color_off
