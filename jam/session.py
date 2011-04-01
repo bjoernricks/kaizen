@@ -159,7 +159,7 @@ class SessionManager(object):
             file.extractall(dest_fir)
 
     def download(self):
-        self.log.info("%s: download" % self.session_name)
+        self.log.normal("%s:phase:download" % self.session_name)
         self.create_download_cache_dirs()
 
         if self.session.url:
@@ -173,7 +173,7 @@ class SessionManager(object):
 
     def extract(self):
         self.download()
-        self.log.info("%s: extract" % self.session_name)
+        self.log.normal("%s:phase:extract" % self.session_name)
         # TODO: create directories in their phases
         self.create_build_cache_dirs()
         self.create_destroot_dir()
@@ -183,42 +183,42 @@ class SessionManager(object):
             self.log.info("Nothing to extract.")
 
     def archive(self):
-        self.log.info("%s: archive" % self.session_name)
+        self.log.normal("%s:phase:archive" % self.session_name)
 
     def configure(self):
         self.patch()
-        self.log.info("%s: configure" % self.session_name)
+        self.log.normal("%s:phase:configure" % self.session_name)
         self.get_session_instance().configure()
 
     def build(self):
         self.configure()
-        self.log.info("%s: build" % self.session_name)
+        self.log.normal("%s:phase:build" % self.session_name)
         self.get_session_instance().build()
 
     def destroot(self):
         self.build()
-        self.log.info("%s: destroot" % self.session_name)
-        #self.create_destroot_dir()
+        self.log.normal("%s:phase:destroot" % self.session_name)
+        self.create_destroot_dir()
         self.get_session_instance().destroot()
 
     def install(self):
-        self.log.info("%s: install" % self.session_name)
+        self.log.normal("%s:phase:install" % self.session_name)
 
     def uninstall(self):
-        self.log.info("%s: uninstall" % self.session_name)
+        self.log.normal("%s:phase:uninstall" % self.session_name)
 
     def activate(self):
-        self.log.info("%s: activate" % self.session_name)
+        self.log.normal("%s:phase:activate" % self.session_name)
 
     def deactivate(self):
-        self.log.info("%s: deactivate" % self.session_name)
+        self.log.normal("%s:phase:deactivate" % self.session_name)
 
     def patch(self):
         self.extract()
-        self.log.info("%s: patch" % self.session_name)
+        self.log.normal("%s:phase:patch" % self.session_name)
 
     def unpatch(self):
-        self.log.info("%s: unpatch" % self.session_name)
+        self.log.normal("%s:phase:unpatch" % self.session_name)
 
 
 class Session(object):
