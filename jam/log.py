@@ -1,27 +1,32 @@
-# vim: set fileencoding=utf-8 :
+# vim:fileencoding=utf-8:et::sw=4:ts=4:tw=80:
+
+# jam - An advanced package manager for Free Software
 #
-# (C) 2010 Guido Guenther <agx@sigxcpu.org>
-#    This program is free software; you can redistribute it and/or modify
-#    it under the terms of the GNU General Public License as published by
-#    the Free Software Foundation; either version 2 of the License, or
-#    (at your option) any later version.
+# This file is orriginally borrowed from git-buildpackage
+# see git clone http://honk.sigxcpu.org/git/git-buildpackage.git
+
 #
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU General Public License for more details.
+# Copyright (C) 2010 Guido Guenther <agx@sigxcpu.org>
+# Copyright (C) 2011  Björn Ricks <bjoern.ricks@googlemail.com>
 #
-#    You should have received a copy of the GNU General Public License
-#    along with this program; if not, write to the Free Software
-#    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
 #
-"""Simple colored logging classes"""
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+"""Simple colored logging class"""
 
 import os
 import sys
-import gbp.tristate
-
-logger = None
 
 class Logger(object):
 
@@ -35,18 +40,20 @@ class Logger(object):
 
 
     format = ("%(color)s"
-              "gbp:%(levelname)s: "
+              "%(levelname)s:%(name)s: "
               "%(message)s"
               "%(coloroff)s")
 
-    def __init__(self):
-        self.levels = { self.DEBUG:   [ 'debug', self.COLOR_GREEN ],
-                        self.INFO:    [ 'info',  self.COLOR_GREEN ],
-                        self.WARNING: [ 'warn',  self.COLOR_RED   ],
-                        self.ERROR:   [ 'error', self.COLOR_RED   ], }
+    def __init__(self, name):
+        self.levels = { self.NORMAL:  [ 'normal', self.COLOR_BLACK ],
+                        self.DEBUG:   [ 'debug',  self.COLOR_GREEN ],
+                        self.INFO:    [ 'info',   self.COLOR_GREEN ],
+                        self.WARNING: [ 'warn',   self.COLOR_RED   ],
+                        self.ERROR:   [ 'error',  self.COLOR_RED   ], }
         self.color = False
         self.level = self.INFO
         self.get_color = self.get_coloroff = self._color_dummy
+        self.name = name
 
     def set_level(self, level):
         self.level = level
@@ -97,26 +104,33 @@ class Logger(object):
         print >>out, self.format % { 'levelname': self.levels[level][0],
                                      'color': self.get_color(level),
                                      'message': message,
-                                     'coloroff': self.get_coloroff()}
+                                     'coloroff': self.get_coloroff(),
+                                     'name': self.name,}
 
+    def err(self, msg):
+        self.log(Logger.ERROR, msg)
 
-def err(msg):
-    logger.log(Logger.ERROR, msg)
+    def warn(self, msg):
+        self.log(Logger.WARNING, msg)
 
-def warn(msg):
-    logger.log(Logger.WARNING, msg)
+    def info(self, msg):
+        self.log(Logger.INFO, msg)
 
-def info(msg):
-    logger.log(Logger.INFO, msg)
+    def debug(self, msg):
+        self.log(Logger.DEBUG, msg)
 
-def debug(msg):
-    logger.log(Logger.DEBUG, msg)
+    def normal(self, msg):
+        self.log(Logger.NORMAL, msg)
 
-def setup(color, verbose):
-    logger.set_color(color)
-    if verbose:
-        logger.set_level(Logger.DEBUG)
+loggers = {}
 
-if not logger:
-    logger = Logger()
+def getLogger(name):
+    if name in loggers:
+        return loggers[name]
+    logger = Logger(name)
+    loggers[name] = logger
+    return logger
+
+def getRootLogger():
+    return getLogger("jam")
 
