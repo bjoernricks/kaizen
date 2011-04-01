@@ -71,8 +71,8 @@ class Make(object):
         jam.run.call(cmd, not self.verbose, cwd=self.cwd_dir)
 
     def install(self, dest_dir=None):
-        cmd = []
+        args = []
         if dest_dir:
-            cmd.append("DESTDIR=" + dest_dir)
-        cmd.append("install")
+            args.append("DESTDIR=" + dest_dir)
+        args.append("install")
         self.run(args)
