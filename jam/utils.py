@@ -18,6 +18,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+import os
 import os.path
 import hashlib # requires python 2.5
 
@@ -52,6 +53,39 @@ class Hash(object):
             m.update(d)
         f.close()
         return m.hexdigest()
+
+
+def list_dir(dir):
+    files = []
+    dirs = []
+    contents = os.listdir(dir)
+    for content in contents:
+        path = os.path.join(dir, content)
+        if os.path.isdir(path):
+            dirs.append(path)
+            (newdirs, newfiles) = list_dir(path)
+            files.extend(newfiles)
+            dirs.extend(newdirs)
+        else:
+            files.append(path)
+    return (dirs, files)
+
+def list_subdir(dir):
+    files = []
+    dirs = []
+    cwd = os.getcwd()
+    os.chdir(dir)
+    contents = os.listdir(dir)
+    for content in contents:
+        if os.path.isdir(content):
+            dirs.append(content)
+            (newdirs, newfiles) = list_dir(content)
+            files.extend(newfiles)
+            dirs.extend(newdirs)
+        else:
+            files.append(content)
+    os.chdir(cwd)
+    return (dirs, files)
 
 def realpath(path):
     return os.path.abspath(os.path.expanduser(path))
