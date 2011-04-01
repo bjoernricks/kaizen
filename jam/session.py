@@ -16,7 +16,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301, USA.
 
 import os
 import sys
@@ -27,7 +28,7 @@ import os.path
 
 import jam.log
 
-from jam.utils import realpath
+from jam.utils import realpath, list_dir, list_subdir
 from jam.buildsystem import Configure, CMake, Make
 from jam.download import Downloader
 
@@ -208,7 +209,11 @@ class SessionManager(object):
         self.get_session_instance().destroot()
 
     def install(self):
+        self.create_destroot_dir()
         self.log.normal("%s:phase:install" % self.session_name)
+        (dirs, files) = list_subdir(self.dest_dir)
+        self.log.debug("dirs '%s'" % dirs)
+        self.log.debug("files '%s'" % files)
 
     def uninstall(self):
         self.log.normal("%s:phase:uninstall" % self.session_name)

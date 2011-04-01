@@ -2,12 +2,11 @@
 
 # jam - An advanced package manager for Free Software
 #
-# This file is orriginally borrowed from git-buildpackage
-# see git clone http://honk.sigxcpu.org/git/git-buildpackage.git
-
+# This file is originally borrowed from git-buildpackage
+# see https://honk.sigxcpu.org/piki/projects/git-buildpackage/
 #
 # Copyright (C) 2010 Guido Guenther <agx@sigxcpu.org>
-# Copyright (C) 2011  Björn Ricks <bjoern.ricks@googlemail.com>
+# Copyright (C) 2011 Björn Ricks <bjoern.ricks@googlemail.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -21,7 +20,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301, USA.
 
 """Simple colored logging class"""
 
