@@ -22,6 +22,7 @@ import os.path
 import logging
 
 import jam.run
+import jam.log
 
 from jam.utils import realpath
 
@@ -33,7 +34,7 @@ class BuildSystem(object):
         self.build_dir = build_dir
         self.cwd_dir = realpath(build_dir)
         self.verbose = verbose
-        self.log = logging.getLogger("jam.buildsystem")
+        self.log = jam.log.getLogger("jam.buildsystem")
 
     def run(self):
         pass
@@ -61,7 +62,7 @@ class Make(object):
         self.dir = dir
         self.cwd_dir = realpath(dir)
         self.verbose = verbose
-        self.log = logging.getLogger("jam.make")
+        self.log = jam.log.getLogger("jam.make")
 
     def run(self, args=[]):
         cmd = ["make"]

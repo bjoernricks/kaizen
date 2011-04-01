@@ -30,7 +30,7 @@ import sys
 
 class Logger(object):
 
-    DEBUG, INFO, WARNING, ERROR = range(4)
+    DEBUG, INFO, NORMAL, WARNING, ERROR = range(5)
 
     COLOR_NONE = 0
     COLOR_BLACK, COLOR_RED, COLOR_GREEN = range(30,33)
@@ -122,15 +122,16 @@ class Logger(object):
     def normal(self, msg):
         self.log(Logger.NORMAL, msg)
 
-loggers = {}
+loggers = {"jam": Logger("jam")}
 
 def getLogger(name):
     if name in loggers:
         return loggers[name]
     logger = Logger(name)
+    logger.set_level(getRootLogger().level)
     loggers[name] = logger
     return logger
 
 def getRootLogger():
-    return getLogger("jam")
+    return loggers["jam"]
 

@@ -19,10 +19,9 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-import logging
-
 import jam.download
 import jam.session
+import jam.log
 
 from optparse import OptionParser
 
@@ -47,12 +46,11 @@ def main():
         parser.print_help()
         return
 
-    logger = logging.getLogger("jam")
-    logger.addHandler(logging.StreamHandler())
+    jamlogger = jam.log.getRootLogger()
 
     config = {}
     if options.debug:
-        logger.setLevel(logging.DEBUG)
+        jamlogger.set_level(jam.log.Logger.DEBUG)
         config["debug"] = True
 
     if options.verbose:

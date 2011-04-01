@@ -21,10 +21,11 @@
 import os
 import sys
 import inspect
-import logging
 import tarfile
 import zipfile
 import os.path
+
+import jam.log
 
 from jam.utils import realpath
 from jam.buildsystem import Configure, CMake, Make
@@ -78,7 +79,6 @@ class SessionManager(object):
         self.session_name = name
         self.session_loader = SessionLoader(config)
         self.session = self.session_loader.load(name + "." + name)
-        # TODO: check session
         if not self.session:
             raise SessionError(self.session_name,
                                "Could not load session from '%s'" %
@@ -91,18 +91,18 @@ class SessionManager(object):
                                "\n".join(validator.errors)))
         self.session_instance = None
         self.download_file = None 
-        self.log = logging.getLogger("jam.sessionmanager")
+        self.log = jam.log.getLogger("jam.sessionmanager")
 
     def create_destroot_dir(self):
         name = self.session_name
         destroot_dir = os.path.join(self.config.get("jam_destroot"), name)
         if not os.path.exists(destroot_dir):
             os.makedirs(destroot_dir)
-        self.log.debug("creating destroot dir in %s", destroot_dir)
+        self.log.debug("creating destroot dir in '%s'" % destroot_dir)
         self.dest_dir = os.path.join(destroot_dir, self.session.version + "-"
                                  + self.session.revision)
         if not os.path.exists(self.dest_dir):
-            self.log.debug("creating destroot dir %s", self.dest_dir)
+            self.log.debug("creating destroot dir '%s'" % self.dest_dir)
             os.mkdir(self.dest_dir)
 
     def create_download_cache_dirs(self):
@@ -110,14 +110,14 @@ class SessionManager(object):
         cache_dir = os.path.join(self.config.get("jam_download_cache"), name)
         if not os.path.exists(cache_dir):
             os.makedirs(cache_dir)
-        self.log.debug("creating download cache dirs in %s", cache_dir)
+        self.log.debug("creating download cache dirs in '%s'" % cache_dir)
         self.data_dir = os.path.join(cache_dir, "data")
         if not os.path.exists(self.data_dir):
-            self.log.debug("creating download cache datadir in %s", self.data_dir)
+            self.log.debug("creating download cache datadir in '%s'" % self.data_dir)
             os.mkdir(self.data_dir)
         self.patch_dir = os.path.join(cache_dir, "patches")
         if not os.path.exists(self.patch_dir):
-            self.log.debug("creating download cache patchdir in %s", self.patch_dir)
+            self.log.debug("creating download cache patchdir in '%s'" % self.patch_dir)
             os.mkdir(self.patch_dir)
 
     def create_build_cache_dirs(self):
@@ -126,14 +126,14 @@ class SessionManager(object):
                                  self.session.version + "-" + self.session.revision)
         if not os.path.exists(cache_dir):
             os.makedirs(cache_dir)
-        self.log.debug("creating build cache dirs in %s", cache_dir)
+        self.log.debug("creating build cache dirs in '%s'" % cache_dir)
         self.src_dir = os.path.join(cache_dir, "source")
         if not os.path.exists(self.src_dir):
-            self.log.debug("creating build cache sourcedir %s", self.src_dir)
+            self.log.debug("creating build cache sourcedir '%s'" % self.src_dir)
             os.mkdir(self.src_dir)
         self.build_dir = os.path.join(cache_dir, "build")
         if not os.path.exists(self.build_dir):
-            self.log.debug("creating build cache buildir %s", self.build_dir)
+            self.log.debug("creating build cache buildir '%s'" % self.build_dir)
             os.mkdir(self.build_dir)
 
     def get_session_instance(self):
@@ -159,7 +159,7 @@ class SessionManager(object):
             file.extractall(dest_fir)
 
     def download(self):
-        self.log.info("%s: download", self.session_name)
+        self.log.info("%s: download" % self.session_name)
         self.create_download_cache_dirs()
 
         if self.session.url:
@@ -173,7 +173,7 @@ class SessionManager(object):
 
     def extract(self):
         self.download()
-        self.log.info("%s: extract", self.session_name)
+        self.log.info("%s: extract" % self.session_name)
         # TODO: create directories in their phases
         self.create_build_cache_dirs()
         self.create_destroot_dir()
@@ -183,42 +183,42 @@ class SessionManager(object):
             self.log.info("Nothing to extract.")
 
     def archive(self):
-        self.log.info("%s: archive", self.session_name)
+        self.log.info("%s: archive" % self.session_name)
 
     def configure(self):
         self.patch()
-        self.log.info("%s: configure", self.session_name)
+        self.log.info("%s: configure" % self.session_name)
         self.get_session_instance().configure()
 
     def build(self):
         self.configure()
-        self.log.info("%s: build", self.session_name)
+        self.log.info("%s: build" % self.session_name)
         self.get_session_instance().build()
 
     def destroot(self):
         self.build()
-        self.log.info("%s: destroot", self.session_name)
+        self.log.info("%s: destroot" % self.session_name)
         #self.create_destroot_dir()
         self.get_session_instance().destroot()
 
     def install(self):
-        self.log.info("%s: install", self.session_name)
+        self.log.info("%s: install" % self.session_name)
 
     def uninstall(self):
-        self.log.info("%s: uninstall", self.session_name)
+        self.log.info("%s: uninstall" % self.session_name)
 
     def activate(self):
-        self.log.info("%s: activate", self.session_name)
+        self.log.info("%s: activate" % self.session_name)
 
     def deactivate(self):
-        self.log.info("%s: deactivate", self.session_name)
+        self.log.info("%s: deactivate" % self.session_name)
 
     def patch(self):
         self.extract()
-        self.log.info("%s: patch", self.session_name)
+        self.log.info("%s: patch" % self.session_name)
 
     def unpatch(self):
-        self.log.info("%s: unpatch", self.session_name)
+        self.log.info("%s: unpatch" % self.session_name)
 
 
 class Session(object):
@@ -283,7 +283,7 @@ class SessionLoader(object):
 
     def __init__(self, config):
         self.config = config
-        self.log = logging.getLogger("jam.sessionloader")
+        self.log = jam.log.getLogger("jam.sessionloader")
         self.add_path()
 
     def add_path(self):
@@ -303,13 +303,13 @@ class SessionLoader(object):
         module = self.module(modulename)
         if not module:
             return classes
-        self.log.debug("Imported module '%s'", module)
+        self.log.debug("Imported module '%s'" % module)
         for key, value in module.__dict__.items():
             if inspect.isclass(value):
                 if parentclass:
                     if not issubclass(value, parentclass):
                         continue
-                self.log.debug("Found class '%s'", value)
+                self.log.debug("Found class '%s'" % value)
                 classes.append(value)
         return classes
 
@@ -319,11 +319,11 @@ class SessionLoader(object):
     def load(self, sessionname):
         sessions = self.sessions(sessionname)
         if not sessions:
-            self.log.warning("Could not load any session with name '%s'",
+            self.log.warning("Could not load any session with name '%s'" %
                              sessionname)
             return None
         session = sessions[0]
-        self.log.info("Loaded session '%s'", session.__name__)
+        self.log.info("Loaded session '%s'" % session.__name__)
         return session
 
 class SessionValidator(object):

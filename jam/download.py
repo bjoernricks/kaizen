@@ -18,9 +18,10 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-import logging
 import urllib2
 import os.path
+
+import jam.log
 
 from urlparse import urlparse
 
@@ -45,7 +46,7 @@ class HttpDownloader(object):
 
     def __init__(self, url):
         self.url = url
-        self.log = logging.getLogger("jam.httpdownloader")
+        self.log = jam.log.getLogger("jam.httpdownloader")
 
     def copy(self, filename):
         u = urllib2.urlopen(self.url)
@@ -71,7 +72,7 @@ class Downloader:
         url = urlparse(urlstr)
         self.url = urlstr
         self.filename = os.path.basename(urlstr)
-        self.log = logging.getLogger("jam.downloader")
+        self.log = jam.log.getLogger("jam.downloader")
         
         if url.scheme == 'http' or url.scheme == 'https':
             self.downloader = HttpDownloader(urlstr)
