@@ -76,22 +76,13 @@ class SessionManager(object):
     def __init__(self, config, name, force=False):
         self.config = config
         self.force = force
+        self.session = None
         self.session_name = name
-        self.session_loader = SessionLoader(config)
-        self.session = self.session_loader.load(name + "." + name)
-        if not self.session:
-            raise SessionError(self.session_name,
-                               "Could not load session from '%s'" %
-                               self.config.get("jam_sessions"))
-        validator = SessionValidator()
-        if not validator.validate(self.session):
-            raise SessionError(self.session_name,
-                               "Loaded invalid session from '%s'. Errors: %s" %
-                               (self.config.get("jam_sessions"),
-                               "\n".join(validator.errors)))
         self.session_instance = None
         self.download_file = None 
+        self.session_loader = SessionLoader(config)
         self.log = jam.log.getLogger("jam.sessionmanager")
+        self.init()
 
     def create_destroot_dir(self):
         name = self.session_name
@@ -157,6 +148,21 @@ class SessionManager(object):
                           (file_name, dest_dir))
             file = zipfile.ZipFile(file_name)
             file.extractall(dest_fir)
+
+    def init(self):
+        self.log.normal("%s:phase:init" % self.session_name)
+        self.session = self.session_loader.load(self.session_name + "." +
+                self.session_name)
+        if not self.session:
+            raise SessionError(self.session_name,
+                               "Could not load session from '%s'" %
+                               self.config.get("jam_sessions"))
+        validator = SessionValidator()
+        if not validator.validate(self.session):
+            raise SessionError(self.session_name,
+                               "Loaded invalid session from '%s'. Errors: %s" %
+                               (self.config.get("jam_sessions"),
+                               "\n".join(validator.errors)))
 
     def download(self):
         self.log.normal("%s:phase:download" % self.session_name)
