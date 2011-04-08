@@ -233,7 +233,20 @@ class SessionManager(object):
                 os.symlink(destdir_file_path, file_path)
 
     def deactivate(self):
+        self.create_destroot_dir()
         self.log.normal("%s:phase:deactivate" % self.session_name)
+        (dirs, files) = list_subdir(self.dest_dir, True)
+        for file in files:
+            file_path = os.path.join("/", file)
+            if os.path.exists(file_path):
+                self.log.debug("Deactivating '%s'" % file_path)
+                os.remove(file_path)
+        dirs.sort(reverse=True)
+        for subdir in dirs:
+            dir = os.path.join("/", subdir)
+            if os.path.exists(dir) and not os.listdir(dir):
+                os.rmdir(dir)
+                self.log.debug("Deleting directory '%s'" % dir)
 
     def patch(self):
         self.extract()
