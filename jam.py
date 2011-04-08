@@ -76,5 +76,7 @@ def main():
         manager.destroot()
     elif command == "install":
         manager.install()
+    elif command == "activate":
+        manager.activate()
 
 main()
