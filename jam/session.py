@@ -211,15 +211,26 @@ class SessionManager(object):
     def install(self):
         self.create_destroot_dir()
         self.log.normal("%s:phase:install" % self.session_name)
-        (dirs, files) = list_subdir(self.dest_dir)
-        self.log.debug("dirs '%s'" % dirs)
-        self.log.debug("files '%s'" % files)
 
     def uninstall(self):
         self.log.normal("%s:phase:uninstall" % self.session_name)
 
     def activate(self):
+        self.create_destroot_dir()
         self.log.normal("%s:phase:activate" % self.session_name)
+        (dirs, files) = list_subdir(self.dest_dir)
+        for subdir in dirs:
+            dir = os.path.join("/", subdir)
+            if not os.path.exists(dir):
+                os.makedirs(dir)
+                self.log.debug("Creating directory '%s'" % dir)
+        for file in files:
+            file_path = os.path.join("/", file)
+            destdir_file_path = os.path.join(self.dest_dir, file)
+            if not os.path.exists(file_path):
+                self.log.debug("Activating '%s' from '%s'" % (file_path,
+                                destdir_file_path))
+                os.symlink(destdir_file_path, file_path)
 
     def deactivate(self):
         self.log.normal("%s:phase:deactivate" % self.session_name)
@@ -306,7 +317,7 @@ class SessionLoader(object):
         try:
             return __import__(name, globals(), locals(), ['*'])
         except ImportError as error:
-            self.log.warn("Could not import module '%s'. %s", name, error)
+            self.log.warn("Could not import module '%s'. %s" % (name, error))
             return None
 
     def classes(self, modulename, parentclass=None):
@@ -330,8 +341,8 @@ class SessionLoader(object):
     def load(self, sessionname):
         sessions = self.sessions(sessionname)
         if not sessions:
-            self.log.warning("Could not load any session with name '%s'" %
-                             sessionname)
+            self.log.warn("Could not load any session with name '%s'" %
+                          sessionname)
             return None
         session = sessions[0]
         self.log.info("Loaded session '%s'" % session.__name__)
