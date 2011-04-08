@@ -63,8 +63,9 @@ def list_dir(dir):
     for content in contents:
         path = os.path.join(dir, content)
         if os.path.isdir(path):
-            dirs.append(path)
             (newdirs, newfiles) = list_dir(path)
+            if not newdirs:
+                dirs.append(path)
             files.extend(newfiles)
             dirs.extend(newdirs)
         else:
@@ -79,8 +80,9 @@ def list_subdir(dir):
     contents = os.listdir(dir)
     for content in contents:
         if os.path.isdir(content):
-            dirs.append(content)
             (newdirs, newfiles) = list_dir(content)
+            if not newdirs:
+                dirs.append(content)
             files.extend(newfiles)
             dirs.extend(newdirs)
         else:
