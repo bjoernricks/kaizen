@@ -78,5 +78,7 @@ def main():
         manager.install()
     elif command == "activate":
         manager.activate()
+    elif command == "deactivate":
+        manager.deactivate()
 
 main()
