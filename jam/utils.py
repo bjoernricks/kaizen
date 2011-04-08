@@ -56,15 +56,15 @@ class Hash(object):
         return m.hexdigest()
 
 
-def list_dir(dir):
+def list_dir(dir, all_dirs=False):
     files = []
     dirs = []
     contents = os.listdir(dir)
     for content in contents:
         path = os.path.join(dir, content)
         if os.path.isdir(path):
-            (newdirs, newfiles) = list_dir(path)
-            if not newdirs:
+            (newdirs, newfiles) = list_dir(path, all_dirs)
+            if not newdirs or all_dirs:
                 dirs.append(path)
             files.extend(newfiles)
             dirs.extend(newdirs)
@@ -72,7 +72,7 @@ def list_dir(dir):
             files.append(path)
     return (dirs, files)
 
-def list_subdir(dir):
+def list_subdir(dir, all_dirs=False):
     files = []
     dirs = []
     cwd = os.getcwd()
@@ -80,8 +80,8 @@ def list_subdir(dir):
     contents = os.listdir(dir)
     for content in contents:
         if os.path.isdir(content):
-            (newdirs, newfiles) = list_dir(content)
-            if not newdirs:
+            (newdirs, newfiles) = list_dir(content, all_dirs)
+            if not newdirs or all_dirs:
                 dirs.append(content)
             files.extend(newfiles)
             dirs.extend(newdirs)
