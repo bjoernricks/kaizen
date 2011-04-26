@@ -179,7 +179,6 @@ class SessionManager(object):
             dl.copy(self.patch_dir)
 
     def extract(self):
-        self.download()
         self.log.normal("%s:phase:extract" % self.session_name)
         # TODO: create directories in their phases
         self.create_build_cache_dirs()
@@ -193,24 +192,27 @@ class SessionManager(object):
         self.log.normal("%s:phase:archive" % self.session_name)
 
     def configure(self):
-        self.patch()
         self.log.normal("%s:phase:configure" % self.session_name)
         self.get_session_instance().configure()
 
     def build(self):
-        self.configure()
         self.log.normal("%s:phase:build" % self.session_name)
         self.get_session_instance().build()
 
     def destroot(self):
-        self.build()
         self.log.normal("%s:phase:destroot" % self.session_name)
         self.create_destroot_dir()
         self.get_session_instance().destroot()
 
     def install(self):
         self.create_destroot_dir()
-        self.log.normal("%s:phase:install" % self.session_name)
+        self.log.normal("%s:running install" % self.session_name)
+        self.download()
+        self.extract()
+        self.patch()
+        self.configure()
+        self.build()
+        self.destroot()
 
     def uninstall(self):
         self.log.normal("%s:phase:uninstall" % self.session_name)
