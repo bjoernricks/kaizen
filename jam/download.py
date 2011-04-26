@@ -54,7 +54,7 @@ class HttpDownloader(object):
         f = open(filename, 'w')
         meta = u.info()
         filesize = int(meta.getheaders("Content-Length")[0])
-        self.log.info("downloading %s (%.2f KiB)", self.url, filesize / 1024)
+        self.log.info("downloading %s (%.2f KiB)" % (self.url, filesize / 1024))
         filesizedl = 0
         while True:
             buffer = u.read(8192)
@@ -87,7 +87,7 @@ class Downloader:
         if not os.path.exists(filename) or overwrite:
             self.downloader.copy(filename)
         else:
-            self.log.debug("'%s' has been downloaded already" % self.filename)
+            self.log.info("'%s' has been downloaded already" % self.filename)
         return filename
 
     def verify(self, hashes):
