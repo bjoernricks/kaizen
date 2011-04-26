@@ -213,6 +213,7 @@ class SessionManager(object):
         self.configure()
         self.build()
         self.destroot()
+        self.activate()
 
     def uninstall(self):
         self.log.normal("%s:phase:uninstall" % self.session_name)
