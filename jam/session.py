@@ -278,8 +278,17 @@ class Session(object):
         self.src_dir = os.path.join(src_dir, self.src_path)
         self.dest_dir = dest_dir
 
+    def _args_replace(self):
+        vars = dict()
+        vars["prefix"] = self.config.get("jam_prefix")
+        org_args = self.args
+        self.args = []
+        for arg in org_args:
+            newarg = arg % vars
+            self.args.append(newarg)
+
     def configure(self):
-        pass
+        self._args_replace()
 
     def build(self):
         pass
@@ -301,6 +310,7 @@ class ConfigureSession(MakeSession):
 
     def configure(self):
         self.args.append("--prefix=" + self.config.get("jam_prefix"))
+        super(ConfigureSession, self).configure()
         Configure(self.args, self.src_dir, self.build_dir,
                   self.config.get("debug")).run()
 
@@ -312,6 +322,7 @@ class CMakeSession(MakeSession):
         self.args.append("-DCMAKE_COLOR_MAKEFILE=TRUE")
         if self.config.get("verbose"):
             self.args.append("-DCMAKE_VERBOSE_MAKEFILE=TRUE")
+        super(CMakeSession, self).configure()
         CMake(self.args, self.src_dir, self_builddir,
               self.config.get("debug")).run()
 
