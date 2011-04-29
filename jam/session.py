@@ -270,22 +270,46 @@ class Session(object):
     args = []
     name = ""
     src_path = None
+    build_path = None
 
     def __init__(self, config, src_dir, build_dir, dest_dir):
         self.config = config
         self.build_dir = build_dir
-        if self.src_path is None:
-            self.src_path = self.name + "-" + self.version
-        self.src_dir = os.path.join(src_dir, self.src_path)
+        self.src_dir = src_dir
         self.dest_dir = dest_dir
 
+        self.vars = dict()
+        self.vars["prefix"] = self.config.get("jam_prefix")
+        self.vars["version"] = self.version
+        self.vars["name"] = self.name
+        self.vars["src_dir"] = self.src_dir
+        self.vars["build_dir"] = self.build_dir
+        self.vars["src_path"] = ""
+        self.vars["build_path"] = ""
+
+        if not self.src_path:
+            self.src_path = os.path.join(src_dir, self.name 
+                                         + "-" + self.version)
+        else:
+            self.src_path = self._var_replace(self.src_path)
+
+        self.vars["src_path"] = self.src_path
+
+        if not self.build_path:
+            self.build_path = build_dir
+        else:
+            self.build_path = self._var_replace(self.build_path)
+
+        self.vars["build_path"] = self.build_path
+
+    def _var_replace(self, var):
+        return var % self.vars
+
     def _args_replace(self):
-        vars = dict()
-        vars["prefix"] = self.config.get("jam_prefix")
         org_args = self.args
         self.args = []
         for arg in org_args:
-            newarg = arg % vars
+            newarg = self._var_replace(arg)
             self.args.append(newarg)
 
     def configure(self):
@@ -301,18 +325,19 @@ class Session(object):
 class MakeSession(Session):
 
     def build(self):
-        Make(self.build_dir, self.config.get("debug")).run()
+        Make(self.build_path, self.config.get("debug")).run()
 
     def destroot(self):
-        Make(self.build_dir, self.config.get("debug")).install(self.dest_dir)
+        Make(self.build_path, self.config.get("debug")).install(self.dest_dir)
 
 
 class ConfigureSession(MakeSession):
 
     def configure(self):
         self.args.append("--prefix=" + self.config.get("jam_prefix"))
+        self.args.append("--srcdir=" + self.src_path)
         super(ConfigureSession, self).configure()
-        Configure(self.args, self.src_dir, self.build_dir,
+        Configure(self.args, self.src_path, self.build_path,
                   self.config.get("debug")).run()
 
 
@@ -324,7 +349,7 @@ class CMakeSession(MakeSession):
         if self.config.get("verbose"):
             self.args.append("-DCMAKE_VERBOSE_MAKEFILE=TRUE")
         super(CMakeSession, self).configure()
-        CMake(self.args, self.src_dir, self_builddir,
+        CMake(self.args, self.src_path, self.build_path,
               self.config.get("debug")).run()
 
 
