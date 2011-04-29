@@ -68,6 +68,8 @@ def main():
                                          force=options.force)
     if command == "build":
        manager.build()
+    elif command == "configure":
+        manager.configure()
     elif command == "extract":
         manager.extract()
     elif command == "download":
@@ -80,5 +82,10 @@ def main():
         manager.activate()
     elif command == "deactivate":
         manager.deactivate()
+    elif command == "clean":
+        manager.clean()
+    elif command == "distclean":
+        manager.distclean()
+
 
 main()
