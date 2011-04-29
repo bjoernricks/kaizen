@@ -415,6 +415,10 @@ class SessionLoader(object):
                 if parentclass:
                     if not issubclass(value, parentclass):
                         continue
+                # only load classes from module
+                if value.__module__ != modulename:
+                    self.log.debug("Skipping class '%s'" % value)
+                    continue
                 self.log.debug("Found class '%s'" % value)
                 classes.append(value)
         return classes
