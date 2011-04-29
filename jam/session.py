@@ -193,19 +193,23 @@ class SessionManager(object):
 
     def configure(self):
         self.log.normal("%s:phase:configure" % self.session_name)
+        self.create_build_cache_dirs()
+        self.create_destroot_dir()
         self.get_session_instance().configure()
 
     def build(self):
         self.log.normal("%s:phase:build" % self.session_name)
+        self.create_build_cache_dirs()
+        self.create_destroot_dir()
         self.get_session_instance().build()
 
     def destroot(self):
         self.log.normal("%s:phase:destroot" % self.session_name)
+        self.create_build_cache_dirs()
         self.create_destroot_dir()
         self.get_session_instance().destroot()
 
     def install(self):
-        self.create_destroot_dir()
         self.log.normal("%s:running install" % self.session_name)
         self.download()
         self.extract()
@@ -219,8 +223,9 @@ class SessionManager(object):
         self.log.normal("%s:phase:uninstall" % self.session_name)
 
     def activate(self):
-        self.create_destroot_dir()
         self.log.normal("%s:phase:activate" % self.session_name)
+        self.create_build_cache_dirs()
+        self.create_destroot_dir()
         (dirs, files) = list_subdir(self.dest_dir)
         for subdir in dirs:
             dir = os.path.join("/", subdir)
@@ -236,8 +241,9 @@ class SessionManager(object):
                 os.symlink(destdir_file_path, file_path)
 
     def deactivate(self):
-        self.create_destroot_dir()
         self.log.normal("%s:phase:deactivate" % self.session_name)
+        self.create_build_cache_dirs()
+        self.create_destroot_dir()
         (dirs, files) = list_subdir(self.dest_dir, True)
         for file in files:
             file_path = os.path.join("/", file)
@@ -257,6 +263,18 @@ class SessionManager(object):
 
     def unpatch(self):
         self.log.normal("%s:phase:unpatch" % self.session_name)
+
+    def clean(self):
+        self.log.normal("%s:phase:clean" % self.session_name)
+        self.create_build_cache_dirs()
+        self.create_destroot_dir()
+        self.get_session_instance().clean()
+
+    def distclean(self):
+        self.log.normal("%s:phase:distclean" % self.session_name)
+        self.create_build_cache_dirs()
+        self.create_destroot_dir()
+        self.get_session_instance().distclean()
 
 
 class Session(object):
@@ -321,6 +339,12 @@ class Session(object):
     def destroot(self):
         pass
 
+    def clean(self):
+        pass
+
+    def distclean(self):
+        pass
+
 
 class MakeSession(Session):
 
@@ -330,6 +354,11 @@ class MakeSession(Session):
     def destroot(self):
         Make(self.build_path, self.config.get("debug")).install(self.dest_dir)
 
+    def clean(self):
+        Make(self.build_path, self.config.get("debug")).clean()
+
+    def distclean(self):
+        Make(self.build_path, self.config.get("debug")).distclean()
 
 class ConfigureSession(MakeSession):
 
@@ -352,6 +381,9 @@ class CMakeSession(MakeSession):
         CMake(self.args, self.src_path, self.build_path,
               self.config.get("debug")).run()
 
+    def distclean(self):
+        # todo delete content of build_path
+        pass
 
 class SessionLoader(object):
 

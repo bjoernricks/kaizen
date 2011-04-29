@@ -79,6 +79,12 @@ class Make(object):
         args.append("install")
         self.run(args)
 
+    def clean(self):
+        self.run(["clean"])
+
+    def distclean(self):
+        self.run(["distclean"])
+
 
 class Copy(object):
 
