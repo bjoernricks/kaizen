@@ -21,6 +21,7 @@
 
 import os.path
 import logging
+import shutil
 
 import jam.run
 import jam.log
@@ -77,3 +78,15 @@ class Make(object):
             args.append("DESTDIR=" + dest_dir)
         args.append("install")
         self.run(args)
+
+
+class Copy(object):
+
+    def __init__(self, src, dest):
+        self.log = jam.log.getLogger("jam.copy")
+        if os.path.isdir(src):
+            self.log.debug("Copy directory '%s' to '%s'" % (src, dest))
+            shutil.copytree(src, dest)
+        else:
+            self.log.debug("Copy file '%s' to '%s'" (src, dest))
+            shutil.copy(src, dest)
