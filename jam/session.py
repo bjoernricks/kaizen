@@ -172,7 +172,7 @@ class SessionManager(object):
         if self.session.url:
             self.log.info("Copying source file from '%s'." % self.session.url)
             dl = Downloader(self.session.url) 
-            self.download_file = dl.copy(self.data_dir, self.force)
+            download_file = dl.copy(self.data_dir, self.force)
             dl.verify(self.session.hash)
         for patch in self.patches:
             dl = Downloader(patch)
@@ -182,9 +182,12 @@ class SessionManager(object):
         self.log.normal("%s:phase:extract" % self.session_name)
         # TODO: create directories in their phases
         self.create_build_cache_dirs()
+        self.create_download_cache_dirs()
         self.create_destroot_dir()
-        if self.download_file:
-            self.extract_file(self.download_file, self.src_dir)
+        filename = os.path.basename(self.session.url)
+        archive_file = os.path.join(self.data_dir, filename)
+        if os.path.isfile(archive_file):
+            self.extract_file(archive_file, self.src_dir)
         else:
             self.log.info("Nothing to extract.")
 
@@ -325,13 +328,14 @@ class Session(object):
 
     def _args_replace(self):
         org_args = self.args
-        self.args = []
+        args = []
         for arg in org_args:
             newarg = self._var_replace(arg)
-            self.args.append(newarg)
+            args.append(newarg)
+        return args
 
     def configure(self):
-        self._args_replace()
+        self.args = self._args_replace()
 
     def build(self):
         pass
