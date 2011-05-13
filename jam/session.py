@@ -29,7 +29,7 @@ import os.path
 import jam.log
 
 from jam.utils import realpath, list_dir, list_subdir
-from jam.buildsystem import Configure, CMake, Make
+from jam.command import Configure, CMake, Make
 from jam.download import Downloader
 
 class SessionError(Exception):
