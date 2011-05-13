@@ -91,7 +91,7 @@ class Command(object):
     def __init__(self, cmd, args, cwd, verbose):
         self.cmd = cmd
         self.args = args
-        self.cwd_dir = cwd
+        self.cwd_dir = realpath(cwd)
         self.verbose = verbose
         self.log = jam.log.getLogger("jam.command")
 
