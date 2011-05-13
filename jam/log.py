@@ -97,7 +97,7 @@ class Logger(object):
                                      'coloroff': self.get_coloroff(),
                                      'name': self.name,}
 
-    def err(self, msg):
+    def error(self, msg):
         self.log(Logger.ERROR, msg)
 
     def warn(self, msg):
