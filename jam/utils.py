@@ -23,6 +23,10 @@ import os
 import os.path
 import hashlib # requires python 2.5
 
+import jam.log
+
+log = jam.log.getLogger(__name__)
+
 class Hash(object):
 
     def __init__(self, filename):
@@ -92,3 +96,19 @@ def list_subdir(dir, all_dirs=False):
 
 def realpath(path):
     return os.path.abspath(os.path.expanduser(path))
+
+def extract_file(self, file_name, dest_dir):
+    if not os.path.isfile(file_name):
+        raise RuntimeError("Unable to extract file. '%s' is does not exit or \
+                           is not a file." % file_name)
+    if tarfile.is_tarfile(file_name):
+        log.debug("Extracting tar file '%s' to '%s'" %
+                      (file_name, dest_dir))
+        file = tarfile.open(file_name)
+        file.extractall(dest_dir)
+    elif zipfile.is_zipfile(file_name):
+        log.debug("Extracting zip file '%s' to '%s'" %
+                      (file_name, dest_dir))
+        file = zipfile.ZipFile(file_name)
+        file.extractall(dest_fir)
+
