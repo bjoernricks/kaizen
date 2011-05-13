@@ -86,6 +86,24 @@ class Make(object):
         self.run(["distclean"])
 
 
+class Command(object):
+
+    def __init__(self, cmd, args, cwd, verbose):
+        self.cmd = cmd
+        self.args = args
+        self.cwd_dir = cwd
+        self.verbose = verbose
+        self.log = jam.log.getLogger("jam.command")
+
+    def run(self):
+        cmd = [self.cmd]
+        for arg in self.args:
+            new_arg = arg.split()
+            cmd.extend(new_arg)
+        self.log.debug("Running command '%s' in '%s'" % (cmd, self.cwd_dir))
+        jam.run.call(cmd, not self.verbose, cwd=self.cwd_dir)
+
+
 class Copy(object):
 
     def __init__(self, src, dest):
