@@ -86,6 +86,8 @@ def main():
         manager.clean()
     elif command == "distclean":
         manager.distclean()
+    elif command == "depends":
+        manager.depends()
 
 
 main()

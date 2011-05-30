@@ -31,6 +31,7 @@ import jam.log
 from jam.utils import realpath, list_dir, list_subdir
 from jam.command import Configure, CMake, Make
 from jam.download import Downloader
+from jam.depend import DependencyAnalyser
 
 class SessionError(Exception):
 
@@ -164,7 +165,11 @@ class SessionManager(object):
 
     def distclean(self):
         self.log.normal("%s:phase:distclean" % self.session_name)
-        self.session_wrapper.distclean()
+        self.log.normal(self.session_wrapper.distclean())
+
+    def depends(self):
+        self.log.normal("%s:phase:depends" % self.session_name)
+        self.session_wrapper.depends()
 
 
 class SessionWrapper(object):
@@ -213,6 +218,9 @@ class SessionWrapper(object):
 
     def replace_session_args(self):
         self.session.args = self.session.args_replace()
+
+    def depends(self):
+        return DependencyAnalyser(self.config, self.session).analyse()
 
     def extract(self):
         src_path = self.session.src_path
@@ -356,6 +364,7 @@ class MakeSession(Session):
     def distclean(self):
         Make(self.build_path, self.config.get("debug")).distclean()
 
+
 class ConfigureSession(MakeSession):
 
     def configure(self):
@@ -367,6 +376,8 @@ class ConfigureSession(MakeSession):
 
 
 class CMakeSession(MakeSession):
+
+    depends = ["cmake"]
 
     def configure(self):
         self.args.append("-DCMAKE_INSTALL_PREFIX=" + self.config.get("jam_prefix"))
@@ -380,6 +391,7 @@ class CMakeSession(MakeSession):
     def distclean(self):
         # todo delete content of build_path
         pass
+
 
 class SessionLoader(object):
 
