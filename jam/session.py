@@ -229,6 +229,7 @@ class SessionWrapper(object):
         filename = os.path.basename(self.session.url)
         archive_file = os.path.join(self.data_dir, filename)
         if os.path.isfile(archive_file):
+            self.log.info("Extract '%s' to '%s'" % (archive_file, self.src_dir))
             extract_file(archive_file, self.src_dir)
         else:
             self.log.info("Nothing to extract.")
