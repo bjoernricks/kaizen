@@ -22,6 +22,8 @@
 import os
 import os.path
 import hashlib # requires python 2.5
+import tarfile
+import zipfile
 
 import jam.log
 
@@ -97,7 +99,7 @@ def list_subdir(dir, all_dirs=False):
 def realpath(path):
     return os.path.abspath(os.path.expanduser(path))
 
-def extract_file(self, file_name, dest_dir):
+def extract_file(file_name, dest_dir):
     if not os.path.isfile(file_name):
         raise RuntimeError("Unable to extract file. '%s' is does not exit or \
                            is not a file." % file_name)
