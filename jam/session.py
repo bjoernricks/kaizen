@@ -28,7 +28,7 @@ import os.path
 
 import jam.log
 
-from jam.utils import realpath, list_dir, list_subdir
+from jam.utils import realpath, list_dir, list_subdir, extract_file
 from jam.command import Configure, CMake, Make
 from jam.download import Downloader
 from jam.depend import DependencyAnalyser
@@ -227,10 +227,10 @@ class SessionWrapper(object):
         if not os.path.exists(src_path):
             self.log.debug("creating source dir '%s'" % src_path)
             os.makedirs(src_path)
-        filename = os.path.basename(self.session.session.url)
+        filename = os.path.basename(self.session.url)
         archive_file = os.path.join(self.data_dir, filename)
         if os.path.isfile(archive_file):
-            self.extract_file(archive_file, src_path)
+            extract_file(archive_file, src_path)
         else:
             self.log.info("Nothing to extract.")
 
