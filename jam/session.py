@@ -244,12 +244,13 @@ class SessionWrapper(object):
             dl = Downloader(self.session.url) 
             download_file = dl.copy(self.data_dir, self.force)
             dl.verify(self.session.hash)
-        if not os.path.exists(self.patch_dir):
-            self.log.debug("creating patch dir '%s'" % self.data_dir)
-            os.makedirs(self.data_dir)
-        for patch in self.session.patches:
-            dl = Downloader(patch)
-            dl.copy(self.patch_dir)
+        if self.session.patches:
+            if not os.path.exists(self.patch_dir):
+                self.log.debug("creating patch dir '%s'" % self.patch_dir)
+                os.makedirs(self.patch_dir)
+            for patch in self.session.patches:
+                dl = Downloader(patch)
+                dl.copy(self.patch_dir)
 
     def configure(self):
         self.replace_session_args()
