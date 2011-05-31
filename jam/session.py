@@ -222,16 +222,14 @@ class SessionWrapper(object):
 
     def depends(self):
         return DependencyAnalyser(self.config, self.session).analyse()
-
     def extract(self):
-        src_path = self.session.src_path
-        if not os.path.exists(src_path):
-            self.log.debug("creating source dir '%s'" % src_path)
-            os.makedirs(src_path)
+        if not os.path.exists(self.src_dir):
+            self.log.debug("creating source dir '%s'" % self.src_dir)
+            os.makedirs(self.src_dir)
         filename = os.path.basename(self.session.url)
         archive_file = os.path.join(self.data_dir, filename)
         if os.path.isfile(archive_file):
-            extract_file(archive_file, src_path)
+            extract_file(archive_file, self.src_dir)
         else:
             self.log.info("Nothing to extract.")
 
