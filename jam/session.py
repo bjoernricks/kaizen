@@ -177,6 +177,7 @@ class SessionWrapper(object):
     def __init__(self, name, config, force=False):
         self.config = config
         self.session_name = name
+        self.force = force
         self.session = None
         self.log = jam.log.getLogger("jam.sessionwrapper")
         self.phase = "init"
@@ -255,7 +256,7 @@ class SessionWrapper(object):
         build_path = self.session.build_path
         if not os.path.exists(build_path):
             self.log.debug("creating build dir '%s'" % build_path)
-            os.makedirs(self.build_path)
+            os.makedirs(build_path)
         self.session.configure()
 
     def build(self):
