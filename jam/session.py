@@ -366,6 +366,9 @@ class MakeSession(Session):
     def distclean(self):
         Make(self.build_path, self.config.get("debug")).distclean()
 
+    def configure(self):
+        pass
+
 
 class ConfigureSession(MakeSession):
 
