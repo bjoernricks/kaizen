@@ -108,9 +108,14 @@ class Copy(object):
 
     def __init__(self, src, dest):
         self.log = jam.log.getLogger("jam.copy")
-        if os.path.isdir(src):
-            self.log.debug("Copy directory '%s' to '%s'" % (src, dest))
-            shutil.copytree(src, dest)
+        self.src = src
+        self.dest = dest
+
+    def run(self):
+        if os.path.isdir(self.src):
+            self.log.debug("Copy directory '%s' to '%s'" % (self.src,
+                                                            self.dest))
+            shutil.copytree(self.src, self.dest)
         else:
-            self.log.debug("Copy file '%s' to '%s'" (src, dest))
-            shutil.copy(src, dest)
+            self.log.debug("Copy file '%s' to '%s'" % (self.src, self.dest))
+            shutil.copy(self.src, self.dest)
