@@ -115,6 +115,8 @@ class Copy(object):
         if os.path.isdir(self.src):
             self.log.debug("Copy directory '%s' to '%s'" % (self.src,
                                                             self.dest))
+            if os.path.exists(self.dest) and not os.listdir(self.dest):
+                os.rmdir(self.dest)
             shutil.copytree(self.src, self.dest)
         else:
             self.log.debug("Copy file '%s' to '%s'" % (self.src, self.dest))
