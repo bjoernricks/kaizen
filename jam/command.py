@@ -113,10 +113,15 @@ class Copy(object):
 
     def run(self):
         if os.path.isdir(self.src):
+            if os.path.exists(self.dest):
+                if os.listdir(self.dest):
+                    self.log.debug("Skipping copy. Destination '%s'"
+                                   " already exists" % self.dest)
+                    return
+                else:
+                    os.rmdir(self.dest)
             self.log.debug("Copy directory '%s' to '%s'" % (self.src,
                                                             self.dest))
-            if os.path.exists(self.dest) and not os.listdir(self.dest):
-                os.rmdir(self.dest)
             shutil.copytree(self.src, self.dest)
         else:
             self.log.debug("Copy file '%s' to '%s'" % (self.src, self.dest))
