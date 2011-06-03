@@ -121,6 +121,7 @@ class SessionManager(object):
 
     def uninstall(self):
         self.log.normal("%s:phase:uninstall" % self.session_name)
+        self.deactivate()
 
     def activate(self):
         self.log.normal("%s:phase:activate" % self.session_name)
