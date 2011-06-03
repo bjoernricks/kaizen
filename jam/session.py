@@ -29,7 +29,7 @@ import os.path
 import jam.log
 
 from jam.utils import realpath, list_dir, list_subdir, extract_file
-from jam.command import Configure, CMake, Make
+from jam.command import Configure, CMake, Make, Command, Copy
 from jam.download import Downloader
 from jam.depend import DependencyAnalyser
 
@@ -394,6 +394,30 @@ class CMakeSession(MakeSession):
 
     def distclean(self):
         # todo delete content of build_path
+        pass
+
+
+class PythonSession(Session):
+
+    def configure(self):
+        Copy(self.src_path, self.build_path).run()
+
+    def build(self):
+        Command("python", ["setup.py", "build"], self.build_path,
+                self.config.get("debug")).run()
+
+    def destroot(self):
+        Command("python", ["setup.py", "install", 
+                "--prefix="+ self.config.get("jam_prefix"),
+                "--root=" + self.dest_dir],
+                self.build_path,
+                self.config.get("debug")).run()
+
+    def clean(self):
+        Command("python", ["setup.py", "clean"], self.build_path,
+                self.config.get("debug")).run()
+
+    def distclean(self):
         pass
 
 
