@@ -185,8 +185,7 @@ class SessionWrapper(object):
 
     def load_session(self):
         session_loader = SessionLoader(self.config)
-        session = session_loader.load(self.session_name + "." +
-                                      self.session_name)
+        session = session_loader.load(self.session_name)
         if not session:
             raise SessionError(self.session_name,
                                "Could not load session from '%s'" %
@@ -222,6 +221,7 @@ class SessionWrapper(object):
 
     def depends(self):
         return DependencyAnalyser(self.config, self.session).analyse()
+
     def extract(self):
         if not os.path.exists(self.src_dir):
             self.log.debug("creating source dir '%s'" % self.src_dir)
@@ -439,7 +439,8 @@ class SessionLoader(object):
         return self.classes(module, Session)
 
     def load(self, sessionname):
-        sessions = self.sessions(sessionname)
+        sessionstring = sessionname + "." + sessionname
+        sessions = self.sessions(sessionstring)
         if not sessions:
             self.log.warn("Could not load any session with name '%s'" %
                           sessionname)
