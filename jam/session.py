@@ -50,20 +50,20 @@ class SessionConfig(object):
         # set default values
         self.config["debug"] = False
         self.config["verbose"] = False
-        self.config["jam_prefix"] = "/opt/local"
+        self.config["prefix"] = "/opt/local"
 
         self.config.update(config)
-        prefix = self.get("jam_prefix")
+        prefix = self.get("prefix")
         jam_dir = os.path.join(prefix, "jam")
 
-        if not self.config.get("jam_download_cache", None):
-            self.config["jam_download_cache"] =  os.path.join(jam_dir, "cache")
-        if not self.config.get("jam_sessions", None):
-            self.config["jam_sessions"] =  os.path.join(jam_dir, "session")
-        if not self.config.get("jam_destroot", None):
-            self.config["jam_destroot"] = os.path.join(jam_dir, "destroot")
-        if not self.config.get("jam_build_cache", None):
-            self.config["jam_build_cache"] = os.path.join(jam_dir, "cache")
+        if not self.config.get("download_cache", None):
+            self.config["download_cache"] =  os.path.join(jam_dir, "cache")
+        if not self.config.get("sessions", None):
+            self.config["sessions"] =  os.path.join(jam_dir, "session")
+        if not self.config.get("destroot", None):
+            self.config["destroot"] = os.path.join(jam_dir, "destroot")
+        if not self.config.get("build_cache", None):
+            self.config["build_cache"] = os.path.join(jam_dir, "cache")
 
     def get(self, value):
         # TODO: raise error if value not found
@@ -194,12 +194,12 @@ class SessionWrapper(object):
         if not session:
             raise SessionError(self.session_name,
                                "Could not load session from '%s'" %
-                               self.config.get("jam_sessions"))
+                               self.config.get("sessions"))
         validator = SessionValidator()
         if not validator.validate(session):
             raise SessionError(self.session_name,
                                "Loaded invalid session from '%s'. Errors: %s" %
-                               (self.config.get("jam_sessions"),
+                               (self.config.get("sessions"),
                                "\n".join(validator.errors)))
         return session
 
@@ -207,9 +207,9 @@ class SessionWrapper(object):
         session = self.load_session()
         version = session.version + "-" + session.revision
         name = self.session_name
-        build_cache = self.config.get("jam_build_cache")
-        download_cache = self.config.get("jam_download_cache")
-        destroot = self.config.get("jam_destroot")
+        build_cache = self.config.get("build_cache")
+        download_cache = self.config.get("download_cache")
+        destroot = self.config.get("destroot")
         self.download_cache_dir = os.path.join(download_cache, name)
         self.cache_dir = os.path.join(build_cache, name, version)
         self.destroot_dir = os.path.join(destroot, name)
@@ -306,7 +306,7 @@ class Session(object):
         self.debug = self.config.get("debug")
 
         self.vars = dict()
-        self.vars["prefix"] = self.config.get("jam_prefix")
+        self.vars["prefix"] = self.config.get("prefix")
         self.vars["version"] = self.version
         self.vars["name"] = self.name
         self.vars["src_dir"] = self.src_dir
@@ -377,7 +377,7 @@ class MakeSession(Session):
 class ConfigureSession(MakeSession):
 
     def configure(self):
-        self.args.append("--prefix=" + self.config.get("jam_prefix"))
+        self.args.append("--prefix=" + self.config.get("prefix"))
         self.args.append("--srcdir=" + self.src_path)
         super(ConfigureSession, self).configure()
         Configure(self.args, self.src_path, self.build_path,
@@ -389,7 +389,7 @@ class CMakeSession(MakeSession):
     depends = ["cmake"]
 
     def configure(self):
-        self.args.append("-DCMAKE_INSTALL_PREFIX=" + self.config.get("jam_prefix"))
+        self.args.append("-DCMAKE_INSTALL_PREFIX=" + self.config.get("prefix"))
         self.args.append("-DCMAKE_COLOR_MAKEFILE=TRUE")
         if self.config.get("verbose"):
             self.args.append("-DCMAKE_VERBOSE_MAKEFILE=TRUE")
@@ -413,7 +413,7 @@ class PythonSession(Session):
 
     def destroot(self):
         Command("python", ["setup.py", "install", 
-                "--prefix="+ self.config.get("jam_prefix"),
+                "--prefix="+ self.config.get("prefix"),
                 "--root=" + self.dest_dir],
                 self.build_path,
                 self.config.get("debug")).run()
@@ -434,7 +434,7 @@ class SessionLoader(object):
         self.add_path()
 
     def add_path(self):
-        path = realpath(self.config.get("jam_sessions"))
+        path = realpath(self.config.get("sessions"))
         if not path in sys.path:
             sys.path.append(path)
 

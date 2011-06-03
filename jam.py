@@ -58,7 +58,7 @@ def main():
         config["verbose"] = True
 
     if options.sessions:
-        config["jam_sessions"] = options.sessions
+        config["sessions"] = options.sessions
 
     session_config = jam.session.SessionConfig(config)
 
