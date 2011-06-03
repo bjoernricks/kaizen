@@ -172,6 +172,10 @@ class SessionManager(object):
         self.log.normal("%s:phase:depends" % self.session_name)
         self.session_wrapper.depends()
 
+    def drop(self):
+        self.log.normal("%s:phase:drop" % self.session_name)
+        #TODO remove session destdir
+
 
 class SessionWrapper(object):
 
