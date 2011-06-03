@@ -69,4 +69,4 @@ class Dependency(object):
         self.dependencies.append(dependency)
 
     def add_dependencies(self, dependencies):
-        self.dependencies.extend(dependenies)
+        self.dependencies.extend(dependencies)
