@@ -33,6 +33,7 @@ from jam.command import Configure, CMake, Make, Command, Copy
 from jam.download import Downloader
 from jam.depend import DependencyAnalyser
 
+
 class SessionError(Exception):
 
     def __init__(self, session_name, value):
@@ -41,33 +42,6 @@ class SessionError(Exception):
 
     def __str__(self):
         return "Error in session '%s': %s" % (self.session_name, self.value)
-
-class SessionConfig(object):
-
-    def __init__(self, config={}):
-        self.config = {}
-
-        # set default values
-        self.config["debug"] = False
-        self.config["verbose"] = False
-        self.config["prefix"] = "/opt/local"
-
-        self.config.update(config)
-        prefix = self.get("prefix")
-        jam_dir = os.path.join(prefix, "jam")
-
-        if not self.config.get("download_cache", None):
-            self.config["download_cache"] =  os.path.join(jam_dir, "cache")
-        if not self.config.get("sessions", None):
-            self.config["sessions"] =  os.path.join(jam_dir, "session")
-        if not self.config.get("destroot", None):
-            self.config["destroot"] = os.path.join(jam_dir, "destroot")
-        if not self.config.get("build_cache", None):
-            self.config["build_cache"] = os.path.join(jam_dir, "cache")
-
-    def get(self, value):
-        # TODO: raise error if value not found
-        return self.config[value]
 
 
 class SessionManager(object):
@@ -207,8 +181,8 @@ class SessionWrapper(object):
         session = self.load_session()
         version = session.version + "-" + session.revision
         name = self.session_name
-        build_cache = self.config.get("build_cache")
-        download_cache = self.config.get("download_cache")
+        build_cache = self.config.get("buildroot")
+        download_cache = self.config.get("downloadroot")
         destroot = self.config.get("destroot")
         self.download_cache_dir = os.path.join(download_cache, name)
         self.cache_dir = os.path.join(build_cache, name, version)
