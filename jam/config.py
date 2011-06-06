@@ -23,17 +23,20 @@ import os.path
 
 from ConfigParser import SafeConfigParser
 
+JAM_VERSION = "0.1"
+
 class Config(object):
 
-    def __init__(self, files=[], config={}):
+    def __init__(self, files=[], options={}):
+        self.options = options
         self.config = {}
         defaults = {}
 
         # set default values
-        defaults["debug"] = "0"
-        defaults["verbose"] = "0" 
+        defaults["debug"] = False
+        defaults["verbose"] = False
         defaults["prefix"] = "/opt/local"
-        defaults.update(config)
+        defaults.update(options)
 
         self.configparser = SafeConfigParser(defaults)
         self.configparser.read(files) 
@@ -67,11 +70,13 @@ class Config(object):
 
     def _get(self, value, default=None):
         try:
-            return self.configparser.get("jam", value)
+            return self.configparser.get("jam", value, vars=self.options)
         except:
             return default
 
     def _getbool(self, value, default=None):
+        if value in self.options:
+            return self.options[value]
         try:
             return self.configparser.getboolean("jam", value)
         except:
