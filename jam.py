@@ -56,12 +56,10 @@ def main():
                       help="Enable verbose output")
     parser.add_option("-f", "--force", action="store_true", dest="force",
                       help="Force an action e.g. re-download sources")
+    parser.add_option("--info", action="store_true", help="print jam settings")
 
     (options, args) = parser.parse_args()
 
-    if not args:
-        parser.print_help()
-        return
 
     if options.config:
         configfiles.append(options.config)
@@ -71,6 +69,14 @@ def main():
     config = jam.config.Config(configfiles, vars(options))
     if config.get("debug"):
         jamlogger.set_level(jam.log.Logger.DEBUG)
+
+    if options.info:
+        print_info(config)
+        return
+
+    if not args:
+        parser.print_help()
+        return
 
     command = args[0]
 
