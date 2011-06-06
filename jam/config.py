@@ -69,13 +69,15 @@ class Config(object):
             self.config["buildroot"] = os.path.join(jam_dir, "cache")
 
     def _get(self, value, default=None):
+        if value in self.options and self.options[value]:
+            return self.options[value]
         try:
-            return self.configparser.get("jam", value, vars=self.options)
+            return self.configparser.get("jam", value)
         except:
             return default
 
     def _getbool(self, value, default=None):
-        if value in self.options:
+        if value in self.options and self.options[value]:
             return self.options[value]
         try:
             return self.configparser.getboolean("jam", value)
