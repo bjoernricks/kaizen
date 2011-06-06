@@ -43,8 +43,8 @@ class Config(object):
         prefix = self._get("prefix")
 
         self.config["prefix"] = prefix
-        self.config["verbose"] = bool(self._getbool("verbose", False))
-        self.config["debug"] = bool(self._getbool("debug", False))
+        self.config["verbose"] = self._getbool("verbose", False)
+        self.config["debug"] = self._getbool("debug", False)
         self.config["dir"] = self._get("dir")
         self.config["sessions"] = self._get("sessions")
         self.config["destroot"] = self._get("destroot")
