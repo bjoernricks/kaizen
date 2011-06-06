@@ -38,10 +38,10 @@ def main():
     parser = OptionParser(usage=usage, version=version)
     parser.add_option("--config", dest="config", help="Path to the config file")
     parser.add_option("--sessions", help="Path to sessions")
-    parser.add_option("-d", "--debug", action="store_const", dest="debug",
-                      const="1", help="Enable debug output")
-    parser.add_option("-v", "--verbose", action="store_const", dest="verbose",
-                      const="1", help="Enable verbose output")
+    parser.add_option("-d", "--debug", action="store_true", dest="debug",
+                      help="Enable debug output")
+    parser.add_option("-v", "--verbose", action="store_true", dest="verbose",
+                      help="Enable verbose output")
     parser.add_option("-f", "--force", action="store_true", dest="force",
                      help="Force an action e.g. re-download sources")
 
