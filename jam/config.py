@@ -42,6 +42,7 @@ class Config(object):
             self.configparser.add_section("jam")
         prefix = self._get("prefix")
 
+        self.config["version"] = JAM_VERSION
         self.config["prefix"] = prefix
         self.config["verbose"] = self._getbool("verbose", False)
         self.config["debug"] = self._getbool("debug", False)
