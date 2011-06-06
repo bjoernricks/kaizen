@@ -43,7 +43,7 @@ def main():
     parser.add_option("-v", "--verbose", action="store_true", dest="verbose",
                       help="Enable verbose output")
     parser.add_option("-f", "--force", action="store_true", dest="force",
-                     help="Force an action e.g. re-download sources")
+                      help="Force an action e.g. re-download sources")
 
     (options, args) = parser.parse_args()
 
