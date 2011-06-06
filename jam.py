@@ -41,7 +41,8 @@ def print_settings(logger, config):
     logger.out("Downloadroot: '%s'" % config.get("downloadroot"))
 
 def main():
-    usage = "usage: %prog [options] command {arguments}"
+    usage = "Usage: %prog [options] command {arguments}\n\n"
+    usage += "jam - Orchestrate your software"
     version = "%prog " + JAM_VERSION
     configfiles = ["/etc/jamrc", realpath("~/.jam/jamrc")]
 
