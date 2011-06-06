@@ -1,0 +1,34 @@
+# jam section
+[jam]
+# default install prefix
+prefix = /opt/local
+
+# debug 1 = ON, 0 = OFF
+debug = 0
+
+# print verbose 1 = ON, 0 = OFF
+verbose = 0
+
+# path to sessions
+sessions = ~/source/jam-sessions
+
+# jam dir
+# default is %(prefix)s/jam
+#dir = %(prefix)s/jam
+
+# path to installed sessions
+# default is %(dir)s/destroot
+# a session will be installed in %(destroot)s/%(session)s/%(version)s
+# destroot = %(dir)s/destroot
+
+# path to downloaded data
+# default is $(dir)s/cache
+# data for a session will be stored in %(downloadroot)s/%(session)s/data
+# downloadroot = %(dir)s/cache
+
+# path to build directory
+# default is %(dir)s/cache
+# build directory for a session will be
+# %(buildroot)s/%(session)s/%(version)s/build
+# buildroot = %(dir)s/cache
+
