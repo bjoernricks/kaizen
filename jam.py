@@ -44,8 +44,6 @@ def main():
                       const="1", help="Enable verbose output")
     parser.add_option("-f", "--force", action="store_true", dest="force",
                      help="Force an action e.g. re-download sources")
-    parser.add_option("--version", action="store_true",
-                      help="Print version information")
 
     (options, args) = parser.parse_args()
 
