@@ -31,9 +31,10 @@ from jam.utils import realpath
 
 def main():
     usage = "usage: %prog [options] command {arguments}"
+    version = "%prog " + JAM_VERSION
     configfiles = ["/etc/jamrc", realpath("~/.jam/jamrc")]
 
-    parser = OptionParser(usage)
+    parser = OptionParser(usage=usage, version=version)
     parser.add_option("--config", dest="config", help="Path to the config file")
     parser.add_option("--sessions", help="Path to sessions")
     parser.add_option("-d", "--debug", action="store_const", dest="debug",
