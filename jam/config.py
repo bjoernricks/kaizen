@@ -43,8 +43,8 @@ class Config(object):
         prefix = self._get("prefix")
 
         self.config["prefix"] = prefix
-        self.config["verbose"] = bool(self._get("verbose", False))
-        self.config["debug"] = bool(self._get("debug", False))
+        self.config["verbose"] = bool(self._getbool("verbose", False))
+        self.config["debug"] = bool(self._getbool("debug", False))
         self.config["dir"] = self._get("dir")
         self.config["sessions"] = self._get("sessions")
         self.config["destroot"] = self._get("destroot")
@@ -54,6 +54,7 @@ class Config(object):
         jam_dir = self.config.get("dir", None)
         if not jam_dir:
             jam_dir = os.path.join(prefix, "jam")
+            self.config["dir"] = jam_dir
         if not self.config.get("downloadroot", None):
             self.config["downloadroot"] =  os.path.join(jam_dir, "cache")
         if not self.config.get("sessions", None):
@@ -66,6 +67,12 @@ class Config(object):
     def _get(self, value, default=None):
         try:
             return self.configparser.get("jam", value)
+        except:
+            return default
+
+    def _getbool(self, value, default=None):
+        try:
+            return self.configparser.getboolean("jam", value)
         except:
             return default
 
