@@ -30,6 +30,18 @@ from optparse import OptionParser
 from jam.utils import realpath
 from jam.config import JAM_VERSION
 
+
+def print_info(config):
+    print "jam - Orchestrate your software\n"
+    print "Version: '%s'" % config.get("version")
+    print "Debug: '%s'" % config.get("debug")
+    print "Verbose: '%s'" % config.get("verbose")
+    print "Dir: '%s'" % config.get("dir")
+    print "Sessions: '%s'" % config.get("sessions")
+    print "Destroot: '%s'" % config.get("destroot")
+    print "Buildroot: '%s'" % config.get("buildroot")
+    print "Downloadroot: '%s'" % config.get("downloadroot")
+
 def main():
     usage = "usage: %prog [options] command {arguments}"
     version = "%prog " + JAM_VERSION
