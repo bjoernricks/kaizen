@@ -112,6 +112,10 @@ class Logger(object):
     def normal(self, msg):
         self.log(Logger.NORMAL, msg)
 
+    def out(self, msg):
+        print msg
+
+
 loggers = {"jam": Logger("jam")}
 
 def getLogger(name):
