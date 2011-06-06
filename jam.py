@@ -30,17 +30,15 @@ from optparse import OptionParser
 from jam.utils import realpath
 from jam.config import JAM_VERSION
 
-
-def print_info(config):
-    print "jam - Orchestrate your software\n"
-    print "Version: '%s'" % config.get("version")
-    print "Debug: '%s'" % config.get("debug")
-    print "Verbose: '%s'" % config.get("verbose")
-    print "Dir: '%s'" % config.get("dir")
-    print "Sessions: '%s'" % config.get("sessions")
-    print "Destroot: '%s'" % config.get("destroot")
-    print "Buildroot: '%s'" % config.get("buildroot")
-    print "Downloadroot: '%s'" % config.get("downloadroot")
+def print_settings(logger, config):
+    logger.out("Version: '%s'" % config.get("version"))
+    logger.out("Debug: '%s'" % config.get("debug"))
+    logger.out("Verbose: '%s'" % config.get("verbose"))
+    logger.out("Dir: '%s'" % config.get("dir"))
+    logger.out("Sessions: '%s'" % config.get("sessions"))
+    logger.out("Destroot: '%s'" % config.get("destroot"))
+    logger.out("Buildroot: '%s'" % config.get("buildroot"))
+    logger.out("Downloadroot: '%s'" % config.get("downloadroot"))
 
 def main():
     usage = "usage: %prog [options] command {arguments}"
@@ -56,7 +54,7 @@ def main():
                       help="Enable verbose output")
     parser.add_option("-f", "--force", action="store_true", dest="force",
                       help="Force an action e.g. re-download sources")
-    parser.add_option("--info", action="store_true", help="print jam settings")
+    parser.add_option("--settings", action="store_true", help="Print jam settings")
 
     (options, args) = parser.parse_args()
 
@@ -65,14 +63,15 @@ def main():
         configfiles.append(options.config)
 
     jamlogger = jam.log.getRootLogger()
-
     config = jam.config.Config(configfiles, vars(options))
+
+    if options.settings:
+        print_settings(jamlogger, config)
+        return
+
     if config.get("debug"):
         jamlogger.set_level(jam.log.Logger.DEBUG)
-
-    if options.info:
-        print_info(config)
-        return
+        print_settings(jamlogger, config)
 
     if not args:
         parser.print_help()
