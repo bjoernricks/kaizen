@@ -28,6 +28,7 @@ import jam.log
 from optparse import OptionParser
 
 from jam.utils import realpath
+from jam.config import JAM_VERSION
 
 def main():
     usage = "usage: %prog [options] command {arguments}"
