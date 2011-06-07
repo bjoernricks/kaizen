@@ -25,7 +25,10 @@ import jam.download
 import jam.session
 import jam.log
 
-from optparse import OptionParser
+try:
+    from argparse import ArgumentParser
+except ImportError:
+    from jam.external.argparse import ArgumentParser
 
 from jam.utils import realpath
 from jam.config import JAM_VERSION
@@ -41,23 +44,35 @@ def print_settings(logger, config):
     logger.out("Downloadroot: '%s'" % config.get("downloadroot"))
 
 def main():
-    usage = "Usage: %prog [options] command {arguments}\n\n"
-    usage += "jam - Orchestrate your software"
-    version = "%prog " + JAM_VERSION
+    usage = "Usage: %(prog)s [options] command {arguments}"
+    description = "jam - Orchestrate your software"
+    version = "%(prog)s " + JAM_VERSION
     configfiles = ["/etc/jamrc", realpath("~/.jam/jamrc")]
 
-    parser = OptionParser(usage=usage, version=version)
-    parser.add_option("--config", dest="config", help="Path to the config file")
-    parser.add_option("--sessions", help="Path to sessions")
-    parser.add_option("-d", "--debug", action="store_true", dest="debug",
-                      help="Enable debug output")
-    parser.add_option("-v", "--verbose", action="store_true", dest="verbose",
-                      help="Enable verbose output")
-    parser.add_option("-f", "--force", action="store_true", dest="force",
-                      help="Force an action e.g. re-download sources")
-    parser.add_option("--settings", action="store_true", help="Print jam settings")
+    parser = ArgumentParser(usage=usage, description=description)
+    parser.add_argument("--config", dest="config", help="path to the config file")
+    parser.add_argument("--sessions", help="path to sessions")
+    parser.add_argument("-d", "--debug", action="store_true", dest="debug",
+                      help="enable debug output")
+    parser.add_argument("-v", "--verbose", action="store_true", dest="verbose",
+                      help="enable verbose output")
+    parser.add_argument("-f", "--force", action="store_true", dest="force",
+                      help="force an action e.g. re-download sources")
+    parser.add_argument("--settings", action="store_true", help="print jam settings")
+    parser.add_argument('--version', action='version', version=version)
 
-    (options, args) = parser.parse_args()
+    subparsers = parser.add_subparsers(dest="command", title="commands",
+                                       description="valid commands",
+                                       help="additional help")
+
+    commands = ["build", "configure", "extract", "download", "destroot",
+                "install", "activate", "deactivate", "update", "upgrade",
+                "distclean", "clean", "depends"]
+    for command in commands:
+        subparser = subparsers.add_parser(command)
+        subparser.add_argument("session", nargs=1)
+
+    options = parser.parse_args()
 
 
     if options.config:
@@ -74,13 +89,10 @@ def main():
         jamlogger.set_level(jam.log.Logger.DEBUG)
         print_settings(jamlogger, config)
 
-    if not args:
-        parser.print_help()
-        return
+    command = options.command
 
-    command = args[0]
-
-    manager = jam.session.SessionManager(config, args[1], force=options.force)
+    manager = jam.session.SessionManager(config, options.session[0],
+                                         force=options.force)
     if command == "build":
        manager.build()
     elif command == "configure":
