@@ -91,6 +91,8 @@ import textwrap as _textwrap
 
 from gettext import gettext as _
 
+import warnings
+warnings.filterwarnings("ignore")
 
 def _callable(obj):
     return hasattr(obj, '__call__') or hasattr(obj, '__bases__')
@@ -1038,7 +1040,7 @@ class _SubParsersAction(Action):
 
         self._prog_prefix = prog
         self._parser_class = parser_class
-        self._name_parser_map = _collections.OrderedDict()
+        self._name_parser_map = dict()
         self._choices_actions = []
 
         super(_SubParsersAction, self).__init__(
