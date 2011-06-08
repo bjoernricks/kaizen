@@ -40,7 +40,7 @@ def print_settings(logger, config):
     logger.out("Downloadroot: '%s'" % config.get("downloadroot"))
 
 def main():
-    usage = "Usage: %(prog)s [options] command {arguments}"
+    usage = "%(prog)s [options] command {arguments}"
     description = "jam - Orchestrate your software"
     version = "%(prog)s " + JAM_VERSION
 
