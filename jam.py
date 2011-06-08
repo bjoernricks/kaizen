@@ -20,14 +20,13 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301, USA.
 
-import jam.config
-import jam.download
-import jam.session
+
 import jam.log
+import jam.command
 
-
-from jam.config import JAM_VERSION, JAM_CONFIG_FILES
+from jam.config import Config, JAM_VERSION, JAM_CONFIG_FILES
 from jam.external.argparse import ArgumentParser
+from jam.utils import Loader
 
 def print_settings(logger, config):
     logger.out("Version: '%s'" % config.get("version"))
@@ -44,7 +43,9 @@ def main():
     description = "jam - Orchestrate your software"
     version = "%(prog)s " + JAM_VERSION
 
-    parser = ArgumentParser(usage=usage, description=description)
+    jamlogger = jam.log.getRootLogger()
+
+    parser = ArgumentParser(usage=usage, description=description, add_help=False)
     parser.add_argument("--config", dest="config", help="path to the config file")
     parser.add_argument("--sessions", help="path to sessions")
     parser.add_argument("-d", "--debug", action="store_true", dest="debug",
@@ -56,25 +57,13 @@ def main():
     parser.add_argument("--settings", action="store_true", help="print jam settings")
     parser.add_argument("--version", action="version", version=version)
 
-    subparsers = parser.add_subparsers(dest="command", title="commands",
-                                       description="valid commands",
-                                       help="additional help")
-
-    commands = ["build", "configure", "extract", "download", "destroot",
-                "install", "activate", "deactivate", "update", "upgrade",
-                "distclean", "clean", "depends"]
-    for command in commands:
-        subparser = subparsers.add_parser(command)
-        subparser.add_argument("session", nargs=1)
-
-    options = parser.parse_args()
-
+    known_args = parser.parse_known_args()
+    options = known_args[0]
 
     if options.config:
         configfiles.append(options.config)
 
-    jamlogger = jam.log.getRootLogger()
-    config = jam.config.Config(JAM_CONFIG_FILES, vars(options))
+    config = Config(JAM_CONFIG_FILES, vars(options))
 
     if options.settings:
         print_settings(jamlogger, config)
@@ -84,32 +73,19 @@ def main():
         jamlogger.set_level(jam.log.Logger.DEBUG)
         print_settings(jamlogger, config)
 
-    command = options.command
+    subparsers = parser.add_subparsers(dest="command", title="commands",
+                                       description="valid commands",
+                                       help="additional help")
 
-    manager = jam.session.SessionManager(config, options.session[0],
-                                         force=options.force)
-    if command == "build":
-       manager.build()
-    elif command == "configure":
-        manager.configure()
-    elif command == "extract":
-        manager.extract()
-    elif command == "download":
-        manager.download()
-    elif command == "destroot":
-        manager.destroot()
-    elif command == "install":
-        manager.install()
-    elif command == "activate":
-        manager.activate()
-    elif command == "deactivate":
-        manager.deactivate()
-    elif command == "clean":
-        manager.clean()
-    elif command == "distclean":
-        manager.distclean()
-    elif command == "depends":
-        manager.depends()
+    for command in Loader().classes(jam.command, all=True):
+        command(config).add_parser(subparsers)
+
+    parser.add_argument("--help", "-h", action="help",
+                        help="show this help message and exit. To get help "\
+                             "for a command use 'command --help'")
+
+    options = parser.parse_args()
+    options.func(options)
 
 
 main()
