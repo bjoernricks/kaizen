@@ -20,15 +20,13 @@
 # 02110-1301, USA.
 
 import os
-import sys
-import inspect
 import tarfile
 import zipfile
 import os.path
 
 import jam.log
 
-from jam.utils import realpath, list_dir, list_subdir, extract_file
+from jam.utils import Loader, realpath, list_dir, list_subdir, extract_file
 from jam.system import Configure, CMake, Make, Command, Copy
 from jam.download import Downloader
 from jam.depend import DependencyAnalyser
@@ -400,43 +398,13 @@ class PythonSession(Session):
         pass
 
 
-class SessionLoader(object):
+class SessionLoader(Loader):
 
     def __init__(self, config):
         self.config = config
         self.log = jam.log.getLogger("jam.sessionloader")
-        self.add_path()
-
-    def add_path(self):
         path = realpath(self.config.get("sessions"))
-        if not path in sys.path:
-            sys.path.append(path)
-
-    def module(self, name):
-        try:
-            return __import__(name, globals(), locals(), ['*'])
-        except ImportError as error:
-            self.log.warn("Could not import module '%s'. %s" % (name, error))
-            return None
-
-    def classes(self, modulename, parentclass=None):
-        classes = []
-        module = self.module(modulename)
-        if not module:
-            return classes
-        self.log.debug("Imported module '%s'" % module)
-        for key, value in module.__dict__.items():
-            if inspect.isclass(value):
-                if parentclass:
-                    if not issubclass(value, parentclass):
-                        continue
-                # only load classes from module
-                if value.__module__ != modulename:
-                    self.log.debug("Skipping class '%s'" % value)
-                    continue
-                self.log.debug("Found class '%s'" % value)
-                classes.append(value)
-        return classes
+        self.add_path(path)
 
     def sessions(self, module):
         return self.classes(module, Session)
@@ -451,6 +419,7 @@ class SessionLoader(object):
         session = sessions[0]
         self.log.info("Loaded session '%s'" % session.__name__)
         return session
+
 
 class SessionValidator(object):
 
