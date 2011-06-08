@@ -406,7 +406,10 @@ class SessionLoader(Loader):
         path = realpath(self.config.get("sessions"))
         self.add_path(path)
 
-    def sessions(self, module):
+    def sessions(self, modulename):
+        module = self.module(modulename)
+        if not module:
+            return None 
         return self.classes(module, Session)
 
     def load(self, sessionname):
