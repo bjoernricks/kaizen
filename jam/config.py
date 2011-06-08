@@ -23,7 +23,10 @@ import os.path
 
 from ConfigParser import SafeConfigParser
 
+from jam.utils import realpath
+
 JAM_VERSION = "0.1"
+JAM_CONFIG_FILES  = ["/etc/jamrc", realpath("~/.jam/jamrc")]
 
 class Config(object):
 
