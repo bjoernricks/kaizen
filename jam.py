@@ -30,8 +30,7 @@ try:
 except ImportError:
     from jam.external.argparse import ArgumentParser
 
-from jam.utils import realpath
-from jam.config import JAM_VERSION
+from jam.config import JAM_VERSION, JAM_CONFIG_FILES
 
 def print_settings(logger, config):
     logger.out("Version: '%s'" % config.get("version"))
@@ -47,7 +46,6 @@ def main():
     usage = "Usage: %(prog)s [options] command {arguments}"
     description = "jam - Orchestrate your software"
     version = "%(prog)s " + JAM_VERSION
-    configfiles = ["/etc/jamrc", realpath("~/.jam/jamrc")]
 
     parser = ArgumentParser(usage=usage, description=description)
     parser.add_argument("--config", dest="config", help="path to the config file")
@@ -79,7 +77,7 @@ def main():
         configfiles.append(options.config)
 
     jamlogger = jam.log.getRootLogger()
-    config = jam.config.Config(configfiles, vars(options))
+    config = jam.config.Config(JAM_CONFIG_FILES, vars(options))
 
     if options.settings:
         print_settings(jamlogger, config)
