@@ -30,11 +30,14 @@ class Command(object):
         self.func = func
         self.aliases = aliases
 
-    def add_parser(self, parser):
-        if self.aliases:
-            subparser = parser.add_parser(self.name, aliases=self.aliases)
+    def add_parser(self, parser, usage=None):
+        if usage:
+            self.usage = usage
         else:
-            subparser = parser.add_parser(self.name)
+            self.usage = "%(prog)s [options] " + self.name + " {arguments}"
+        subparser = parser.add_parser(self.name, aliases=self.aliases,
+                                      usage=self.usage)
+        subparser.set_defaults(func=self.func)
         return subparser
 
     def get_func(self):
