@@ -1058,8 +1058,8 @@ class _SubParsersAction(Action):
 
     def add_parser(self, name, **kwargs):
         # set prog from the existing prefix
-        if kwargs.get('prog') is None:
-            kwargs['prog'] = '%s %s' % (self._prog_prefix, name)
+        #if kwargs.get('prog') is None:
+        #    kwargs['prog'] = '%s %s' % (self._prog_prefix, name)
             
         aliases = kwargs.pop('aliases', ())
 
