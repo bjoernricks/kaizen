@@ -120,11 +120,20 @@ class InstallCommand(PhaseCommand):
 class UninstallCommand(PhaseCommand):
 
     def __init__(self):
-        super(UninstallCommand, self),__init__("uninstall", ["uninst", "remove",
-                                               "drop"])
+        super(UninstallCommand, self),__init__("uninstall", ["uninst", "remove"])
 
     def main(self, options):
         super(UninstallCommand, self).main(options)
+        self.manager.uninstall()
+
+
+class DropCommand(PhaseCommand):
+
+    def __init__(self):
+        super(DropCommand, self),__init__("drop")
+
+    def main(self, options):
+        super(DropCommand, self).main(options)
         self.manager.uninstall()
 
 
