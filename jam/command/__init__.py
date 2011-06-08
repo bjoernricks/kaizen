@@ -20,7 +20,7 @@
 # 02110-1301, USA.
 
 from jam.command.command import BuildCommand, ActivateCommand, \
-                                DeactivatCommand, CleanCommand, \
+                                DeactivateCommand, CleanCommand, \
                                 ConfigureCommand, DistcleanCommand, \
                                 DependsCommand, ExtractCommand, \
                                 DownloadCommand, DestrootCommand, \

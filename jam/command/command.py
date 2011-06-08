@@ -43,7 +43,7 @@ class Command(object):
 
 class PhaseCommand(Command):
 
-    def __init__(self, name, aliases=[])
+    def __init__(self, name, aliases=[]):
         super(PhaseCommand, self).__init__(name, self.main, aliases)
 
     def add_parser(self, parser):
