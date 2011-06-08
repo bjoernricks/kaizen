@@ -25,12 +25,9 @@ import jam.download
 import jam.session
 import jam.log
 
-try:
-    from argparse import ArgumentParser
-except ImportError:
-    from jam.external.argparse import ArgumentParser
 
 from jam.config import JAM_VERSION, JAM_CONFIG_FILES
+from jam.external.argparse import ArgumentParser
 
 def print_settings(logger, config):
     logger.out("Version: '%s'" % config.get("version"))
