@@ -75,24 +75,22 @@ class Loader(object):
 
     def module(self, name):
         try:
-            return __import__(name, globals(), locals(), ['*'])
+            module =  __import__(name, globals(), locals(), ['*'])
+            self.log.debug("Imported module '%s'" % module)
+            return module
         except ImportError as error:
             self.log.warn("Could not import module '%s'. %s" % (name, error))
             return None
 
-    def classes(self, modulename, parentclass=None):
+    def classes(self, module, parentclass=None, all=False):
         classes = []
-        module = self.module(modulename)
-        if not module:
-            return classes
-        self.log.debug("Imported module '%s'" % module)
         for key, value in module.__dict__.items():
             if inspect.isclass(value):
                 if parentclass:
                     if not issubclass(value, parentclass):
                         continue
                 # only load classes from module
-                if value.__module__ != modulename:
+                if not all and value.__module__ != module.__name__:
                     self.log.debug("Skipping class '%s'" % value)
                     continue
                 self.log.debug("Found class '%s'" % value)
@@ -112,6 +110,7 @@ class Loader(object):
         self.log.warn("Could not load any class with name '%s'" %
                       classname)
         return None
+
 
 def list_dir(dir, all_dirs=False):
     files = []
