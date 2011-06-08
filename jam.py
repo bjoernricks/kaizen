@@ -54,7 +54,7 @@ def main():
     parser.add_argument("-f", "--force", action="store_true", dest="force",
                       help="force an action e.g. re-download sources")
     parser.add_argument("--settings", action="store_true", help="print jam settings")
-    parser.add_argument('--version', action='version', version=version)
+    parser.add_argument("--version", action="version", version=version)
 
     subparsers = parser.add_subparsers(dest="command", title="commands",
                                        description="valid commands",
