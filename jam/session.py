@@ -29,7 +29,7 @@ import os.path
 import jam.log
 
 from jam.utils import realpath, list_dir, list_subdir, extract_file
-from jam.command import Configure, CMake, Make, Command, Copy
+from jam.system import Configure, CMake, Make, Command, Copy
 from jam.download import Downloader
 from jam.depend import DependencyAnalyser
 

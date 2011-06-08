@@ -126,3 +126,4 @@ class Copy(object):
         else:
             self.log.debug("Copy file '%s' to '%s'" % (self.src, self.dest))
             shutil.copy(self.src, self.dest)
+
