@@ -289,15 +289,11 @@ class Session(object):
         if not self.src_path:
             self.src_path = os.path.join(src_dir, self.name 
                                          + "-" + self.version)
-        else:
-            self.src_path = self.var_replace(self.src_path)
 
         self.vars["src_path"] = self.src_path
 
         if not self.build_path:
             self.build_path = build_dir
-        else:
-            self.build_path = self.var_replace(self.build_path)
 
         self.vars["build_path"] = self.build_path
 
