@@ -39,7 +39,7 @@ class DependencyAnalyser(object):
                 name = depend[0]
                 version = depend[1]
             if not name:
-                self.log.warn("Session '%s' as an empty dependency" %
+                self.log.warn("Session '%s' has an empty dependency" %
                               session.name)
                 continue
             if name in self.dependencies:
