@@ -24,11 +24,12 @@ from jam.session import SessionManager
 
 class Command(object):
 
-    def __init__(self, name, config, func, aliases=[]):
+    def __init__(self, name, config, func, aliases=[], description=None):
         self.name = name
         self.func = func
         self.aliases = aliases
         self.config = config
+        self.description = description
 
     def add_parser(self, parser, usage=None):
         if usage:
@@ -36,7 +37,8 @@ class Command(object):
         else:
             self.usage = "%(prog)s [options] " + self.name + " {arguments}"
         subparser = parser.add_parser(self.name, aliases=self.aliases,
-                                      usage=self.usage)
+                                      usage=self.usage,
+                                      description=self.description)
         subparser.set_defaults(func=self.func)
         return subparser
 
@@ -46,9 +48,9 @@ class Command(object):
 
 class PhaseCommand(Command):
 
-    def __init__(self, name, config, help, aliases=[]):
-        super(PhaseCommand, self).__init__(name, config, self.main, aliases)
-        self.help = help
+    def __init__(self, name, config, description, aliases=[]):
+        super(PhaseCommand, self).__init__(name, config, self.main, aliases,
+                                           description)
 
     def add_parser(self, parser):
         subparser = super(PhaseCommand, self).add_parser(parser)
@@ -63,8 +65,8 @@ class PhaseCommand(Command):
 class BuildCommand(PhaseCommand):
 
     def __init__(self, config):
-        help = "run build process"
-        super(BuildCommand, self).__init__("build", config, help)
+        description = "run build process"
+        super(BuildCommand, self).__init__("build", config, description)
 
     def main(self, options):
         super(BuildCommand, self).main(options)
@@ -74,8 +76,8 @@ class BuildCommand(PhaseCommand):
 class ConfigureCommand(PhaseCommand):
 
     def __init__(self, config):
-        help = ""
-        super(ConfigureCommand, self).__init__("configure", config, help,
+        description = ""
+        super(ConfigureCommand, self).__init__("configure", config, description,
                                                ["conf"])
 
     def main(self, options):
@@ -86,8 +88,8 @@ class ConfigureCommand(PhaseCommand):
 class ExtractCommand(PhaseCommand):
 
     def __init__(self, config):
-        help = ""
-        super(ExtractCommand, self).__init__("extract", config, help, ["ex"])
+        description = ""
+        super(ExtractCommand, self).__init__("extract", config, description, ["ex"])
 
     def main(self, options):
         super(ExtractCommand, self).main(options)
@@ -97,8 +99,8 @@ class ExtractCommand(PhaseCommand):
 class DownloadCommand(PhaseCommand):
 
     def __init__(self, config):
-        help = ""
-        super(DownloadCommand, self).__init__("download", config, help,
+        description = ""
+        super(DownloadCommand, self).__init__("download", config, description,
                                               ["down"])
 
     def main(self, options):
@@ -109,8 +111,8 @@ class DownloadCommand(PhaseCommand):
 class DestrootCommand(PhaseCommand):
 
     def __init__(self, config):
-        help = ""
-        super(DestrootCommand, self).__init__("destroot", config, help,
+        description = ""
+        super(DestrootCommand, self).__init__("destroot", config, description,
                                               ["dest"])
 
     def main(self, options):
@@ -121,8 +123,8 @@ class DestrootCommand(PhaseCommand):
 class InstallCommand(PhaseCommand):
 
     def __init__(self, config):
-        help = ""
-        super(InstallCommand, self).__init__("install", config, help,
+        description = ""
+        super(InstallCommand, self).__init__("install", config, description,
                                              ["inst"])
 
     def main(self, options):
@@ -133,8 +135,8 @@ class InstallCommand(PhaseCommand):
 class UninstallCommand(PhaseCommand):
 
     def __init__(self, config):
-        help = ""
-        super(UninstallCommand, self).__init__("uninstall", config, help,
+        description = ""
+        super(UninstallCommand, self).__init__("uninstall", config, description,
                                                ["uninst", "remove"])
 
     def main(self, options):
@@ -145,8 +147,8 @@ class UninstallCommand(PhaseCommand):
 class DropCommand(PhaseCommand):
 
     def __init__(self, config):
-        help = ""
-        super(DropCommand, self).__init__("drop", config, help)
+        description = ""
+        super(DropCommand, self).__init__("drop", config, description)
 
     def main(self, options):
         super(DropCommand, self).main(options)
@@ -156,8 +158,8 @@ class DropCommand(PhaseCommand):
 class ActivateCommand(PhaseCommand):
 
     def __init__(self, config):
-        help = ""
-        super(ActivateCommand, self).__init__("activate", config, help)
+        description = ""
+        super(ActivateCommand, self).__init__("activate", config, description)
 
     def main(self, options):
         super(ActivateCommand, self).main(options)
@@ -167,8 +169,8 @@ class ActivateCommand(PhaseCommand):
 class DeactivateCommand(PhaseCommand):
 
     def __init__(self, config):
-        help = ""
-        super(DeactivateCommand, self).__init__("deactivate", config, help)
+        description = ""
+        super(DeactivateCommand, self).__init__("deactivate", config, description)
 
     def main(self, options):
         super(DeactivateCommand, self).main(options)
@@ -178,8 +180,8 @@ class DeactivateCommand(PhaseCommand):
 class CleanCommand(PhaseCommand):
 
     def __init__(self, config):
-        help = ""
-        super(CleanCommand, self).__init__("clean", config, help)
+        description = ""
+        super(CleanCommand, self).__init__("clean", config, description)
 
     def main(self, options):
         super(CleanCommand, self).main(options)
@@ -189,8 +191,8 @@ class CleanCommand(PhaseCommand):
 class DistcleanCommand(PhaseCommand):
 
     def __init__(self, config):
-        help = ""
-        super(DistcleanCommand, self).__init__("distclean", config, help)
+        description = ""
+        super(DistcleanCommand, self).__init__("distclean", config, description)
 
     def main(self, options):
         super(DistcleanCommand, self).main(options)
@@ -200,8 +202,8 @@ class DistcleanCommand(PhaseCommand):
 class DependsCommand(PhaseCommand):
 
     def __init__(self, config):
-        help = ""
-        super(DependsCommand, self).__init__("depends", config, help,
+        description = ""
+        super(DependsCommand, self).__init__("depends", config, description,
                                              ["deps"])
 
     def main(self, options):
