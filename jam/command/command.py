@@ -211,3 +211,24 @@ class DependsCommand(PhaseCommand):
         self.manager.depends()
 
 
+class CreateCommand(Command):
+
+    def __init__(self, config):
+        description = "Create a new Session"
+        super(CreateCommand, self).__init__("create", config, self.main, [],
+                                            description)
+
+    def add_parser(self, parser):
+        subparser = super(CreateCommand, self).add_parser(parser)
+        subparser.add_argument("url", nargs=1, help="url to download source file")
+        subparser.add_argument("--template", choices=["cmake", "python",
+                               "autotools"], help="specify a template for the"\
+                               " new session. If empty jam will guess the"\
+                               " right one.")
+        subparser.add_argument("--name", "-n", help="name of the new "\
+                               "session. If empty jam will determine the "\
+                               " name from the source file")
+
+    def main(self, options):
+        print options
+
