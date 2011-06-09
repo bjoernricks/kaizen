@@ -312,6 +312,27 @@ class Session(object):
             args.append(newarg)
         return args
 
+    def __getattribute__(self, name):
+        value = object.__getattribute__(self, name)
+        if not value:
+            return value
+        if name in ["src_path", "build_path", "args", "url",
+                             "patches"]:
+            if isinstance(value, list):
+                newlist = []
+                for listvalue in value:
+                    newlist.append(self.var_replace(listvalue))
+                return newlist
+            else:
+                return self.var_replace(value)
+        elif name == "depends":
+            deps = value[:]
+            for base in type(self).__bases__:
+                superdeps = base.depends
+                if superdeps:
+                    deps.extend(superdeps)
+            return list(set(deps))
+
     def configure(self):
         pass
 
