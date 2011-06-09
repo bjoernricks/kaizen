@@ -257,9 +257,9 @@ class SessionWrapper(object):
 
 
 class Session(object):
-    
+
     depends = []
-    url = []
+    url = ""
     patches = []
     version = ""
     revision = "0"
