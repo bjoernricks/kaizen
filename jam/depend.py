@@ -38,6 +38,10 @@ class DependencyAnalyser(object):
             if isinstance(depend, tuple):
                 name = depend[0]
                 version = depend[1]
+            if not name:
+                self.log.warn("Session '%s' as an empty dependency" %
+                              session.name)
+                continue
             if name in self.dependencies:
                 dependency = self.dependencies[name] 
             else:
