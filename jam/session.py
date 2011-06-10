@@ -277,6 +277,10 @@ class Session(object):
         self.verbose = self.config.get("verbose")
         self.debug = self.config.get("debug")
 
+        if not self.name:
+            module = self.__module__
+            self.name = module.split(".")[0]
+
         self.vars = dict()
         self.vars["prefix"] = self.config.get("prefix")
         self.vars["version"] = self.version
