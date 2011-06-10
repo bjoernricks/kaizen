@@ -45,7 +45,7 @@ class Hash(object):
 
     def sha1(self):
         if not self.sha1_value:
-            self.sha1_value = self._calculate_hash(hashlibs.sha1)
+            self.sha1_value = self._calculate_hash(hashlib.sha1)
         return self.sha1_value
 
     def _calculate_hash(self, hashalgorithm):
