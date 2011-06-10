@@ -14,7 +14,7 @@ sessions = ~/source/jam-sessions
 
 # jam dir
 # default is %(prefix)s/jam
-#dir = %(prefix)s/jam
+# dir = %(prefix)s/jam
 
 # path to installed sessions
 # default is %(dir)s/destroot
