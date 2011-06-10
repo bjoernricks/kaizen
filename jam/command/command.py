@@ -19,7 +19,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301, USA.
 
-from jam.session import SessionManager
+from jam.session import SessionManager, SessionCreator
 
 
 class Command(object):
@@ -226,7 +226,8 @@ class CreateCommand(Command):
                                             description)
 
     def add_parser(self, parser):
-        subparser = super(CreateCommand, self).add_parser(parser)
+        usage = "%(prog)s [options] " + self.name + " url {arguments}"
+        subparser = super(CreateCommand, self).add_parser(parser, usage)
         subparser.add_argument("url", nargs=1, help="url to download source file")
         subparser.add_argument("--template", choices=["cmake", "python",
                                "autotools"], help="specify a template for the"\
@@ -235,7 +236,21 @@ class CreateCommand(Command):
         subparser.add_argument("--name", "-n", help="name of the new "\
                                "session. If empty jam will determine the "\
                                " name from the source file")
+        subparser.add_argument("--version", "-v", help="version of the new "\
+                               "session. If empty jam will determine the "\
+                               " version from the source file")
+        subparser.add_argument("--keep", help="keep temporary directory")
 
     def main(self, options):
-        print options
+        creator = SessionCreator(self.config, options.url[0], options.keep)
+        if options.name:
+            creator.set_name(options.name)
+
+        if options.template:
+            creator.set_template(options.template)
+
+        if options.version:
+            creator.set_version(options.version)
+
+        creator.create()
 
