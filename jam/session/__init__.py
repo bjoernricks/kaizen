@@ -23,3 +23,5 @@ from jam.session.session import SessionError, SessionManager, Session, \
                                 MakeSession, ConfigureSession, \
                                 CMakeSession, PythonSession, \
                                 SessionLoader, SessionValidator
+
+from jam.session.create import SessionCreator
