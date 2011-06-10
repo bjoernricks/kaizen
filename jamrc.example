@@ -12,9 +12,9 @@ verbose = 0
 # path to sessions
 sessions = ~/source/jam-sessions
 
-# jam dir
+# jam root dir
 # default is %(prefix)s/jam
-# dir = %(prefix)s/jam
+# rootdir = %(prefix)s/jam
 
 # path to installed sessions
 # default is %(dir)s/destroot

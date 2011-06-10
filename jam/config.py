@@ -52,7 +52,7 @@ class Config(object):
         self.config["prefix"] = prefix
         self.config["verbose"] = self._getbool("verbose", False)
         self.config["debug"] = self._getbool("debug", False)
-        self.config["dir"] = self._get("dir")
+        self.config["rootdir"] = self._get("rootdir")
         self.config["sessions"] = self._get("sessions")
         self.config["destroot"] = self._get("destroot")
         self.config["downloadroot"] = self._get("downloadroot")
