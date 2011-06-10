@@ -32,7 +32,7 @@ def print_settings(logger, config):
     logger.out("Version: '%s'" % config.get("version"))
     logger.out("Debug: '%s'" % config.get("debug"))
     logger.out("Verbose: '%s'" % config.get("verbose"))
-    logger.out("Dir: '%s'" % config.get("dir"))
+    logger.out("Root: '%s'" % config.get("rootdir"))
     logger.out("Sessions: '%s'" % config.get("sessions"))
     logger.out("Destroot: '%s'" % config.get("destroot"))
     logger.out("Buildroot: '%s'" % config.get("buildroot"))
