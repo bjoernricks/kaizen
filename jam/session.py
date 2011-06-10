@@ -167,12 +167,6 @@ class SessionWrapper(object):
             raise SessionError(self.session_name,
                                "Could not load session from '%s'" %
                                self.config.get("sessions"))
-        validator = SessionValidator()
-        if not validator.validate(session):
-            raise SessionError(self.session_name,
-                               "Loaded invalid session from '%s'. Errors: %s" %
-                               (self.config.get("sessions"),
-                               "\n".join(validator.errors)))
         return session
 
     def init_session(self):
@@ -192,6 +186,12 @@ class SessionWrapper(object):
         self.dest_dir = os.path.join(self.destroot_dir, version)
         self.session = session(self.config, self.src_dir,
                                    self.build_dir, self.dest_dir)
+        validator = SessionValidator()
+        if not validator.validate(self.session):
+            raise SessionError(self.session_name,
+                               "Loaded invalid session from '%s'. Errors: %s" %
+                               (self.config.get("sessions"),
+                               "\n".join(validator.errors)))
 
     def replace_session_args(self):
         self.session.args = self.session.args_replace()
