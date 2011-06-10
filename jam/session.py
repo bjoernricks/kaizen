@@ -332,6 +332,7 @@ class Session(object):
                 if superdeps:
                     deps.extend(superdeps)
             return list(set(deps))
+        return value
 
     def configure(self):
         pass
