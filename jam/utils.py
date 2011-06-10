@@ -112,6 +112,20 @@ class Loader(object):
         return None
 
 
+class Template(object):
+
+    def __init__(self, filename):
+        path = realpath(os.path.join(__name__, "..", "templates"))
+        f = open(os.path.join(path, filename), "r")
+        try:
+            self.text = f.read()
+        finally:
+            f.close()
+
+    def replace(self, vars):
+        return self.text % vars
+
+
 def list_dir(dir, all_dirs=False):
     files = []
     dirs = []
