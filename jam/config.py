@@ -58,10 +58,10 @@ class Config(object):
         self.config["downloadroot"] = self._get("downloadroot")
         self.config["buildroot"] = self._get("buildroot")
 
-        jam_dir = self.config.get("dir", None)
+        jam_dir = self.config.get("rootdir", None)
         if not jam_dir:
             jam_dir = os.path.join(prefix, "jam")
-            self.config["dir"] = jam_dir
+            self.config["rootdir"] = jam_dir
         if not self.config.get("downloadroot", None):
             self.config["downloadroot"] =  os.path.join(jam_dir, "cache")
         if not self.config.get("sessions", None):
