@@ -283,6 +283,7 @@ class Session(object):
 
         self.vars = dict()
         self.vars["prefix"] = self.config.get("prefix")
+        self.vars["rootdir"] = self.config.get("rootdir")
         self.vars["version"] = self.version
         self.vars["name"] = self.name
         self.vars["src_dir"] = self.src_dir
