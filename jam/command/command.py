@@ -46,16 +46,23 @@ class Command(object):
         return func
 
 
-class PhaseCommand(Command):
+class SessionNameCommand(Command):
+
+    def __init__(self, name, config, func, description, aliases=[]):
+        super(SessionNameCommand, self).__init__(name, config, func, aliases,
+                                                 description)
+
+    def add_parser(self, parser):
+        subparser = super(SessionNameCommand, self).add_parser(parser)
+        subparser.add_argument("sessionname", nargs=1)
+        return subparser
+
+
+class PhaseCommand(SessionNameCommand):
 
     def __init__(self, name, config, description, aliases=[]):
         super(PhaseCommand, self).__init__(name, config, self.main, aliases,
                                            description)
-
-    def add_parser(self, parser):
-        subparser = super(PhaseCommand, self).add_parser(parser)
-        subparser.add_argument("sessionname", nargs=1)
-        return subparser
 
     def main(self, options):
         self.manager = SessionManager(self.config, options.sessionname[0],
