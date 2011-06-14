@@ -1,12 +1,12 @@
 import jam.session
 
-class %(sessionname)s(jam.session.ConfigureSession):
+class ${sessionname}(jam.session.ConfigureSession):
 
-    url = "%(url)s"
-    hash = { "md5" : "%(md5)s",
-             "sha1" : "%(sha1)s" }
-    version = "%(version)s"
-    name = "%(name)s"
+    url = "${url}"
+    hash = { "md5" : "${md5}",
+             "sha1" : "${sha1}" }
+    version = "${version}"
+    name = "${name}"
 
     # uncomment to set path to source directory
     # default is %(src_dir)s/%(name)s-%(version)s
