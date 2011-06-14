@@ -241,6 +241,9 @@ class CreateCommand(Command):
                                " version from the source file")
         subparser.add_argument("--keep", action="store_true", 
                                help="keep temporary directory")
+        subparser.add_argument("--print", dest="stdout", action="store_true",
+                               help="print to stdout instead of creating a "\
+                               "new session")
 
     def main(self, options):
         creator = SessionCreator(self.config, options.url[0], options.keep)
@@ -253,5 +256,5 @@ class CreateCommand(Command):
         if options.version:
             creator.set_version(options.version)
 
-        creator.create()
+        creator.create(options.stdout)
 
