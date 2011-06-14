@@ -26,11 +26,40 @@ import jam.log
 
 from tempfile import mkdtemp
 
-from jam.utils import Template, Hash
+from jam.utils import Template, Hash, list_contents, extract_file, realpath
 from jam.download import Downloader
 
 class SessionCreateError(Exception):
     pass
+
+
+class TypeDetector(object):
+
+    def detect(self, dir):
+        return None
+
+
+class FileDetector(TypeDetector):
+
+    def __init__(self, filename, templatename):
+        self.filename = filename
+        self.templatename = templatename
+
+    def detect(self, dir):
+        (dirs, files) = list_contents(dir)
+        if len(dirs) == 1:
+            # only one subdir, look in subdir
+            dir = os.path.join(dir, dirs[0])
+            (dirs, files) = list_contents(dir)
+        if self.filename in files:
+            return Template(self.templatename + ".template")
+        return None 
+
+
+detectors = [FileDetector("CMakeList.txt", "cmake"),
+             FileDetector("setup.py", "python"),
+             FileDetector("configure", "autotools"),]
+
 
 class SessionCreator(object):
 
@@ -42,6 +71,7 @@ class SessionCreator(object):
         self.template = None
         self.name = None
         self.version = None
+        self.tmp_dir = None
         self.log = jam.log.getLogger("jam.sessioncreator")
 
     def set_template(self, template):
@@ -53,11 +83,11 @@ class SessionCreator(object):
     def set_version(self, version):
         self.version = version
 
-    def create(self):
-        temp_dir = mkdtemp(prefix="tmp-session-", dir=self.dir)
-        self.log.debug("Created temporary directory '%s'" % temp_dir)
+    def create(self, stdout=False):
+        self.tmp_dir = mkdtemp(prefix="tmp-session-", dir=self.dir)
+        self.log.debug("Created temporary directory '%s'" % self.tmp_dir)
         downloader = Downloader(self.url)
-        source = downloader.copy(temp_dir)
+        source = downloader.copy(self.tmp_dir)
         hashcalc = Hash(source)
         md5 = hashcalc.md5()
         self.log.debug("md5 hash is '%s'" % md5)
@@ -68,7 +98,7 @@ class SessionCreator(object):
         if not self.name or not self.version:
             filename = os.path.basename(source)
             if not "-" in filename:
-                self._clean(tmp_dir)
+                self.clean()
                 raise SessionCreateError("Could not determinte name and "\
                                          "version from file '%s'" % filename)
             suffixes = [".tar.gz", ".tar.bz2", ".tgz", "tbz2", ".zip"]
@@ -89,13 +119,49 @@ class SessionCreator(object):
             name = self.name
         if self.version:
             version = self.version
+        if not self.template:
+            extract_file(source, self.tmp_dir)
+            for detector in detectors:
+                template = detector.detect(self.tmp_dir)
+                if template:
+                    break
+            if not template:
+                self.log.info("Could not determine template for '%s'. "
+                              "Using default." % name)
+                template = Template("default.template")
+        else:
+            template = Template(self.templatename + ".template")
 
-        if self.template:
-            template = Template(self.template + ".template")
+        vars = dict()
+        vars["name"] = name
+        vars["version"] = version
+        vars["md5"] = md5
+        vars["sha1"] = sha1
+        vars["url"] = self.url
+        vars["rootdir"] = self.dir
+        vars["sessions"] = self.session_dir
+        vars["sessionname"] = name.capitalize()
+        
+        if stdout:
+            print template.replace(vars)
+        else:
+            new_session_dir = os.path.join(realpath(self.session_dir), name)
+            if not os.path.exists(new_session_dir):
+                os.makedirs(new_session_dir)
+            try:
+                sessionfile = os.path.join(new_session_dir, name + ".py")
+                f = open(sessionfile, "w")
+                self.log.info("Creating new session file '%s'", sessionfile)
+                f.write(template.replace(vars))
+                f.close()
+                f = open(os.path.join(new_session_dir, "__init__.py"), "w")
+            finally:
+                f.close()
 
-        self._clean(temp_dir)
+        self.clean()
 
-    def _clean(self, tmp_dir):
-        if not self.keep:
-            self.log.debug("Deleteing temporary directory '%s'" % tmp_dir)
-            shutil.rmtree(tmp_dir)
+    def clean(self):
+        if self.tmp_dir and not self.keep:
+            self.log.debug("Deleteing temporary directory '%s'" % self.tmp_dir)
+            shutil.rmtree(self.tmp_dir)
+
