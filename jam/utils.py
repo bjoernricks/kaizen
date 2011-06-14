@@ -23,6 +23,7 @@ import os
 import os.path
 import hashlib # requires python 2.5
 import inspect
+import string
 import sys
 import tarfile
 import zipfile
@@ -118,12 +119,13 @@ class Template(object):
         path = realpath(os.path.join(__name__, "..", "templates"))
         f = open(os.path.join(path, filename), "r")
         try:
-            self.text = f.read()
+            text = f.read()
         finally:
             f.close()
+        self.template = string.Template(text)
 
     def replace(self, vars):
-        return self.text % vars
+        return self.template.safe_substitute(vars)
 
 
 def list_dir(dir, all_dirs=False):
