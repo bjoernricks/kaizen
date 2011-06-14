@@ -128,6 +128,20 @@ class Template(object):
         return self.template.safe_substitute(vars)
 
 
+def list_contents(dir):
+    files = []
+    dirs = []
+    cwd = os.getcwd()
+    os.chdir(dir)
+    contents = os.listdir(dir)
+    for content in contents:
+        if os.path.isdir(content):
+            dirs.append(content)
+        else:
+            files.append(content)
+    os.chdir(cwd)
+    return (dirs, files)
+
 def list_dir(dir, all_dirs=False):
     files = []
     dirs = []
