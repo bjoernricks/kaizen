@@ -1,0 +1,10 @@
+The main license of jam should be LGPLv2+. All new files should
+use this license.
+
+Currently jam contains files under several licenses:
+
+jam/externals/argparse.py   PYTHON SOFTWARE FOUNDATION LICENSE VERSION 2
+jam/run.py                  GPLv2+
+jam/log.py                  GPLv2+
+jam.py                      GPLv2+
+
