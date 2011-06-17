@@ -29,7 +29,7 @@ import jam.log
 from jam.utils import Loader, realpath, list_dir, list_subdir, extract_file
 from jam.system import Configure, CMake, Make, Command, Copy
 from jam.download import Downloader
-from jam.depend import DependencyAnalyser
+from jam.session.depend import DependencyAnalyser
 
 
 class SessionError(Exception):
