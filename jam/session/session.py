@@ -276,6 +276,7 @@ class Session(object):
         self.dest_dir = dest_dir
         self.verbose = self.config.get("verbose")
         self.debug = self.config.get("debug")
+        self.prefix = self.config.get("prefix")
 
         if not self.name:
             module = self.__module__
