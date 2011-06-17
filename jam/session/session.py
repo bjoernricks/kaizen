@@ -373,10 +373,10 @@ class MakeSession(Session):
 class ConfigureSession(MakeSession):
 
     def configure(self):
-        self.args.append("--prefix=" + self.config.get("prefix"))
-        self.args.append("--srcdir=" + self.src_path)
-        super(ConfigureSession, self).configure()
-        Configure(self.args, self.src_path, self.build_path,
+        args = self.args
+        args.append("--prefix=" + self.config.get("prefix"))
+        args.append("--srcdir=" + self.src_path)
+        Configure(args, self.src_path, self.build_path,
                   self.config.get("debug")).run()
 
 
@@ -385,12 +385,12 @@ class CMakeSession(MakeSession):
     depends = ["cmake"]
 
     def configure(self):
-        self.args.append("-DCMAKE_INSTALL_PREFIX=" + self.config.get("prefix"))
-        self.args.append("-DCMAKE_COLOR_MAKEFILE=TRUE")
+        args = self.args
+        args.append("-DCMAKE_INSTALL_PREFIX=" + self.config.get("prefix"))
+        args.append("-DCMAKE_COLOR_MAKEFILE=TRUE")
         if self.config.get("verbose"):
-            self.args.append("-DCMAKE_VERBOSE_MAKEFILE=TRUE")
-        super(CMakeSession, self).configure()
-        CMake(self.args, self.src_path, self.build_path,
+            args.append("-DCMAKE_VERBOSE_MAKEFILE=TRUE")
+        CMake(args, self.src_path, self.build_path,
               self.config.get("debug")).run()
 
     def distclean(self):
