@@ -98,6 +98,10 @@ class SessionManager(object):
     def activate(self):
         self.log.normal("%s:phase:activate" % self.session_name)
         (dirs, files) = list_subdir(self.session_wrapper.dest_dir)
+        current_dir = os.path.join(self.session_wrapper.destroot_dir, "current")
+        if os.path.exists(current_dir):
+            os.remove(current_dir)
+        os.symlink(self.session_wrapper.dest_dir, current_dir)
         for subdir in dirs:
             dir = os.path.join("/", subdir)
             if not os.path.exists(dir):
@@ -105,11 +109,12 @@ class SessionManager(object):
                 self.log.debug("Creating directory '%s'" % dir)
         for file in files:
             file_path = os.path.join("/", file)
-            destdir_file_path = os.path.join(self.session_wrapper.dest_dir, file)
-            if not os.path.exists(file_path):
-                self.log.debug("Activating '%s' from '%s'" % (file_path,
-                                destdir_file_path))
-                os.symlink(destdir_file_path, file_path)
+            destdir_file_path = os.path.join(current_dir, file)
+            self.log.debug("Activating '%s' from '%s'" % (file_path,
+                           destdir_file_path))
+            if os.path.exists(file_path):
+                os.remove(file_path)
+            os.symlink(destdir_file_path, file_path)
 
     def deactivate(self):
         self.log.normal("%s:phase:deactivate" % self.session_name)
