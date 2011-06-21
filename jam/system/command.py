@@ -124,6 +124,12 @@ class Copy(object):
                                                             self.dest))
             shutil.copytree(self.src, self.dest)
         else:
+            if os.path.isdir(self.dest):
+                dest_dir = self.dest
+            else:
+                dest_dir = os.path.dirname(self.dest)
+            if not os.path.exists(dest_dir):
+                os.makedirs(dest_dir)
             self.log.debug("Copy file '%s' to '%s'" % (self.src, self.dest))
             shutil.copy(self.src, self.dest)
 
