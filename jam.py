@@ -39,6 +39,8 @@ def print_settings(logger, config):
     logger.out("Downloadroot: '%s'" % config.get("downloadroot"))
 
 def main():
+    if sys.version_info < (2, 4):
+        raise Exception("jam requires Python 2.4 or higher.")
     usage = "%(prog)s [options] command {arguments}"
     description = "jam - Orchestrate your software"
     version = "%(prog)s " + JAM_VERSION
