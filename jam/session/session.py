@@ -127,7 +127,8 @@ class SessionManager(object):
         dirs.sort(reverse=True)
         for subdir in dirs:
             dir = os.path.join("/", subdir)
-            if os.path.exists(dir) and not os.listdir(dir):
+            if os.path.exists(dir) and not os.listdir(dir) and not \
+                dir == self.config.get("prefix"):
                 os.rmdir(dir)
                 self.log.debug("Deleting directory '%s'" % dir)
 
