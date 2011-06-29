@@ -21,7 +21,6 @@
 
 import os
 import os.path
-import hashlib # requires python 2.5
 import inspect
 import string
 import sys
@@ -29,6 +28,13 @@ import tarfile
 import zipfile
 
 import jam.log
+
+try:
+    from hashlib import md5 # requires python 2.5
+    from hashlib import sha1 # requires python 2.5
+except ImportError:
+    from md5 import new as md5
+    from sha import new as sha1
 
 log = jam.log.getLogger(__name__)
 
@@ -41,12 +47,12 @@ class Hash(object):
 
     def md5(self):
         if not self.md5_value:
-            self.md5_value = self._calculate_hash(hashlib.md5)
+            self.md5_value = self._calculate_hash(md5)
         return self.md5_value
 
     def sha1(self):
         if not self.sha1_value:
-            self.sha1_value = self._calculate_hash(hashlib.sha1)
+            self.sha1_value = self._calculate_hash(sha1)
         return self.sha1_value
 
     def _calculate_hash(self, hashalgorithm):
