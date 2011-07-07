@@ -1,0 +1,3 @@
+﻿= jam - Orchestrate your Free Software =
+
+jam is a tool to package, build, install and maintain your software written in [http://www.python.org python]
