@@ -151,7 +151,7 @@ class SessionCreator(object):
             try:
                 sessionfile = os.path.join(new_session_dir, name + ".py")
                 f = open(sessionfile, "w")
-                self.log.info("Creating new session file '%s'", sessionfile)
+                self.log.info("Creating new session file '%s'" % sessionfile)
                 f.write(template.replace(vars))
                 f.close()
                 f = open(os.path.join(new_session_dir, "__init__.py"), "w")
