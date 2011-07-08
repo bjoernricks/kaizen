@@ -1,4 +1,4 @@
-# vim:fileencoding=utf-8:et::sw=4:ts=4:tw=80:
+# vim: fileencoding=utf-8 et sw=4 ts=4 tw=80:
 
 # jam - An advanced package manager for Free Software
 #
