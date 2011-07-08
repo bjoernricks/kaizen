@@ -207,7 +207,7 @@ class SessionWrapper(object):
 
     def extract(self):
         if not os.path.exists(self.src_dir):
-            self.log.debug("creating source dir '%s'" % self.src_dir)
+            self.log.debug("Creating source dir '%s'" % self.src_dir)
             os.makedirs(self.src_dir)
         filename = os.path.basename(self.session.url)
         archive_file = os.path.join(self.data_dir, filename)
@@ -219,7 +219,7 @@ class SessionWrapper(object):
 
     def download(self):
         if not os.path.exists(self.data_dir):
-            self.log.debug("creating data dir '%s'" % self.data_dir)
+            self.log.debug("Creating data dir '%s'" % self.data_dir)
             os.makedirs(self.data_dir)
         if self.session.url:
             self.log.info("Copying source file from '%s'." % self.session.url)
@@ -228,7 +228,7 @@ class SessionWrapper(object):
             dl.verify(self.session.hash)
         if self.session.patches:
             if not os.path.exists(self.patch_dir):
-                self.log.debug("creating patch dir '%s'" % self.patch_dir)
+                self.log.debug("Creating patch dir '%s'" % self.patch_dir)
                 os.makedirs(self.patch_dir)
             for patch in self.session.patches:
                 dl = Downloader(patch)
@@ -238,7 +238,7 @@ class SessionWrapper(object):
         self.replace_session_args()
         build_path = self.session.build_path
         if not os.path.exists(build_path):
-            self.log.debug("creating build dir '%s'" % build_path)
+            self.log.debug("Creating build dir '%s'" % build_path)
             os.makedirs(build_path)
         self.session.configure()
 
@@ -249,7 +249,7 @@ class SessionWrapper(object):
     def destroot(self):
         self.replace_session_args()
         if not os.path.exists(self.dest_dir):
-            self.log.debug("creating destroot dir '%s'" % self.dest_dir)
+            self.log.debug("Creating destroot dir '%s'" % self.dest_dir)
             os.makedirs(self.dest_dir)
         self.session.destroot()
 
