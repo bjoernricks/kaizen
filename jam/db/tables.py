@@ -21,6 +21,8 @@
 
 from jam.external.sqlalchemy import MetaData, Table, Column, String
 
+from jam.db import PhaseType
+
 class Tables(object):
 
     def __init__(self, db):
@@ -50,7 +52,7 @@ class Tables(object):
                        Column('session', String, primary_key = True,
                               ForeignKey(self.sessions_table.c.session)),
                        Column('version', String, nullable = False),
-                       Column('phase', String, nullable = False))
+                       Column('phase', PhaseType, nullable = False))
 
     def create(self):
         self.metadata.create_all()
