@@ -19,14 +19,24 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 
 # 02110-1301 USA
 
+from sqlalchemy import MetaData, Table, Column, String
 
-"CREATE TABLE IF NOT EXISTS files_installed (
-    file TEXT NOT NULL,
-    session TEXT NOT NULL
-)"
+class Create(object):
 
-"CREATE TABLE IF NOT EXISTS sessions_installed (
-    session TEXT NOT NULL,
-    version TEXT NOT NULL,
-    revision TEXT NOT NULL
-)"
+    def __init__(self):
+        metadata = MetaData()
+
+        installed = Table('installed', metadata,
+                          Column('session', String, primary_key = True),
+                          Column('version', String, nullable = False))
+
+        files = Table('files', metadata,
+                      Column('filename', String, primary_key = True),
+                      Column('session', String, nullable = False))
+
+        status = Table('status', metadata,
+                       Column('session', String, primary_key = True),
+                       Column('version', String, nullable = False),
+                       Column('phase', String, nullable = False))
+
+
