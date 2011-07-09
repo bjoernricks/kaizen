@@ -31,3 +31,15 @@ class Db(object):
    def get_engine(self):
        return self.engine
 
+
+class PhaseType(TypeDecorator):
+
+    impl = String
+    phases = ["None", "Downloaded", "Extracted", "Configured", "Built",
+              "Destrooted", "Activated", "Deactivated"]
+
+    def process_bind_param(self, value, dialect):
+        if value not in self.phases:
+            raise TypeError("Invalid PhaseType '%s'" % value)
+        return value
+
