@@ -19,7 +19,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 
 # 02110-1301 USA
 
-from jam.external.sqlalchemy import MetaData, Table, Column, String
+from jam.external.sqlalchemy import MetaData, Table, Column, String, ForeignKey
 
 from jam.db import PhaseType
 
@@ -27,7 +27,7 @@ class Tables(object):
 
     def __init__(self, db):
         self.metadata = MetaData()
-        meta.bind = db.get_engine()
+        self.metadata.bind = db.get_engine()
 
         self.sessions_table = Table('sessions', self.metadata,
                          Column('session', String, primary_key = True),
@@ -39,18 +39,21 @@ class Tables(object):
                          Column('scm', String))
 
         self.installed_table = Table('installed', self.metadata,
-                          Column('session', String, primary_key = True,
-                                 ForeignKey(self.sessions_table.c.session)),
+                          Column('session', String,
+                                 ForeignKey(self.sessions_table.c.session),
+                                 primary_key = True),
                           Column('version', String, nullable = False))
 
         files = Table('files', self.metadata,
                       Column('filename', String, primary_key = True),
-                      Column('session', String, nullable = False,
-                             ForeignKey(sessions.c.session)))
+                      Column('session', String,
+                             ForeignKey(self.sessions_table.c.session),
+                             nullable = False))
 
         self.status_table = Table('status', self.metadata,
-                       Column('session', String, primary_key = True,
-                              ForeignKey(self.sessions_table.c.session)),
+                       Column('session', String,
+                              ForeignKey(self.sessions_table.c.session),
+                              primary_key = True),
                        Column('version', String, nullable = False),
                        Column('phase', PhaseType, nullable = False))
 
