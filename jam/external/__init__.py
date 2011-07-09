@@ -17,3 +17,10 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 
 # 02110-1301 USA
+
+import os.path
+import sys
+
+# import current dir for sqlalchemy
+cur_dir = os.path.dirname(__file__)
+sys.path.append(os.path.join(cur_dir))
