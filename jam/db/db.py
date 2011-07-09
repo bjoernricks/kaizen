@@ -26,7 +26,8 @@ class Db(object):
 
     def __init__(self, config):
         rootdir = config.get("rootdir")
-        self.engine = create_engine("sqlite://%s" % rootdir)
+        db_path = os.path.join(rootdir, "jam.db")
+        self.engine = create_engine("sqlite://%s" % db_path)
 
    def get_engine(self):
        return self.engine
