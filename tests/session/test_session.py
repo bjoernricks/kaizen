@@ -27,7 +27,7 @@ import unittest
 import jam.log
 
 test_dir = os.path.dirname(__file__)
-sys.path.append(os.path.join(test_dir, os.pardir))
+sys.path.append(os.path.join(test_dir, os.pardir, os.pardir))
 
 from jam.session import SessionLoader, Session, SessionValidator
 
@@ -164,7 +164,6 @@ def suite():
     return suite
 
 if __name__ == "__main__":
-    print os.curdir
     runner = unittest.TextTestRunner()
     runner.run(suite())
 
