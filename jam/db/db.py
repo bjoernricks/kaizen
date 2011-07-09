@@ -31,8 +31,8 @@ class Db(object):
         db_path = os.path.join(rootdir, "jam.db")
         self.engine = create_engine("sqlite://%s" % db_path)
 
-   def get_engine(self):
-       return self.engine
+    def get_engine(self):
+        return self.engine
 
 
 class PhaseType(TypeDecorator):
