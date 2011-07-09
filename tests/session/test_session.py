@@ -23,8 +23,8 @@ import os
 import os.path
 import sys
 import unittest
-import logging
 
+import jam.log
 
 test_dir = os.path.dirname(__file__)
 sys.path.append(os.path.join(test_dir, os.pardir))
@@ -34,11 +34,8 @@ from jam.session import SessionLoader, Session, SessionValidator
 class MySession(Session):
     pass
 
-class NullHandler(logging.Handler):
-    def emit(self, record):
-        pass
 
-logging.getLogger("jam").addHandler(NullHandler())
+logger = jam.log.getLogger("jam").set_level(jam.log.Logger.NONE)
 
 class TestConfig(object):
 
