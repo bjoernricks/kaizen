@@ -19,24 +19,40 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 
 # 02110-1301 USA
 
-from sqlalchemy import MetaData, Table, Column, String
+from jam.external.sqlalchemy import MetaData, Table, Column, String
 
-class Create(object):
+class Tables(object):
 
-    def __init__(self):
-        metadata = MetaData()
+    def __init__(self, db):
+        self.metadata = MetaData()
+        meta.bind = db.get_engine()
 
-        installed = Table('installed', metadata,
-                          Column('session', String, primary_key = True),
+        self.sessions_table = Table('sessions', self.metadata,
+                         Column('session', String, primary_key = True),
+                         Column('desription', String),
+                         Column('license', String),
+                         Column('maintainer', String),
+                         Column('category', String),
+                         Column('homepage', String),
+                         Column('scm', String))
+
+        self.installed_table = Table('installed', self.metadata,
+                          Column('session', String, primary_key = True,
+                                 ForeignKey(self.sessions_table.c.session)),
                           Column('version', String, nullable = False))
 
-        files = Table('files', metadata,
+        files = Table('files', self.metadata,
                       Column('filename', String, primary_key = True),
-                      Column('session', String, nullable = False))
+                      Column('session', String, nullable = False,
+                             ForeignKey(sessions.c.session)))
 
-        status = Table('status', metadata,
-                       Column('session', String, primary_key = True),
+        self.status_table = Table('status', self.metadata,
+                       Column('session', String, primary_key = True,
+                              ForeignKey(self.sessions_table.c.session)),
                        Column('version', String, nullable = False),
                        Column('phase', String, nullable = False))
+
+    def create(self):
+        self.metadata.create_all()
 
 
