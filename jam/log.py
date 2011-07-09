@@ -30,7 +30,7 @@ import sys
 
 class Logger(object):
 
-    DEBUG, INFO, NORMAL, WARNING, ERROR = range(5)
+    DEBUG, INFO, NORMAL, WARNING, ERROR, NONE = range(6)
 
     COLOR_NONE = 0
     COLOR_BLACK, COLOR_RED, COLOR_GREEN = range(30,33)
@@ -49,7 +49,9 @@ class Logger(object):
                         self.DEBUG:   [ 'debug',  self.COLOR_GREEN ],
                         self.INFO:    [ 'info',   self.COLOR_GREEN ],
                         self.WARNING: [ 'warn',   self.COLOR_RED   ],
-                        self.ERROR:   [ 'error',  self.COLOR_RED   ], }
+                        self.ERROR:   [ 'error',  self.COLOR_RED   ],
+                        self.NONE:    [ 'none',   self.COLOR_NONE  ],
+                        }
         self.level = self.INFO
         self.name = name
         self.set_color(self._is_tty())
