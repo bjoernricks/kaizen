@@ -465,7 +465,7 @@ class SessionValidator(object):
                 valid = False
                 self.errors.append("Session '%s' version not set." %
                                    session.__name__)
-        except AttributeError as error:
+        except AttributeError, error:
             self.errors.append("Session '%s' has no attribute version." %
                                session.__name__)
         try:
@@ -473,7 +473,7 @@ class SessionValidator(object):
                 valid = False
                 self.errors.append("Session '%s' name not set." %
                                    session.__name__)
-        except AttributeError as error:
+        except AttributeError, error:
             self.errors.append("Session '%s' has not attribute name." %
                                session.__name__)
 
