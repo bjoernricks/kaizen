@@ -85,7 +85,7 @@ class Loader(object):
             module =  __import__(name, globals(), locals(), ['*'])
             self.log.debug("Imported module '%s'" % module)
             return module
-        except ImportError as error:
+        except ImportError, error:
             self.log.warn("Could not import module '%s'. %s" % (name, error))
             return None
 
