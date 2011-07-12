@@ -29,14 +29,15 @@ class Tables(object):
         self.metadata = MetaData()
         self.metadata.bind = db.get_engine()
 
-        self.sessions_table = Table('sessions', self.metadata,
+        self.sessions_table = Table('info', self.metadata,
                          Column('session', String, primary_key = True),
                          Column('desription', String),
                          Column('license', String),
                          Column('maintainer', String),
                          Column('category', String),
                          Column('homepage', String),
-                         Column('scm', String))
+                         Column('scm', String),
+                         Column('scm_web', String))
 
         self.installed_table = Table('installed', self.metadata,
                           Column('session', String,
