@@ -23,7 +23,8 @@ import os.path
 
 from jam.db.tables import Tables
 from jam.session.objects import Info, Installed, Files, Status
-from jam.external.sqlalchemy import String, mapper
+from jam.external.sqlalchemy import String
+from jam.external.sqlalchemy.orm import mapper
 
 
 class Db(object):
