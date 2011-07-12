@@ -27,7 +27,7 @@ class Tables(object):
 
     def __init__(self, db):
         self.metadata = MetaData()
-        self.metadata.bind = db.get_engine()
+        self.metadata.bind = db.engine
 
         self.sessions_table = Table('info', self.metadata,
                          Column('session', String, primary_key = True),
