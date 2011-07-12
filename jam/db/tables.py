@@ -52,19 +52,19 @@ class Tables(object):
 
         self.installed_table = Table('installed', self.metadata,
                           Column('session', String,
-                                 ForeignKey(self.sessions_table.c.session),
+                                 ForeignKey(self.info_table.c.session),
                                  primary_key = True),
                           Column('version', String, nullable = False))
 
         files = Table('files', self.metadata,
                       Column('filename', String, primary_key = True),
                       Column('session', String,
-                             ForeignKey(self.sessions_table.c.session),
+                             ForeignKey(self.info_table.c.session),
                              nullable = False))
 
         self.status_table = Table('status', self.metadata,
                        Column('session', String,
-                              ForeignKey(self.sessions_table.c.session),
+                              ForeignKey(self.info_table.c.session),
                               primary_key = True),
                        Column('version', String, nullable = False),
                        Column('phase', PhaseType, nullable = False))
