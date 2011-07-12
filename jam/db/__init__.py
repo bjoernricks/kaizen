@@ -19,6 +19,6 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 
 # 02110-1301 USA
 
-from jam.db.db import Db, PhaseType
+from jam.db.db import Db
 
-from jam.db.tables import Tables
+from jam.db.tables import Tables, PhaseType
