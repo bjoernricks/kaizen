@@ -40,7 +40,7 @@ class Tables(object):
         self.metadata = MetaData()
         self.metadata.bind = db.engine
 
-        self.sessions_table = Table('info', self.metadata,
+        self.info_table = Table('info', self.metadata,
                          Column('session', String, primary_key = True),
                          Column('desription', String),
                          Column('license', String),
