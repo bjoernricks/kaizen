@@ -21,7 +21,9 @@
 
 import os.path
 
-from jam.external.sqlalchemy import String
+from jam.db.tables import Tables
+from jam.session.objects import Info, Installed, Files, Status
+from jam.external.sqlalchemy import String, mapper
 
 
 class Db(object):
@@ -34,4 +36,12 @@ class Db(object):
     def get_engine(self):
         return self.engine
 
+        self.tables = Tables(self)
+        self.tables.create()
+        Session = sessionmaker()
+        self.session = Session(bind=self.engine)
+        mapper(Info, self.tables.info_table) 
+        mapper(Installed, self.tables.installed_table)
+        mapper(Files, self.tables.files_table)
+        mapper(Status, self.tables.status_table)
 
