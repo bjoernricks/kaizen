@@ -48,6 +48,8 @@ class TableTest(unittest.TestCase):
 
     def test_create(self):
         self.tables.create()
+        # second time tables already exists and create shouldn't raise an error
+        self.tables.create()
 
 
 def suite():
