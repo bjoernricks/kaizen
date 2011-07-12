@@ -29,6 +29,7 @@ sys.path.append(os.path.join(test_dir, os.pardir, os.pardir))
 
 from jam.db import Db, Tables
 from jam.external.sqlalchemy import create_engine
+from sqlalchemy.exc import IntegrityError
 
 class TestDb(Db):
 
@@ -50,6 +51,24 @@ class TableTest(unittest.TestCase):
         self.tables.create()
         # second time tables already exists and create shouldn't raise an error
         self.tables.create()
+
+    def test_info_table(self):
+        self.tables.create()
+        val = self.tables.info_table.insert({"session" : "myapp",
+                                       "description" : "my new session",
+                                       "license" : "GPLv2",
+                                       "maintainer" : "john@doe.com",
+                                       "category" : "devel",
+                                       "homepage" : "http://some.url",
+                                       "scm" : "git://some.url/abc.git",
+                                       "scm_web" : "http://gitweb.some.url/",
+                                       })
+        val.execute()
+        try:
+            val.execute()
+            fail("inserting the same info should result in an IntegrityError")
+        except IntegrityError, e:
+            pass
 
 
 def suite():
