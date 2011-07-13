@@ -48,8 +48,10 @@ def main():
 
     jamlogger = jam.log.getRootLogger()
 
-    parser = ArgumentParser(usage=usage, description=description, add_help=False)
-    parser.add_argument("--config", dest="config", help="path to the config file")
+    parser = ArgumentParser(usage=usage, description=description,
+                            add_help=False)
+    parser.add_argument("--config", dest="config",
+                        help="path to the config file")
     parser.add_argument("--sessions", help="path to sessions")
     parser.add_argument("-d", "--debug", action="store_true", dest="debug",
                       help="enable debug output")
@@ -57,7 +59,8 @@ def main():
                       help="enable verbose output")
     parser.add_argument("-f", "--force", action="store_true", dest="force",
                       help="force an action e.g. re-download sources")
-    parser.add_argument("--settings", action="store_true", help="print jam settings")
+    parser.add_argument("--settings", action="store_true",
+                        help="print jam settings")
     parser.add_argument("--version", action="version", version=version)
 
     known_args = parser.parse_known_args()
