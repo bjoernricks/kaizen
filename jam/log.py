@@ -64,7 +64,9 @@ class Logger(object):
             os.getenv("INSIDE_EMACS", "").endswith(",comint")):
             return False
 
-        if (sys.stderr.isatty() and
+        if (hasattr(sys.stderr, "isatty") and
+            hasattr(sys.stdout, "isatty") and
+            sys.stderr.isatty() and
             sys.stdout.isatty()):
             return True
 
