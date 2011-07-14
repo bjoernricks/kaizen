@@ -29,7 +29,7 @@ sys.path.append(os.path.join(test_dir, os.pardir, os.pardir))
 
 from jam.db import Db, Tables
 from jam.external.sqlalchemy import create_engine
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, StatementError
 
 class TestDb(Db):
 
@@ -66,9 +66,152 @@ class TableTest(unittest.TestCase):
         val.execute()
         try:
             val.execute()
-            fail("inserting the same info should result in an IntegrityError")
+            self.fail("inserting the same info should result in an "
+                      "IntegrityError")
         except IntegrityError, e:
             pass
+
+    def test_installed_table(self):
+        self.tables.create()
+        table = self.tables.installed_table
+
+        ins = dict({"session": "myapp",
+                   "version" : "123"})
+        res = table.insert(ins)
+        res.execute()
+
+        res = table.select(table.c.session == "myapp")
+        val = res.execute().fetchone()
+        self.assertEquals(val["session"], "myapp")
+        self.assertEquals(val["version"], "123")
+
+        ins = dict({"session": "myapp",
+                    "version": "321"})
+        res = table.insert(ins)
+        try:
+            res.execute()
+            self.fail("inserting the same value should result in an "
+                      "IntegretyError")
+        except IntegrityError, e:
+            pass
+
+        res = table.update(table.c.session == "myapp", ins)
+        res.execute()
+
+        res = table.select(table.c.session == "myapp")
+        val = res.execute().fetchone()
+        self.assertEquals(val["session"], "myapp")
+        self.assertEquals(val["version"], "321")
+
+    def test_files_table(self):
+        self.tables.create()
+        table = self.tables.files_table
+
+        ins = dict(filename="/usr/share/myapp/myfile",
+                   session="myapp")
+
+        res = table.insert(ins)
+        res.execute()
+
+        res = table.select(table.c.session == "myapp")
+        val = res.execute().fetchone()
+        self.assertEquals(val["session"], "myapp")
+        self.assertEquals(val["filename"], "/usr/share/myapp/myfile")
+
+        res = table.insert(ins)
+        try:
+            res.execute()
+            self.fail("inserting the same value should result in an "
+                      "IntegretyError")
+        except IntegrityError, e:
+            pass
+
+        ins = dict(filename="/usr/share/myapp/myfile",
+                   session="app2")
+        res = table.insert(ins)
+        try:
+            res.execute()
+            self.fail("inserting the same primary key should result in an "
+                      "IntegretyError")
+        except IntegrityError, e:
+            pass
+
+    def test_status_table(self):
+        self.tables.create()
+        table = self.tables.status_table
+
+        ins = dict(session="myapp",
+                   version="123",
+                   phase="Built")
+        res = table.insert(ins)
+        res.execute()
+
+        ins = dict(session="myapp",
+                   version="1234",
+                   phase="Built")
+        res = table.insert(ins)
+        res.execute()
+
+        ins = dict(session="myapp2",
+                   version="123",
+                   phase="abc")
+        res = table.insert(ins)
+        try:
+            res.execute()
+            self.fail("abc is an invalid phase")
+        except StatementError:
+            pass
+
+        table.delete(table.c.session=="myapp").execute()
+
+        ins = dict(session="myapp",
+                   version="123",
+                   phase="None")
+        res = table.insert(ins)
+        res.execute()
+        table.delete(table.c.session=="myapp").execute()
+
+        ins = dict(session="myapp",
+                   version="123",
+                   phase="Downloaded")
+        res = table.insert(ins)
+        res.execute()
+        table.delete(table.c.session=="myapp").execute()
+
+        ins = dict(session="myapp",
+                   version="123",
+                   phase="Extracted")
+        res = table.insert(ins)
+        res.execute()
+        table.delete(table.c.session=="myapp").execute()
+
+        ins = dict(session="myapp",
+                   version="123",
+                   phase="Configured")
+        res = table.insert(ins)
+        res.execute()
+        table.delete(table.c.session=="myapp").execute()
+
+        ins = dict(session="myapp",
+                   version="123",
+                   phase="Destrooted")
+        res = table.insert(ins)
+        res.execute()
+        table.delete(table.c.session=="myapp").execute()
+
+        ins = dict(session="myapp",
+                   version="123",
+                   phase="Activated")
+        res = table.insert(ins)
+        res.execute()
+        table.delete(table.c.session=="myapp").execute()
+
+        ins = dict(session="myapp",
+                   version="123",
+                   phase="Deactivated")
+        res = table.insert(ins)
+        res.execute()
+        table.delete(table.c.session=="myapp").execute()
 
 
 def suite():
