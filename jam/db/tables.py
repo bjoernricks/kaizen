@@ -56,7 +56,7 @@ class Tables(object):
                                  primary_key = True),
                           Column('version', String, nullable = False))
 
-        files = Table('files', self.metadata,
+        self.files_table = Table('files', self.metadata,
                       Column('filename', String, primary_key = True),
                       Column('session', String,
                              ForeignKey(self.info_table.c.session),
