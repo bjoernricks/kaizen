@@ -66,7 +66,7 @@ class Tables(object):
                        Column('session', String,
                               ForeignKey(self.info_table.c.session),
                               primary_key = True),
-                       Column('version', String, nullable = False),
+                       Column('version', String, primary_key = True),
                        Column('phase', PhaseType, nullable = False))
 
     def create(self):
