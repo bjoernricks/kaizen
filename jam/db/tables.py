@@ -19,14 +19,16 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 
 # 02110-1301 USA
 
+import jam.session.phase
+
 from jam.external.sqlalchemy import MetaData, Table, Column, String, \
                                     ForeignKey, TypeDecorator
+
 
 class PhaseType(TypeDecorator):
 
     impl = String
-    phases = ["None", "Downloaded", "Extracted", "Configured", "Built",
-              "Destrooted", "Activated", "Deactivated"]
+    phases = jam.session.phase.phases
 
     def process_bind_param(self, value, dialect):
         if value not in self.phases:
