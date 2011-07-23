@@ -61,3 +61,8 @@ class Phase(object):
 for i, name in enumerate(phases):
     name2phase[name] = Phase(name, i)
 
+
+def get_phase_from_name(name):
+    if not name in name2phase:
+        return None
+    return name2phase[name]
