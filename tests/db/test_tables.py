@@ -213,6 +213,13 @@ class TableTest(unittest.TestCase):
         res.execute()
         table.delete(table.c.session=="myapp").execute()
 
+        ins = dict(session="myapp",
+                   version="123",
+                   phase="Patched")
+        res = table.insert(ins)
+        res.execute()
+        table.delete(table.c.session=="myapp").execute()
+
 
 def suite():
     suite = unittest.TestSuite()
