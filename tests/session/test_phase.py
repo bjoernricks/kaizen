@@ -59,6 +59,13 @@ class PhaseTest(unittest.TestCase):
         phase = get_phase_from_name("Deactivated")
         self.assertEquals("Deactivated", phase.name)
 
+    def test_equal(self):
+        phasenone1 = get_phase_from_name("None")
+        phasenone2 = get_phase_from_name("None")
+        self.assertEquals(phasenone1, phasenone2)
+
+        phasedownloaded = get_phase_from_name("Downloaded")
+        self.assertNotEquals(phasenone1, phasedownloaded)
 
 
 def suite():
