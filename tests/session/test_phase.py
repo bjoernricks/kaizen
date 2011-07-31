@@ -67,6 +67,37 @@ class PhaseTest(unittest.TestCase):
         phasedownloaded = get_phase_from_name("Downloaded")
         self.assertNotEquals(phasenone1, phasedownloaded)
 
+    def test_compare(self):
+        phasenone1 = get_phase_from_name("None")
+        phasenone2 = get_phase_from_name("None")
+        self.assertTrue(phasenone1 == phasenone2)
+
+        phasedownloaded = get_phase_from_name("Downloaded")
+        self.assertTrue(phasenone1 < phasedownloaded)
+        self.assertTrue(phasedownloaded > phasenone1)
+
+        phaseextracted = get_phase_from_name("Extracted")
+        self.assertTrue(phaseextracted > phasedownloaded)
+
+        phasepatched = get_phase_from_name("Patched")
+        self.assertTrue(phasepatched > phaseextracted)
+
+        phaseconfigured = get_phase_from_name("Configured")
+        self.assertTrue(phaseconfigured > phasepatched)
+
+        phasebuilt = get_phase_from_name("Built")
+        self.assertTrue(phasebuilt > phaseconfigured)
+
+        phasedestrooted = get_phase_from_name("Destrooted")
+        self.assertTrue(phasedestrooted > phasebuilt)
+
+        phaseactivated = get_phase_from_name("Activated")
+        self.assertTrue(phaseactivated > phasedestrooted)
+
+        phasedeactivated = get_phase_from_name("Deactivated")
+        self.assertTrue(phasedeactivated > phaseactivated)
+
+
 
 def suite():
     suite = unittest.TestSuite()
