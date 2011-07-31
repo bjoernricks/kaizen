@@ -38,23 +38,27 @@ class PhaseTest(unittest.TestCase):
         phase = get_phase_from_name("Downloaded")
         self.assertEquals("Downloaded", phase.name)
 
-        phase = get_phase_from_name("Downloaded")
-        self.assertEquals("Downloaded", phase.name)
+        phase = get_phase_from_name("Extracted")
+        self.assertEquals("Extracted", phase.name)
 
-        phase = get_phase_from_name("Downloaded")
-        self.assertEquals("Downloaded", phase.name)
+        phase = get_phase_from_name("Patched")
+        self.assertEquals("Patched", phase.name)
 
-        phase = get_phase_from_name("Downloaded")
-        self.assertEquals("Downloaded", phase.name)
+        phase = get_phase_from_name("Configured")
+        self.assertEquals("Configured", phase.name)
 
-        phase = get_phase_from_name("Downloaded")
-        self.assertEquals("Downloaded", phase.name)
+        phase = get_phase_from_name("Built")
+        self.assertEquals("Built", phase.name)
 
-        phase = get_phase_from_name("Downloaded")
-        self.assertEquals("Downloaded", phase.name)
+        phase = get_phase_from_name("Destrooted")
+        self.assertEquals("Destrooted", phase.name)
 
-        phase = get_phase_from_name("Downloaded")
-        self.assertEquals("Downloaded", phase.name)
+        phase = get_phase_from_name("Activated")
+        self.assertEquals("Activated", phase.name)
+
+        phase = get_phase_from_name("Deactivated")
+        self.assertEquals("Deactivated", phase.name)
+
 
 
 def suite():
