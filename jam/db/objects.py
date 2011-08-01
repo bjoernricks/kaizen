@@ -48,7 +48,7 @@ class Files(object):
 
 class Status(object):
 
-    def __init__(session, version, phase):
+    def __init__(self, session, version, phase):
         self.session = session
         self.version = version
         self.phase = phase
