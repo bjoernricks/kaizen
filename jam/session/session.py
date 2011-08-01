@@ -30,6 +30,11 @@ from jam.utils import Loader, realpath, list_dir, list_subdir, extract_file
 from jam.system import Configure, CMake, Make, Command, Copy
 from jam.download import Downloader
 from jam.session.depend import DependencyAnalyser
+from jam.db.objects import Status
+from jam.db.db import Db
+from jam.db.phase import get_phase_from_name
+
+from jam.external.sqlalchemy import and_
 
 
 class SessionError(Exception):
@@ -163,8 +168,9 @@ class SessionWrapper(object):
         self.force = force
         self.session = None
         self.log = jam.log.getLogger("jam.sessionwrapper")
-        self.phase = "init"
         self.init_session()
+        self.db = Db(config)
+        self.init_status()
 
     def load_session(self):
         session_loader = SessionLoader(self.config)
@@ -202,6 +208,16 @@ class SessionWrapper(object):
 
     def replace_session_args(self):
         self.session.args = self.session.args_replace()
+
+    def init_status(self):
+        self.status = self.db.session.query(Status).filter(
+                                            and_(Status.session ==
+                                                 self.session_name,
+                                            Status.version == self.version)
+                                            ).first()
+        if not self.status:
+            self.status = Status(self.session_name, self.version,
+                                 get_phase_from_name("None"))
 
     def depends(self):
         return DependencyAnalyser(self.config, self.session).analyse()
