@@ -19,7 +19,8 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 
 # 02110-1301 USA
 
-from jam.session import SessionManager, SessionCreator
+from jam.session.session import SessionManager
+from jam.session.create import SessionCreator
 
 
 class Command(object):
