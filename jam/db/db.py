@@ -22,9 +22,9 @@
 import os.path
 
 from jam.db.tables import Tables
-from jam.session.objects import Info, Installed, Files, Status
-from jam.external.sqlalchemy import String
-from jam.external.sqlalchemy.orm import mapper
+from jam.db.objects import Info, Installed, Files, Status
+from jam.external.sqlalchemy import String, create_engine
+from jam.external.sqlalchemy.orm import mapper, sessionmaker
 
 
 class Db(object):
@@ -33,10 +33,6 @@ class Db(object):
         rootdir = config.get("rootdir")
         db_path = os.path.join(rootdir, "jam.db")
         self.engine = create_engine("sqlite:///%s" % db_path)
-
-    def get_engine(self):
-        return self.engine
-
         self.tables = Tables(self)
         self.tables.create()
         Session = sessionmaker()
@@ -45,4 +41,7 @@ class Db(object):
         mapper(Installed, self.tables.installed_table)
         mapper(Files, self.tables.files_table)
         mapper(Status, self.tables.status_table)
+
+    def get_engine(self):
+        return self.engine
 
