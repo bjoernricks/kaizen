@@ -27,7 +27,7 @@ import unittest
 test_dir = os.path.dirname(__file__)
 sys.path.append(os.path.join(test_dir, os.pardir, os.pardir))
 
-from jam.db import Db, Tables
+from jam.db.db import Db, Tables
 from jam.external.sqlalchemy import create_engine
 from sqlalchemy.exc import IntegrityError, StatementError
 
