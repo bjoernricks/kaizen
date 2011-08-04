@@ -27,80 +27,98 @@ import unittest
 test_dir = os.path.dirname(__file__)
 sys.path.append(os.path.join(test_dir, os.pardir, os.pardir))
 
-from jam.phase.phase import get_phase_from_name, Phase
+from jam.phase.phase import Phase, Phases
 
-class PhaseTest(unittest.TestCase):
+class PhasesTest(unittest.TestCase):
 
-    def test_get_phase_from_name(self):
-        phase = get_phase_from_name("None")
+    def test_get(self):
+        phases = Phases()
+        phase = phases.get("None")
         self.assertEquals("None", phase.name)
 
-        phase = get_phase_from_name("Downloaded")
+        phase = phases.get("Downloaded")
         self.assertEquals("Downloaded", phase.name)
 
-        phase = get_phase_from_name("Extracted")
+        phase = phases.get("Extracted")
         self.assertEquals("Extracted", phase.name)
 
-        phase = get_phase_from_name("Patched")
+        phase = phases.get("Patched")
         self.assertEquals("Patched", phase.name)
 
-        phase = get_phase_from_name("Configured")
+        phase = phases.get("Configured")
         self.assertEquals("Configured", phase.name)
 
-        phase = get_phase_from_name("Built")
+        phase = phases.get("Built")
         self.assertEquals("Built", phase.name)
 
-        phase = get_phase_from_name("Destrooted")
+        phase = phases.get("Destrooted")
         self.assertEquals("Destrooted", phase.name)
 
-        phase = get_phase_from_name("Activated")
+        phase = phases.get("Activated")
         self.assertEquals("Activated", phase.name)
 
-        phase = get_phase_from_name("Deactivated")
+        phase = phases.get("Deactivated")
         self.assertEquals("Deactivated", phase.name)
 
-    def test_equal(self):
-        phasenone1 = get_phase_from_name("None")
-        phasenone2 = get_phase_from_name("None")
-        self.assertEquals(phasenone1, phasenone2)
-
-        phasedownloaded = get_phase_from_name("Downloaded")
-        self.assertNotEquals(phasenone1, phasedownloaded)
-
     def test_compare(self):
-        phasenone1 = get_phase_from_name("None")
-        phasenone2 = get_phase_from_name("None")
+        phases = Phases()
+        phasenone1 = phases.get("None")
+        phasenone2 = phases.get("None")
         self.assertTrue(phasenone1 == phasenone2)
 
-        phasedownloaded = get_phase_from_name("Downloaded")
+        phasedownloaded = phases.get("Downloaded")
         self.assertTrue(phasenone1 < phasedownloaded)
         self.assertTrue(phasedownloaded > phasenone1)
 
-        phaseextracted = get_phase_from_name("Extracted")
+        phaseextracted = phases.get("Extracted")
         self.assertTrue(phaseextracted > phasedownloaded)
 
-        phasepatched = get_phase_from_name("Patched")
+        phasepatched = phases.get("Patched")
         self.assertTrue(phasepatched > phaseextracted)
 
-        phaseconfigured = get_phase_from_name("Configured")
+        phaseconfigured = phases.get("Configured")
         self.assertTrue(phaseconfigured > phasepatched)
 
-        phasebuilt = get_phase_from_name("Built")
+        phasebuilt = phases.get("Built")
         self.assertTrue(phasebuilt > phaseconfigured)
 
-        phasedestrooted = get_phase_from_name("Destrooted")
+        phasedestrooted = phases.get("Destrooted")
         self.assertTrue(phasedestrooted > phasebuilt)
 
-        phaseactivated = get_phase_from_name("Activated")
+        phaseactivated = phases.get("Activated")
         self.assertTrue(phaseactivated > phasedestrooted)
 
-        phasedeactivated = get_phase_from_name("Deactivated")
+        phasedeactivated = phases.get("Deactivated")
         self.assertTrue(phasedeactivated > phaseactivated)
 
+
+class PhaseTest(unittest.TestCase):
+
+    def test_equal(self):
+        phasenone1 = Phase("None", 0)
+        phasenone2 = Phase("None", 0)
+        self.assertEquals(phasenone1, phasenone2)
+
+        phasedownloaded = Phase("Downloaded", 1)
+        self.assertNotEquals(phasenone1, phasedownloaded)
+
+    def test_compare(self):
+        phasenone1 = Phase("None", 0)
+        phasenone2 = Phase("None", 0)
+        self.assertTrue(phasenone1 == phasenone2)
+
+        phasedownloaded = Phase("Downloaded", 1)
+        self.assertTrue(phasenone1 < phasedownloaded)
+        self.assertTrue(phasedownloaded > phasenone1)
+
+        phaseextracted = Phase("Extracted", 2)
+        self.assertTrue(phaseextracted > phasedownloaded)
+        self.assertTrue(phaseextracted > phasenone1)
 
 
 def suite():
     suite = unittest.TestSuite()
+    suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(PhasesTest))
     suite.addTest(unittest.defaultTestLoader.loadTestsFromTestCase(PhaseTest))
     return suite
 
