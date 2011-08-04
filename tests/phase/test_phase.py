@@ -27,7 +27,7 @@ import unittest
 test_dir = os.path.dirname(__file__)
 sys.path.append(os.path.join(test_dir, os.pardir, os.pardir))
 
-from jam.session.phase import get_phase_from_name, Phase
+from jam.phase.phase import get_phase_from_name, Phase
 
 class PhaseTest(unittest.TestCase):
 
