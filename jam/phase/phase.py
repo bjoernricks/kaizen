@@ -20,18 +20,11 @@
 # 02110-1301 USA
 
 
-phases = [ "None",
-           "Downloaded",
-           "Extracted",
-           "Patched",
-           "Configured",
-           "Built",
-           "Destrooted",
-           "Activated",
-           "Deactivated",
-         ]
+class PhaseSequence(object):
 
-name2phase = {}
+    def __init__(self, required_phase, result_phase):
+        self.required_phase = required_phase
+        self.result_phase = result_phase
 
 
 class Phase(object):
@@ -57,12 +50,24 @@ class Phase(object):
     def __hash__(self):
         return self.value
 
+class Phases(object):
 
-for i, name in enumerate(phases):
-    name2phase[name] = Phase(name, i)
+    def __init__(self):
+        self.phases = dict()
+        self.phase_names = [
+                             "None",
+                             "Downloaded",
+                             "Extracted",
+                             "Patched",
+                             "Configured",
+                             "Built",
+                             "Destrooted",
+                             "Activated",
+                             "Deactivated",
+                           ]
+        for i, name in enumerate(self.phase_names):
+            self.phases[name] = Phase(name, i)
 
 
-def get_phase_from_name(name):
-    if not name in name2phase:
-        return None
-    return name2phase[name]
+    def get(self, name):
+        return self.phases.get(name)
