@@ -218,6 +218,8 @@ class SessionWrapper(object):
         if not self.status:
             self.status = Status(self.session_name, self.version,
                                  get_phase_from_name("None"))
+            self.db.session.save(self.status)
+            self.db.session.commit()
 
     def depends(self):
         return DependencyAnalyser(self.config, self.session).analyse()
