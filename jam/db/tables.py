@@ -19,7 +19,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 
 # 02110-1301 USA
 
-from jam.phase.phase import Phases
+from jam.phase.phase import Phases, Phase
 
 from jam.external.sqlalchemy import MetaData, Table, Column, String, \
                                     ForeignKey, TypeDecorator
@@ -31,6 +31,8 @@ class PhaseType(TypeDecorator):
     phases = Phases()
 
     def process_bind_param(self, value, dialect):
+        if isinstance(value, Phase):
+            return value.name
         if not self.phases.get(value):
             raise TypeError("Invalid PhaseType '%s'" % value)
         return value
