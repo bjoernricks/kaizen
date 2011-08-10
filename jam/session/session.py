@@ -218,8 +218,8 @@ class SessionWrapper(object):
                                             ).first()
         if not self.status:
             self.status = Status(self.session_name, self.version,
-            self.db.session.save(self.status)
                                  self.phases.get("None"))
+            self.db.session.add(self.status)
             self.db.session.commit()
 
     def depends(self):
