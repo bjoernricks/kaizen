@@ -42,6 +42,8 @@ class Phase(object):
             return 1
 
     def __eq__(self, other):
+        if not isinstance(other, Phase):
+            return False
         return self.value == other.value
 
     def __neq__(self, other):
@@ -49,6 +51,7 @@ class Phase(object):
 
     def __hash__(self):
         return self.value
+
 
 class Phases(object):
 
