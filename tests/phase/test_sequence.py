@@ -27,8 +27,8 @@ import unittest
 test_dir = os.path.dirname(__file__)
 sys.path.append(os.path.join(test_dir, os.pardir, os.pardir))
 
-from jam.phase.phase import Phase, Phases, Sequence, SequenceEntry, \
-                            SequenceError
+from jam.phase.phase import Phase, Phases
+from jam.phase.sequence import Sequence, SequenceEntry, SequenceError
 
 
 class SessionDummy():
