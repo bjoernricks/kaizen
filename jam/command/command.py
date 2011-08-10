@@ -216,7 +216,7 @@ class DependsCommand(PhaseCommand):
 
     def main(self, options):
         super(DependsCommand, self).main(options)
-        self.manager.depends()
+        print self.manager.depends()
 
 
 class CreateCommand(Command):
