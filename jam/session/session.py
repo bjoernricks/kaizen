@@ -32,7 +32,7 @@ from jam.download import Downloader
 from jam.session.depend import DependencyAnalyser
 from jam.db.objects import Status
 from jam.db.db import Db
-from jam.db.phase import get_phase_from_name
+from jam.phase.phase import Phases
 
 from jam.external.sqlalchemy import and_
 
@@ -167,6 +167,7 @@ class SessionWrapper(object):
         self.session_name = name
         self.force = force
         self.session = None
+        self.phases = Phases()
         self.log = jam.log.getLogger("jam.sessionwrapper")
         self.init_session()
         self.db = Db(config)
@@ -217,8 +218,8 @@ class SessionWrapper(object):
                                             ).first()
         if not self.status:
             self.status = Status(self.session_name, self.version,
-                                 get_phase_from_name("None"))
             self.db.session.save(self.status)
+                                 self.phases.get("None"))
             self.db.session.commit()
 
     def depends(self):
