@@ -20,11 +20,50 @@
 # 02110-1301 USA
 
 
-class PhaseSequence(object):
+class SequenceError(Exception):
 
-    def __init__(self, required_phase, result_phase):
+    def __init__(self, sequence_name, session_name, value):
+        self.sequence_name = sequence_name
+        self.session_name = session_name
+        self.value = value
+
+    def __str__(self):
+        return "Error while executing sequence '%s' for session '%s': %s" %\
+                (self.sequence_name, self.session_name, self.value)
+
+
+class SequenceEntry(object):
+
+    def __init__(self, phase, method_name, always = False):
+        self.phase = phase
+        self.method_name = method_name
+        self.always = always
+
+
+class Sequence(object):
+
+    def __init__(self, name, required_phase, result_phase):
+        self.name = name
         self.required_phase = required_phase
         self.result_phase = result_phase
+        self.sequence = []
+
+    def add(self, phase, method_name, always = False):
+        self.add_entry(SequenceEntry(phase, method_name, always))
+
+    def add_entry(self, entry):
+        self.sequence.append(entry)
+
+    def call(self, session, current_phase):
+        if current_phase < self.required_phase:
+            raise SequenceError(self.name, session.name,
+                    "session is in phase '%s' but required is '%s'" %\
+                    (current_phase.name, self.required_phase.name))
+
+        for entry in self.sequence:
+            if current_phase < entry.phase or entry.always:
+                method = getattr(session, entry.method_name)
+                method()
 
 
 class Phase(object):
