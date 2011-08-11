@@ -37,6 +37,12 @@ class PhaseType(TypeDecorator):
             raise TypeError("Invalid PhaseType '%s'" % value)
         return value
 
+    def process_result_value(self, value, dialect):
+        phase = self.phases.get(value)
+        if not phase:
+            raise TypeError("Invalid value '%s' for PhaseType" % value)
+        return phase
+
 
 class Tables(object):
 
