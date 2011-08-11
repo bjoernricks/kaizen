@@ -396,7 +396,7 @@ class SessionLoader(Loader):
                           sessionname)
             return None
         session = sessions[0]
-        self.log.info("Loaded session '%s'" % session.__name__)
+        self.log.debug("Loaded session class '%s'" % session.__name__)
         return session
 
 
