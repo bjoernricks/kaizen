@@ -60,26 +60,21 @@ class SessionManager(object):
         self.session_wrapper = SessionWrapper(name, config, force)
 
     def download(self):
-        self.log.normal("%s:phase:download" % self.session_name)
         self.session_wrapper.download()
 
     def extract(self):
-        self.log.normal("%s:phase:extract" % self.session_name)
         self.session_wrapper.extract()
 
     def archive(self):
         self.log.normal("%s:phase:archive" % self.session_name)
 
     def configure(self):
-        self.log.normal("%s:phase:configure" % self.session_name)
         self.session_wrapper.configure()
 
     def build(self):
-        self.log.normal("%s:phase:build" % self.session_name)
         self.session_wrapper.build()
 
     def destroot(self):
-        self.log.normal("%s:phase:destroot" % self.session_name)
         self.session_wrapper.destroot()
 
     def install(self):
@@ -93,7 +88,6 @@ class SessionManager(object):
         self.activate()
 
     def uninstall(self):
-        self.log.normal("%s:phase:uninstall" % self.session_name)
         self.deactivate()
 
     def activate(self):
@@ -109,15 +103,12 @@ class SessionManager(object):
         self.log.normal("%s:phase:unpatch" % self.session_name)
 
     def clean(self):
-        self.log.normal("%s:phase:clean" % self.session_name)
         self.session_wrapper.clean()
 
     def distclean(self):
-        self.log.normal("%s:phase:distclean" % self.session_name)
         self.log.normal(self.session_wrapper.distclean())
 
     def depends(self):
-        self.log.normal("%s:phase:depends" % self.session_name)
         return self.session_wrapper.depends()
 
     def drop(self):
@@ -185,9 +176,11 @@ class SessionWrapper(object):
             self.db.session.commit()
 
     def depends(self):
+        self.log.normal("%s:phase:depends" % self.session_name)
         return DependencyAnalyser(self.config, self.session).analyse()
 
     def extract(self):
+        self.log.normal("%s:phase:extract" % self.session_name)
         if not os.path.exists(self.src_dir):
             self.log.debug("Creating source dir '%s'" % self.src_dir)
             os.makedirs(self.src_dir)
@@ -200,6 +193,7 @@ class SessionWrapper(object):
             self.log.info("Nothing to extract.")
 
     def download(self):
+        self.log.normal("%s:phase:download" % self.session_name)
         if not os.path.exists(self.data_dir):
             self.log.debug("Creating data dir '%s'" % self.data_dir)
             os.makedirs(self.data_dir)
@@ -254,6 +248,7 @@ class SessionWrapper(object):
             os.symlink(destdir_file_path, file_path)
 
     def configure(self):
+        self.log.normal("%s:phase:configure" % self.session_name)
         build_path = self.session.build_path
         if not os.path.exists(build_path):
             self.log.debug("Creating build dir '%s'" % build_path)
@@ -261,18 +256,22 @@ class SessionWrapper(object):
         self.session.configure()
 
     def build(self):
+        self.log.normal("%s:phase:build" % self.session_name)
         self.session.build()
 
     def destroot(self):
+        self.log.normal("%s:phase:destroot" % self.session_name)
         if not os.path.exists(self.dest_dir):
             self.log.debug("Creating destroot dir '%s'" % self.dest_dir)
             os.makedirs(self.dest_dir)
         self.session.destroot()
 
     def clean(self):
+        self.log.normal("%s:phase:clean" % self.session_name)
         self.session.clean()
 
     def distclean(self):
+        self.log.normal("%s:phase:distclean" % self.session_name)
         self.session.distclean()
 
 
