@@ -20,8 +20,9 @@
 # 02110-1301 USA
 
 from jam.session.session import SessionError, SessionManager, Session, \
-                                MakeSession, ConfigureSession, \
-                                CMakeSession, PythonSession, \
                                 SessionLoader, SessionValidator
+
+from jam.session.systems import MakeSession, ConfigureSession, \
+                                CMakeSession, PythonSession
 
 from jam.session.create import SessionCreator
