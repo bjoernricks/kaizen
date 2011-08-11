@@ -128,6 +128,7 @@ class SessionWrapper(object):
         self.init_session()
         self.db = Db(config)
         self.init_status()
+        self.session.init()
 
     def load_session(self):
         session_loader = SessionLoader(self.config)
@@ -354,6 +355,9 @@ class Session(object):
                     deps.extend(superdeps)
             return list(set(deps))
         return value
+
+    def init(self):
+        pass
 
     def configure(self):
         pass
