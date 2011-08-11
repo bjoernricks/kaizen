@@ -207,9 +207,6 @@ class SessionWrapper(object):
                                (self.config.get("sessions"),
                                "\n".join(validator.errors)))
 
-    def replace_session_args(self):
-        self.session.args = self.session.args_replace()
-
     def init_status(self):
         self.status = self.db.session.query(Status).filter(
                                             and_(Status.session ==
@@ -255,7 +252,6 @@ class SessionWrapper(object):
                 dl.copy(self.patch_dir)
 
     def configure(self):
-        self.replace_session_args()
         build_path = self.session.build_path
         if not os.path.exists(build_path):
             self.log.debug("Creating build dir '%s'" % build_path)
@@ -263,22 +259,18 @@ class SessionWrapper(object):
         self.session.configure()
 
     def build(self):
-        self.replace_session_args()
         self.session.build()
 
     def destroot(self):
-        self.replace_session_args()
         if not os.path.exists(self.dest_dir):
             self.log.debug("Creating destroot dir '%s'" % self.dest_dir)
             os.makedirs(self.dest_dir)
         self.session.destroot()
 
     def clean(self):
-        self.replace_session_args()
         self.session.clean()
 
     def distclean(self):
-        self.replace_session_args()
         self.session.distclean()
 
 
@@ -315,8 +307,6 @@ class Session(object):
         self.vars["name"] = self.name
         self.vars["src_dir"] = self.src_dir
         self.vars["build_dir"] = self.build_dir
-        self.vars["src_path"] = ""
-        self.vars["build_path"] = ""
 
         if not self.src_path:
             self.src_path = os.path.join(src_dir, self.name 
@@ -347,6 +337,8 @@ class Session(object):
         if name in ["src_path", "build_path", "args", "url",
                              "patches"]:
             if isinstance(value, list):
+                #TODO: don't return a new list. instead return some
+                # member variable that shadows the variable
                 newlist = []
                 for listvalue in value:
                     newlist.append(self.var_replace(listvalue))
