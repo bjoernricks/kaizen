@@ -28,6 +28,7 @@ test_dir = os.path.dirname(__file__)
 sys.path.append(os.path.join(test_dir, os.pardir, os.pardir))
 
 from jam.db.db import Db, Tables
+from jam.phase.phase import Phases
 from jam.external.sqlalchemy import create_engine
 from sqlalchemy.exc import IntegrityError, StatementError
 
@@ -218,6 +219,13 @@ class TableTest(unittest.TestCase):
                    phase="Patched")
         res = table.insert(ins)
         res.execute()
+
+        query = table.select(table.c.session=="myapp")
+        status = self.db.engine.execute(query).fetchone()
+        self.assertEquals("myapp", status[0])
+        self.assertEquals("123", status[1])
+        self.assertEquals(Phases().get("Patched"), status[2])
+
         table.delete(table.c.session=="myapp").execute()
 
 
