@@ -58,10 +58,6 @@ class SessionManager(object):
         self.session_name = name
         self.log = jam.log.getLogger("jam.sessionmanager")
         self.session_wrapper = SessionWrapper(name, config, force)
-        self.init()
-
-    def init(self):
-        self.log.normal("%s:phase:init" % self.session_name)
 
     def download(self):
         self.log.normal("%s:phase:download" % self.session_name)
