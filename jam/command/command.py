@@ -216,7 +216,12 @@ class DependsCommand(PhaseCommand):
 
     def main(self, options):
         super(DependsCommand, self).main(options)
-        print self.manager.depends()
+        dependency_names = self.manager.depends().keys()
+        if not dependency_names:
+            return
+        print "Session %s depends on:" % options.sessionname[0]
+        for dependency_name in dependency_names:
+            print "--> %s" % dependency_name
 
 
 class CreateCommand(Command):
