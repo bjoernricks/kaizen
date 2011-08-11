@@ -49,7 +49,7 @@ class Command(object):
 
 class SessionNameCommand(Command):
 
-    def __init__(self, name, config, func, description, aliases=[]):
+    def __init__(self, name, config, func, aliases=[], description=None):
         super(SessionNameCommand, self).__init__(name, config, func, aliases,
                                                  description)
 
