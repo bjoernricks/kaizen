@@ -101,41 +101,10 @@ class SessionManager(object):
         self.deactivate()
 
     def activate(self):
-        self.log.normal("%s:phase:activate" % self.session_name)
-        (dirs, files) = list_subdir(self.session_wrapper.dest_dir)
-        current_dir = os.path.join(self.session_wrapper.destroot_dir, "current")
-        if os.path.exists(current_dir):
-            os.remove(current_dir)
-        os.symlink(self.session_wrapper.dest_dir, current_dir)
-        for subdir in dirs:
-            dir = os.path.join("/", subdir)
-            if not os.path.exists(dir):
-                os.makedirs(dir)
-                self.log.debug("Creating directory '%s'" % dir)
-        for file in files:
-            file_path = os.path.join("/", file)
-            destdir_file_path = os.path.join(current_dir, file)
-            self.log.debug("Activating '%s' from '%s'" % (file_path,
-                           destdir_file_path))
-            if os.path.exists(file_path):
-                os.remove(file_path)
-            os.symlink(destdir_file_path, file_path)
+        self.session_wrapper.activate()
 
     def deactivate(self):
-        self.log.normal("%s:phase:deactivate" % self.session_name)
-        (dirs, files) = list_subdir(self.session_wrapper.dest_dir, True)
-        for file in files:
-            file_path = os.path.join("/", file)
-            if os.path.exists(file_path):
-                self.log.debug("Deactivating '%s'" % file_path)
-                os.remove(file_path)
-        dirs.sort(reverse=True)
-        for subdir in dirs:
-            dir = os.path.join("/", subdir)
-            if os.path.exists(dir) and not os.listdir(dir) and not \
-                dir == self.config.get("prefix"):
-                os.rmdir(dir)
-                self.log.debug("Deleting directory '%s'" % dir)
+        self.session_wrapper.deactivate()
 
     def patch(self):
         self.log.normal("%s:phase:patch" % self.session_name)
@@ -250,6 +219,43 @@ class SessionWrapper(object):
             for patch in self.session.patches:
                 dl = Downloader(patch)
                 dl.copy(self.patch_dir)
+
+    def deactivate(self):
+        self.log.normal("%s:phase:deactivate" % self.session_name)
+        (dirs, files) = list_subdir(self.dest_dir, True)
+        for file in files:
+            file_path = os.path.join("/", file)
+            if os.path.exists(file_path):
+                self.log.debug("Deactivating '%s'" % file_path)
+                os.remove(file_path)
+        dirs.sort(reverse=True)
+        for subdir in dirs:
+            dir = os.path.join("/", subdir)
+            if os.path.exists(dir) and not os.listdir(dir) and not \
+                dir == self.config.get("prefix"):
+                os.rmdir(dir)
+                self.log.debug("Deleting directory '%s'" % dir)
+
+    def activate(self):
+        self.log.normal("%s:phase:activate" % self.session_name)
+        (dirs, files) = list_subdir(self.dest_dir)
+        current_dir = os.path.join(self.destroot_dir, "current")
+        if os.path.exists(current_dir):
+            os.remove(current_dir)
+        os.symlink(self.dest_dir, current_dir)
+        for subdir in dirs:
+            dir = os.path.join("/", subdir)
+            if not os.path.exists(dir):
+                os.makedirs(dir)
+                self.log.debug("Creating directory '%s'" % dir)
+        for file in files:
+            file_path = os.path.join("/", file)
+            destdir_file_path = os.path.join(current_dir, file)
+            self.log.debug("Activating '%s' from '%s'" % (file_path,
+                           destdir_file_path))
+            if os.path.exists(file_path):
+                os.remove(file_path)
+            os.symlink(destdir_file_path, file_path)
 
     def configure(self):
         build_path = self.session.build_path
