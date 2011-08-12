@@ -56,9 +56,10 @@ class Sequence(object):
     def add_entry(self, entry):
         self.sequence.append(entry)
 
-    def call(self, session, current_phase):
+    def call(self, session):
+        current_phase = session.get_current_phase()
         if self.parent_seq:
-            self.parent_seq.call(session, current_phase)
+            self.parent_seq.call(session)
         if current_phase < self.required_phase:
             raise SequenceError(self.name, session.name,
                     "session is in phase '%s' but required is '%s'" %\
