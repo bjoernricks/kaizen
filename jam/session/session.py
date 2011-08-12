@@ -342,12 +342,11 @@ class Session(object):
             if isinstance(value, list):
                 newlist = self.__shadow.get(name)
                 if not newlist:
-                    newlist = []
+                    newlist = value[:]
                     self.__shadow[name] = newlist
-                else:
-                    del newlist[:]
-                for listvalue in value:
-                    newlist.append(self.var_replace(listvalue))
+                for i, listvalue in enumerate(newlist):
+                    replaced_value = self.var_replace(listvalue)
+                    newlist[i] = replaced_value
                 return newlist
             else:
                 return self.var_replace(value)
