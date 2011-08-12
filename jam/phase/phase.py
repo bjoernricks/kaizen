@@ -66,4 +66,4 @@ class Phases(object):
 
 
     def get(self, name):
-        return self.phases.get(name)
+        return self.phases[name]
