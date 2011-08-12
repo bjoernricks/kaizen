@@ -170,10 +170,13 @@ class SessionWrapper(object):
                                             Status.version == self.version)
                                             ).first()
         if not self.status:
-            self.status = Status(self.session_name, self.version,
-                                 self.phases.get("None"))
-            self.db.session.add(self.status)
-            self.db.session.commit()
+            self.status = Status(self.session_name, self.version)
+            self.set_phase(self.phases.get("None"))
+
+    def set_phase(self, phase):
+        self.status.set_phase(phase)
+        self.db.session.add(self.status)
+        self.db.session.commit()
 
     def depends(self):
         self.log.debug("%s:phase:depends" % self.session_name)
