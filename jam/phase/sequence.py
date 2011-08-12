@@ -63,8 +63,13 @@ class Sequence(object):
             raise SequenceError(self.name, session.name,
                     "session is in phase '%s' but required is '%s'" %\
                     (current_phase.name, self.required_phase.name))
-
+        set_phase = False
         for entry in self.sequence:
             if current_phase < entry.phase or entry.always:
                 method = getattr(session, entry.method_name)
                 method()
+                set_phase = True
+        # only set phase if method calls were successfully executed
+        if set_phase:
+            session.set_phase(self.result_phase)
+
