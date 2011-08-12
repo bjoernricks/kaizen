@@ -178,6 +178,9 @@ class SessionWrapper(object):
         self.db.session.add(self.status)
         self.db.session.commit()
 
+    def get_current_phase(self):
+        return self.status.phase
+
     def depends(self):
         self.log.debug("%s:phase:depends" % self.session_name)
         return DependencyAnalyser(self.config, self.session).analyse()
