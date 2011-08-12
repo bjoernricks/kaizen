@@ -297,6 +297,8 @@ class Session(object):
         self.debug = self.config.get("debug")
         self.prefix = self.config.get("prefix")
 
+        self.__shadow = dict()
+
         if not self.name:
             module = self.__module__
             self.name = module.split(".")[0]
@@ -338,9 +340,12 @@ class Session(object):
         if name in ["src_path", "build_path", "args", "url",
                              "patches"]:
             if isinstance(value, list):
-                #TODO: don't return a new list. instead return some
-                # member variable that shadows the variable
-                newlist = []
+                newlist = self.__shadow.get(name)
+                if not newlist:
+                    newlist = []
+                    self.__shadow[name] = newlist
+                else:
+                    del newlist[:]
                 for listvalue in value:
                     newlist.append(self.var_replace(listvalue))
                 return newlist
