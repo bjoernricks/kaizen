@@ -65,7 +65,7 @@ class SessionManager(object):
         self.session_wrapper.extract()
 
     def archive(self):
-        self.log.normal("%s:phase:archive" % self.session_name)
+        self.log.debug("%s:phase:archive" % self.session_name)
 
     def configure(self):
         self.session_wrapper.configure()
@@ -96,10 +96,10 @@ class SessionManager(object):
         self.session_wrapper.deactivate()
 
     def patch(self):
-        self.log.normal("%s:phase:patch" % self.session_name)
+        self.log.debug("%s:phase:patch" % self.session_name)
 
     def unpatch(self):
-        self.log.normal("%s:phase:unpatch" % self.session_name)
+        self.log.debug("%s:phase:unpatch" % self.session_name)
 
     def clean(self):
         self.session_wrapper.clean()
@@ -111,7 +111,7 @@ class SessionManager(object):
         return self.session_wrapper.depends()
 
     def drop(self):
-        self.log.normal("%s:phase:drop" % self.session_name)
+        self.log.debug("%s:phase:drop" % self.session_name)
         #TODO remove session destdir
 
 
@@ -176,11 +176,11 @@ class SessionWrapper(object):
             self.db.session.commit()
 
     def depends(self):
-        self.log.normal("%s:phase:depends" % self.session_name)
+        self.log.debug("%s:phase:depends" % self.session_name)
         return DependencyAnalyser(self.config, self.session).analyse()
 
     def extract(self):
-        self.log.normal("%s:phase:extract" % self.session_name)
+        self.log.debug("%s:phase:extract" % self.session_name)
         if not os.path.exists(self.src_dir):
             self.log.debug("Creating source dir '%s'" % self.src_dir)
             os.makedirs(self.src_dir)
@@ -193,7 +193,7 @@ class SessionWrapper(object):
             self.log.info("Nothing to extract.")
 
     def download(self):
-        self.log.normal("%s:phase:download" % self.session_name)
+        self.log.debug("%s:phase:download" % self.session_name)
         if not os.path.exists(self.data_dir):
             self.log.debug("Creating data dir '%s'" % self.data_dir)
             os.makedirs(self.data_dir)
@@ -211,7 +211,7 @@ class SessionWrapper(object):
                 dl.copy(self.patch_dir)
 
     def deactivate(self):
-        self.log.normal("%s:phase:deactivate" % self.session_name)
+        self.log.debug("%s:phase:deactivate" % self.session_name)
         (dirs, files) = list_subdir(self.dest_dir, True)
         for file in files:
             file_path = os.path.join("/", file)
@@ -227,7 +227,7 @@ class SessionWrapper(object):
                 self.log.debug("Deleting directory '%s'" % dir)
 
     def activate(self):
-        self.log.normal("%s:phase:activate" % self.session_name)
+        self.log.debug("%s:phase:activate" % self.session_name)
         (dirs, files) = list_subdir(self.dest_dir)
         current_dir = os.path.join(self.destroot_dir, "current")
         if os.path.exists(current_dir):
@@ -248,7 +248,7 @@ class SessionWrapper(object):
             os.symlink(destdir_file_path, file_path)
 
     def configure(self):
-        self.log.normal("%s:phase:configure" % self.session_name)
+        self.log.debug("%s:phase:configure" % self.session_name)
         build_path = self.session.build_path
         if not os.path.exists(build_path):
             self.log.debug("Creating build dir '%s'" % build_path)
@@ -256,22 +256,22 @@ class SessionWrapper(object):
         self.session.configure()
 
     def build(self):
-        self.log.normal("%s:phase:build" % self.session_name)
+        self.log.debug("%s:phase:build" % self.session_name)
         self.session.build()
 
     def destroot(self):
-        self.log.normal("%s:phase:destroot" % self.session_name)
+        self.log.debug("%s:phase:destroot" % self.session_name)
         if not os.path.exists(self.dest_dir):
             self.log.debug("Creating destroot dir '%s'" % self.dest_dir)
             os.makedirs(self.dest_dir)
         self.session.destroot()
 
     def clean(self):
-        self.log.normal("%s:phase:clean" % self.session_name)
+        self.log.debug("%s:phase:clean" % self.session_name)
         self.session.clean()
 
     def distclean(self):
-        self.log.normal("%s:phase:distclean" % self.session_name)
+        self.log.debug("%s:phase:distclean" % self.session_name)
         self.session.distclean()
 
 
