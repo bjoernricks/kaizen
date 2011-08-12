@@ -60,6 +60,12 @@ class PhasesTest(unittest.TestCase):
         phase = phases.get("Deactivated")
         self.assertEquals("Deactivated", phase.name)
 
+        try:
+            phases.get("abc")
+            self.fail("phase abc doesn't exists")
+        except KeyError:
+            pass
+
     def test_compare(self):
         phases = Phases()
         phasenone1 = phases.get("None")
