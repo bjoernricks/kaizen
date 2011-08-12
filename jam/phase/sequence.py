@@ -42,8 +42,10 @@ class SequenceEntry(object):
 
 class Sequence(object):
 
-    def __init__(self, name, required_phase, result_phase):
+    def __init__(self, name, required_phase, result_phase,
+                 parent_seq=None):
         self.name = name
+        self.parent_seq = parent_seq
         self.required_phase = required_phase
         self.result_phase = result_phase
         self.sequence = []
@@ -55,6 +57,8 @@ class Sequence(object):
         self.sequence.append(entry)
 
     def call(self, session, current_phase):
+        if self.parent_seq:
+            self.parent_seq.call(session, current_phase)
         if current_phase < self.required_phase:
             raise SequenceError(self.name, session.name,
                     "session is in phase '%s' but required is '%s'" %\
