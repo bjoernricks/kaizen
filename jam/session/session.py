@@ -32,6 +32,7 @@ from jam.session.depend import DependencyAnalyser
 from jam.db.objects import Status
 from jam.db.db import Db
 from jam.phase.phase import Phases
+from jam.phase.sequence import Sequence
 
 from jam.external.sqlalchemy import and_
 
@@ -57,49 +58,111 @@ class SessionManager(object):
         self.session_name = name
         self.log = jam.log.getLogger("jam.sessionmanager")
         self.session_wrapper = SessionWrapper(name, config, force)
+        self.phases = Phases()
+        self.init_sequences()
 
-    def download(self):
-        self.session_wrapper.download()
+    def init_sequences(self):
+        self.download_seq = Sequence("download", self.phases.get("None"),
+                                     self.phases.get("Downloaded"))
+        self.download_seq.add(self.phases.get("Downloaded"), "download")
+
+        self.extract_seq = Sequence("extract", self.phases.get("None"),
+                                    self.phases.get("Extracted"),
+                                    self.download_seq)
+        self.extract_seq.add(self.phases.get("Extracted"), "extract")
+        self.patch_seq = Sequence("patch", self.phases.get("None"),
+                                  self.phases.get("Patched"),
+                                  self.extract_seq)
+        self.patch_seq.add(self.phases.get("Patched"), "patch")
+        self.configure_seq = Sequence("configure",
+                                      self.phases.get("None"),
+                                      self.phases.get("Configured"),
+                                      self.patch_seq)
+        self.configure_seq.add(self.phases.get("Configured"),
+                               "configure")
+        self.build_seq = Sequence("build", self.phases.get("None"),
+                                  self.phases.get("Built"),
+                                  self.configure_seq)
+        self.build_seq.add(self.phases.get("Built"), "build")
+        self.destroot_seq = Sequence("destroot",
+                                     self.phases.get("None"),
+                                     self.phases.get("Destrooted"),
+                                     self.build_seq)
+        self.destroot_seq.add(self.phases.get("Destrooted"),
+                              "destroot")
+        self.activate_seq = Sequence("activate",
+                                     self.phases.get("None"),
+                                     self.phases.get("Activated"),
+                                     self.destroot_seq)
+        self.activate_seq.add(self.phases.get("Activated"),
+                              "activate")
+        self.deactivate_seq = Sequence("deactivate",
+                                       self.phases.get("Activated"),
+                                       self.phases.get("Deactivated"))
+        self.deactivate_seq.add(self.phases.get("Deactivated"),
+                                "deactivate")
+        self.install_seq = Sequence("install",
+                                    self.phases.get("None"),
+                                    self.phases.get("Activated"),
+                                    self.activate_seq)
+        #TODO review unpatch_seq
+        # maybe it's necessary to deactivate, clean, ... too
+        self.unpatch_seq = Sequence("unpatch",
+                                    self.phases.get("Patched"),
+                                    self.phases.get("Extracted"))
+        self.unpatch_seq.add(self.phases.get("Activated"), "unpatch")
+
+    def download(self, all=False, resume_on_error=True):
+        if all:
+            dependencies = self.session_wrapper.depends()
+            for dependency in dependencies:
+                if not resume_on_error:
+                    self.download_seq.call(dependency)
+                else:
+                    try:
+                        self.download_seq.call(dependency)
+                    except Error, e:
+                        self.log.err("Error while downloading " + 
+                                     "session '%s': %s" %\
+                                     (dependency, e))
+        self.download_seq(self.session_wrapper)
 
     def extract(self):
-        self.session_wrapper.extract()
+        self.extract_seq.call(self.session_wrapper)
 
     def archive(self):
         self.log.debug("%s:phase:archive" % self.session_name)
 
     def configure(self):
-        self.session_wrapper.configure()
+        dependencies = self.session_wrapper.depends()
+        for dependency in dependencies:
+            self.install_seq.call(dependency)
+        self.configure_seq.call(self.session_wrapper)
 
     def build(self):
-        self.session_wrapper.build()
+        self.build_seq.call(self.session_wrapper)
 
     def destroot(self):
-        self.session_wrapper.destroot()
+        self.destroot_seq.call(self.session_wrapper)
 
     def install(self):
         self.log.normal("%s:running install" % self.session_name)
-        self.download()
-        self.extract()
-        self.patch()
-        self.configure()
-        self.build()
-        self.destroot()
-        self.activate()
+        self.install_seq.call(self.session_wrapper)
 
     def uninstall(self):
         self.deactivate()
 
     def activate(self):
-        self.session_wrapper.activate()
+        self.activate_seq.call(self.session_wrapper)
 
     def deactivate(self):
-        self.session_wrapper.deactivate()
+        self.deactivate_seq.call(self.session_wrapper)
 
     def patch(self):
-        self.log.debug("%s:phase:patch" % self.session_name)
+        self.patch_seq.call(self.session_wrapper)
 
     def unpatch(self):
-        self.log.debug("%s:phase:unpatch" % self.session_name)
+        self.unpatch_seq.call(self.session_wrapper)
 
     def clean(self):
         self.session_wrapper.clean()
