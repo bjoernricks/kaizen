@@ -112,19 +112,26 @@ class SessionManager(object):
                                     self.phases.get("Extracted"))
         self.unpatch_seq.add(self.phases.get("Activated"), "unpatch")
 
+    def install_dependencies(self):
+        dependencies = self.session_wrapper.depends()
+        for dependency in dependencies.itervalues():
+            current_phase = dependency.session.status.phase
+            if not current_phase == self.phases.get("Activated"):
+                self.install_seq.call(dependency)
+
     def download(self, all=False, resume_on_error=True):
         if all:
             dependencies = self.session_wrapper.depends()
-            for dependency in dependencies:
+            for dependency in dependencies.itervalues():
                 if not resume_on_error:
-                    self.download_seq.call(dependency)
+                    self.download_seq.call(dependency.session)
                 else:
                     try:
-                        self.download_seq.call(dependency)
+                        self.download_seq.call(dependency.session)
                     except Error, e:
                         self.log.err("Error while downloading " + 
                                      "session '%s': %s" %\
-                                     (dependency, e))
+                                     (dependency.name, e))
         self.download_seq(self.session_wrapper)
 
     def extract(self):
@@ -134,18 +141,19 @@ class SessionManager(object):
         self.log.debug("%s:phase:archive" % self.session_name)
 
     def configure(self):
-        dependencies = self.session_wrapper.depends()
-        for dependency in dependencies:
-            self.install_seq.call(dependency)
+        self.install_dependencies()
         self.configure_seq.call(self.session_wrapper)
 
     def build(self):
+        self.install_dependencies()
         self.build_seq.call(self.session_wrapper)
 
     def destroot(self):
+        self.install_dependencies()
         self.destroot_seq.call(self.session_wrapper)
 
     def install(self):
+        self.install_dependencies()
         self.log.normal("%s:running install" % self.session_name)
         self.install_seq.call(self.session_wrapper)
 
@@ -153,6 +161,7 @@ class SessionManager(object):
         self.deactivate()
 
     def activate(self):
+        self.install_dependencies()
         self.activate_seq.call(self.session_wrapper)
 
     def deactivate(self):
