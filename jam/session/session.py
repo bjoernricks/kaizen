@@ -185,6 +185,12 @@ class SessionWrapper(object):
         self.log.debug("%s:phase:depends" % self.session_name)
         return DependencyAnalyser(self.config, self.session).analyse()
 
+    def patch(self):
+        self.log.debug("%s:phase:patch" % self.session_name)
+
+    def unpatch(self):
+        self.log.debug("%s:phase:unpatch" % self.session_name)
+
     def extract(self):
         self.log.debug("%s:phase:extract" % self.session_name)
         if not os.path.exists(self.src_dir):
