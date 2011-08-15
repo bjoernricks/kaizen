@@ -19,11 +19,13 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 
 # 02110-1301 USA
 
-from jam.session.session import Session
-from jam.session.manager import SessionManager
-from jam.session.error import SessionError
+class SessionError(Exception):
 
-from jam.session.systems import MakeSession, ConfigureSession, \
-                                CMakeSession, PythonSession
+    def __init__(self, session_name, value):
+        self.session_name = session_name
+        self.value = value
 
-from jam.session.create import SessionCreator
+    def __str__(self):
+        return "Error in session '%s': %s" % (self.session_name, self.value)
+
+
