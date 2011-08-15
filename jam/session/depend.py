@@ -19,20 +19,22 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 
 # 02110-1301 USA
 
-import jam.session
+import jam.log
+
+from jam.session.wrapper import SessionWrapper
+from jam.session.error import SessionError
 
 class DependencyAnalyser(object):
 
     def __init__(self, config, session):
         self.config = config
         self.session = session
-        self.session_loader = jam.session.SessionLoader(config)
         self.dependencies = dict()
         self.log = jam.log.getLogger("jam.dependencies")
 
     def analyse_session(self, session):
         dependencies = []
-        for depend in session.depends:
+        for depend in session.session.depends:
             name = depend
             version = None
             if isinstance(depend, tuple):
@@ -45,11 +47,13 @@ class DependencyAnalyser(object):
             if name in self.dependencies:
                 dependency = self.dependencies[name] 
             else:
-                depend_session = self.session_loader.load(name)
-                if not depend_session:
-                    self.log.error("Could not load dependency '%s'" % name)
+                try:
+                    depend_session = SessionWrapper(name, self.config)
+                except SessionError, e:
+                    self.log.error("Error while loading dependency '%s': %s" % \
+                                   (name, e))
                     continue
-                dependency = Dependency(session, name, version)
+                dependency = Dependency(depend_session, name, version)
                 self.dependencies[name] = dependency
                 cur_deps = self.analyse_session(depend_session)
                 dependency.add_dependencies(cur_deps)
