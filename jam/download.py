@@ -21,6 +21,7 @@
 
 import urllib2
 import os.path
+import shutil
 
 import jam.log
 
@@ -67,6 +68,17 @@ class HttpDownloader(object):
         f.close()
 
 
+class LocalFileDownloader(object):
+
+    def __init__(self, url):
+        self.url = url
+        self.log = jam.log.getLogger("jam.localfiledownloader")
+
+    def copy(self, filename):
+        self.log.debug("copying '%s' to '%s'" % (self.url, self.filename)
+        shutil.copy(self.url, filename)
+
+
 class Downloader:
 
     def __init__(self, urlstr):
@@ -77,6 +89,8 @@ class Downloader:
         
         if url.scheme == 'http' or url.scheme == 'https':
             self.downloader = HttpDownloader(urlstr)
+        else:
+            self.downloader = LocalFileDownloader(urlstr)
 
     def copy(self, destination, overwrite=False):
         if os.path.isdir(destination):
