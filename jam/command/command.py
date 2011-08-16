@@ -81,6 +81,28 @@ class BuildCommand(PhaseCommand):
         self.manager.build()
 
 
+class PatchCommand(PhaseCommand):
+
+    def __init__(self, config):
+        description = "apply patches to sources"
+        super(PatchCommand, self).__init__("patch", config, description)
+
+    def main(self, options):
+        super(PatchCommand, self).main(options)
+        self.manager.patch()
+
+
+class UnPatchCommand(PhaseCommand):
+
+    def __init__(self, config):
+        description = "revert patches applied sources"
+        super(UnPatchCommand, self).__init__("unpatch", config, description)
+
+    def main(self, options):
+        super(UnPatchCommand, self).main(options)
+        self.manager.unpatch()
+
+
 class ConfigureCommand(PhaseCommand):
 
     def __init__(self, config):
