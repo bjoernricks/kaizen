@@ -115,7 +115,7 @@ class SessionManager(object):
                         self.log.err("Error while downloading " + 
                                      "session '%s': %s" %\
                                      (dependency.name, e))
-        self.download_seq(self.session_wrapper, self.force)
+        self.download_seq.call(self.session_wrapper, self.force)
 
     def extract(self):
         self.extract_seq.call(self.session_wrapper, self.force)
