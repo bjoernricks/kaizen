@@ -35,6 +35,7 @@ from jam.db.db import Db
 from jam.db.objects import Status
 from jam.session.session import Session
 from jam.session.error import SessionError
+from jam.system.command import Patch
 
 class SessionWrapper(object):
 
@@ -110,14 +111,16 @@ class SessionWrapper(object):
     def patch(self):
         self.log.debug("%s:phase:patch" % self.session_name)
         for patch in self.session.patches:
-            Patch(os.path.join(self.patch_dir, patch, self.src_dir),
-                               self.config.get("verbose"))
+            patch_name = os.path.basename(patch)
+            Patch(os.path.join(self.patch_dir, patch_name), self.session.src_path,
+                               self.config.get("verbose")).run()
 
     def unpatch(self):
         self.log.debug("%s:phase:unpatch" % self.session_name)
         for patch in self.session.patches:
-            Patch(os.path.join(self.patch_dir, patch, self.src_dir),
-                               self.config.get("verbose"), True)
+            patch_name = os.path.basename(patch)
+            Patch(os.path.join(self.patch_dir, patch_name), self.src_path,
+                               self.config.get("verbose"), True).run()
 
     def extract(self):
         self.log.debug("%s:phase:extract" % self.session_name)
