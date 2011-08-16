@@ -115,46 +115,46 @@ class SessionManager(object):
                         self.log.err("Error while downloading " + 
                                      "session '%s': %s" %\
                                      (dependency.name, e))
-        self.download_seq(self.session_wrapper)
+        self.download_seq(self.session_wrapper, self.force)
 
     def extract(self):
-        self.extract_seq.call(self.session_wrapper)
+        self.extract_seq.call(self.session_wrapper, self.force)
 
     def archive(self):
-        self.log.debug("%s:phase:archive" % self.session_name)
+        self.log.info("%s:phase:archive" % self.session_name)
 
     def configure(self):
         self.install_dependencies()
-        self.configure_seq.call(self.session_wrapper)
+        self.configure_seq.call(self.session_wrapper, self.force)
 
     def build(self):
         self.install_dependencies()
-        self.build_seq.call(self.session_wrapper)
+        self.build_seq.call(self.session_wrapper, self.force)
 
     def destroot(self):
         self.install_dependencies()
-        self.destroot_seq.call(self.session_wrapper)
+        self.destroot_seq.call(self.session_wrapper, self.force)
 
     def install(self):
         self.install_dependencies()
-        self.log.normal("%s:running install" % self.session_name)
-        self.install_seq.call(self.session_wrapper)
+        self.log.info("%s:running install" % self.session_name)
+        self.install_seq.call(self.session_wrapper, self.force)
 
     def uninstall(self):
         self.deactivate()
 
     def activate(self):
         self.install_dependencies()
-        self.activate_seq.call(self.session_wrapper)
+        self.activate_seq.call(self.session_wrapper, self.force)
 
     def deactivate(self):
-        self.deactivate_seq.call(self.session_wrapper)
+        self.deactivate_seq.call(self.session_wrapper, self.force)
 
     def patch(self):
-        self.patch_seq.call(self.session_wrapper)
+        self.patch_seq.call(self.session_wrapper, self.force)
 
     def unpatch(self):
-        self.unpatch_seq.call(self.session_wrapper)
+        self.unpatch_seq.call(self.session_wrapper, self.force)
 
     def clean(self):
         self.session_wrapper.clean()
@@ -166,7 +166,7 @@ class SessionManager(object):
         return self.session_wrapper.depends()
 
     def drop(self):
-        self.log.debug("%s:phase:drop" % self.session_name)
+        self.log.info("%s:phase:drop" % self.session_name)
         #TODO remove session destdir
 
 
