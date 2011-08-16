@@ -21,6 +21,8 @@
 
 import os.path
 
+from jam.utils import realpath
+
 class Session(object):
 
     depends = []
@@ -42,6 +44,7 @@ class Session(object):
         self.verbose = self.config.get("verbose")
         self.debug = self.config.get("debug")
         self.prefix = self.config.get("prefix")
+        self.session_dir = self.config.get("sessions")
 
         self.__shadow = dict()
 
@@ -56,6 +59,8 @@ class Session(object):
         self.vars["name"] = self.name
         self.vars["src_dir"] = self.src_dir
         self.vars["build_dir"] = self.build_dir
+        self.vars["session_path"] = realpath(os.path.join(self.session_dir,
+                                             self.name))
 
         if not self.src_path:
             self.src_path = os.path.join(src_dir, self.name 
