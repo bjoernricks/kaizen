@@ -104,26 +104,26 @@ class SessionWrapper(object):
         return self.status.phase
 
     def depends(self):
-        self.log.debug("%s:phase:depends" % self.session_name)
+        self.log.info("%s:phase:depends" % self.session_name)
         from jam.session.depend import DependencyAnalyser
         return DependencyAnalyser(self.config, self).analyse()
 
     def patch(self):
-        self.log.debug("%s:phase:patch" % self.session_name)
+        self.log.info("%s:phase:patch" % self.session_name)
         for patch in self.session.patches:
             patch_name = os.path.basename(patch)
             Patch(os.path.join(self.patch_dir, patch_name), self.session.src_path,
                                self.config.get("verbose")).run()
 
     def unpatch(self):
-        self.log.debug("%s:phase:unpatch" % self.session_name)
+        self.log.info("%s:phase:unpatch" % self.session_name)
         for patch in self.session.patches:
             patch_name = os.path.basename(patch)
             Patch(os.path.join(self.patch_dir, patch_name), self.src_path,
                                self.config.get("verbose"), True).run()
 
     def extract(self):
-        self.log.debug("%s:phase:extract" % self.session_name)
+        self.log.info("%s:phase:extract" % self.session_name)
         if not os.path.exists(self.src_dir):
             self.log.debug("Creating source dir '%s'" % self.src_dir)
             os.makedirs(self.src_dir)
@@ -136,7 +136,7 @@ class SessionWrapper(object):
             self.log.info("Nothing to extract.")
 
     def download(self):
-        self.log.debug("%s:phase:download" % self.session_name)
+        self.log.info("%s:phase:download" % self.session_name)
         if not os.path.exists(self.data_dir):
             self.log.debug("Creating data dir '%s'" % self.data_dir)
             os.makedirs(self.data_dir)
@@ -154,7 +154,7 @@ class SessionWrapper(object):
                 dl.copy(self.patch_dir, self.force)
 
     def deactivate(self):
-        self.log.debug("%s:phase:deactivate" % self.session_name)
+        self.log.info("%s:phase:deactivate" % self.session_name)
         (dirs, files) = list_subdir(self.dest_dir, True)
         for file in files:
             file_path = os.path.join("/", file)
@@ -170,7 +170,7 @@ class SessionWrapper(object):
                 self.log.debug("Deleting directory '%s'" % dir)
 
     def activate(self):
-        self.log.debug("%s:phase:activate" % self.session_name)
+        self.log.info("%s:phase:activate" % self.session_name)
         (dirs, files) = list_subdir(self.dest_dir)
         current_dir = os.path.join(self.destroot_dir, "current")
         if os.path.exists(current_dir):
@@ -191,7 +191,7 @@ class SessionWrapper(object):
             os.symlink(destdir_file_path, file_path)
 
     def configure(self):
-        self.log.debug("%s:phase:configure" % self.session_name)
+        self.log.info("%s:phase:configure" % self.session_name)
         build_path = self.session.build_path
         if not os.path.exists(build_path):
             self.log.debug("Creating build dir '%s'" % build_path)
@@ -199,22 +199,22 @@ class SessionWrapper(object):
         self.session.configure()
 
     def build(self):
-        self.log.debug("%s:phase:build" % self.session_name)
+        self.log.info("%s:phase:build" % self.session_name)
         self.session.build()
 
     def destroot(self):
-        self.log.debug("%s:phase:destroot" % self.session_name)
+        self.log.info("%s:phase:destroot" % self.session_name)
         if not os.path.exists(self.dest_dir):
             self.log.debug("Creating destroot dir '%s'" % self.dest_dir)
             os.makedirs(self.dest_dir)
         self.session.destroot()
 
     def clean(self):
-        self.log.debug("%s:phase:clean" % self.session_name)
+        self.log.info("%s:phase:clean" % self.session_name)
         self.session.clean()
 
     def distclean(self):
-        self.log.debug("%s:phase:distclean" % self.session_name)
+        self.log.info("%s:phase:distclean" % self.session_name)
         self.session.distclean()
 
 
