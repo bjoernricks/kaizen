@@ -75,7 +75,7 @@ class LocalFileDownloader(object):
         self.log = jam.log.getLogger("jam.localfiledownloader")
 
     def copy(self, filename):
-        self.log.debug("copying '%s' to '%s'" % (self.url, self.filename)
+        self.log.debug("copying '%s' to '%s'" % (self.url, filename))
         shutil.copy(self.url, filename)
 
 
@@ -89,8 +89,9 @@ class Downloader:
         
         if url.scheme == 'http' or url.scheme == 'https':
             self.downloader = HttpDownloader(urlstr)
-        else:
+        elif url.scheme == "file" or not url.scheme:
             self.downloader = LocalFileDownloader(urlstr)
+        # TODO: raise error if scheme is unknown
 
     def copy(self, destination, overwrite=False):
         if os.path.isdir(destination):
