@@ -56,7 +56,7 @@ class Sequence(object):
     def add_entry(self, entry):
         self.sequence.append(entry)
 
-    def call(self, session):
+    def call(self, session, force=False):
         current_phase = session.get_current_phase()
         if self.parent_seq:
             self.parent_seq.call(session)
@@ -66,7 +66,7 @@ class Sequence(object):
                     (current_phase.name, self.required_phase.name))
         set_phase = False
         for entry in self.sequence:
-            if current_phase < entry.phase or entry.always:
+            if current_phase < entry.phase or entry.always or force:
                 method = getattr(session, entry.method_name)
                 method()
                 set_phase = True
