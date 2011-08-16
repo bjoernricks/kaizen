@@ -54,8 +54,14 @@ class HttpDownloader(object):
         u = urllib2.urlopen(self.url)
         f = open(filename, 'w')
         meta = u.info()
-        filesize = int(meta.getheaders("Content-Length")[0])
-        self.log.info("downloading %s (%.2f KiB)" % (self.url, filesize / 1024))
+        content_length_header = meta.getheaders("Content-Length")
+        if content_length_header:
+            filesize = int(content_length_header[0])
+            self.log.info("downloading %s to %s (%.2f KiB)" % (self.url,
+                                                               filename,
+                                                               filesize / 1024))
+        else:
+            self.log.info("downloading %s to %s" % (self.url, filename))
         filesizedl = 0
         while True:
             buffer = u.read(8192)
