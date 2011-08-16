@@ -41,6 +41,7 @@ class BuildSystem(object):
     def run(self):
         pass
 
+
 class Configure(BuildSystem):
     
     def run(self):
@@ -48,6 +49,7 @@ class Configure(BuildSystem):
         cmd.extend(self.args)
         self.log.debug("Configure run '%s' in '%s'" % (cmd, self.cwd_dir))
         jam.run.call(cmd, not self.verbose, cwd=self.cwd_dir)
+
 
 class CMake(BuildSystem):
 
@@ -57,6 +59,7 @@ class CMake(BuildSystem):
         cmd.append(realpath(self.src_dir))
         self.log.debug("CMake run '%s' in '%s'" % (cmd, self.cwd_dir))
         jam.run.call(cmd, not self.verbose, cwd=self.cwd_dir)
+
 
 class Make(object):
 
@@ -102,6 +105,16 @@ class Command(object):
             cmd.extend(new_arg)
         self.log.debug("Running command '%s' in '%s'" % (cmd, self.cwd_dir))
         jam.run.call(cmd, not self.verbose, cwd=self.cwd_dir)
+
+
+class Patch(Command):
+
+    def __init__(self, patchfile, cwd, verbose, reverse=False):
+        args = []
+        if reverse:
+            args.append("-R")
+        args.extend(["-p1", "<", patchfile])
+        super(Patch, self).__init__("patch", args, cwd, verbose)
 
 
 class Copy(object):
