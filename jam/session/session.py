@@ -74,7 +74,13 @@ class Session(object):
         self.vars["build_path"] = self.build_path
 
     def var_replace(self, var):
-        return var % self.vars
+        if isinstance(var, list):
+            for i, val in enumerate(var):
+                var[i] = val % self.vars
+            else:
+                return var
+        else:
+            return var % self.vars
 
     def args_replace(self):
         org_args = self.args
