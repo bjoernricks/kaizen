@@ -148,7 +148,7 @@ class SessionWrapper(object):
                 os.makedirs(self.patch_dir)
             for patch in self.session.patches:
                 dl = Downloader(patch)
-                dl.copy(self.patch_dir)
+                dl.copy(self.patch_dir, self.force)
 
     def deactivate(self):
         self.log.debug("%s:phase:deactivate" % self.session_name)
