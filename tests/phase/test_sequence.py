@@ -247,6 +247,59 @@ class SequenceTest(unittest.TestCase):
         self.assertEquals(session_dummy.get_current_phase(), 
                           self.phases.get("Activated"))
 
+    def test_call_force(self):
+        session_dummy = SessionDummy()
+        required_phase = self.phases.get("None")
+        result_phase = self.phases.get("Activated")
+        sequence = Sequence("test_seq9", required_phase, result_phase)
+        sequence.add(self.phases.get("Extracted"), "extract")
+        sequence.add(self.phases.get("Built"), "build")
+        session_dummy.set_current_phase(self.phases.get("Activated"))
+        sequence.call(session_dummy, True)
+
+        self.assertTrue(session_dummy.get("extract"))
+        self.assertTrue(session_dummy.get("build"))
+        self.assertEquals(len(session_dummy.result_phase), 1)
+        self.assertEquals(session_dummy.result_phase[0],
+                          self.phases.get("Activated"))
+        self.assertEquals(session_dummy.get_current_phase(), 
+                          self.phases.get("Activated"))
+
+        session_dummy = SessionDummy()
+        required_phase = self.phases.get("None")
+        result_phase = self.phases.get("Activated")
+        sequence = Sequence("test_seq9", required_phase, result_phase)
+        sequence.add(self.phases.get("Extracted"), "extract", True)
+        sequence.add(self.phases.get("Built"), "build", True)
+        session_dummy.set_current_phase(self.phases.get("Activated"))
+        sequence.call(session_dummy, True)
+
+        self.assertTrue(session_dummy.get("extract"))
+        self.assertTrue(session_dummy.get("build"))
+        self.assertEquals(len(session_dummy.result_phase), 1)
+        self.assertEquals(session_dummy.result_phase[0],
+                          self.phases.get("Activated"))
+        self.assertEquals(session_dummy.get_current_phase(), 
+                          self.phases.get("Activated"))
+
+        session_dummy = SessionDummy()
+        required_phase = self.phases.get("None")
+        result_phase1 = self.phases.get("Activated")
+        sequence1 = Sequence("test_par_seq1", required_phase, result_phase1)
+        sequence1.add(self.phases.get("Extracted"), "extract")
+
+        result_phase2 = self.phases.get("Built")
+        sequence2 = Sequence("test_par_seq2", required_phase, result_phase2,
+                             sequence1)
+        sequence2.add(self.phases.get("Built"), "build")
+        session_dummy.set_current_phase(self.phases.get("Activated"))
+        sequence2.call(session_dummy, True)
+
+        self.assertFalse(session_dummy.get("extract"))
+        self.assertTrue(session_dummy.get("build"))
+        self.assertEquals(len(session_dummy.result_phase), 1)
+        self.assertEquals(session_dummy.result_phase[0], result_phase2)
+
     def test_parent_sequence(self):
         session_dummy = SessionDummy()
         required_phase = self.phases.get("None")
