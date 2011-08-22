@@ -158,7 +158,7 @@ class SessionWrapper(object):
                 else:
                     patch_source = patch
                     patch_dest = self.patch_dir
-                dl = Downloader(patch_source, self.session.session_path,)
+                dl = Downloader(patch_source, self.session.session_path)
                 dl.copy(patch_dest, self.force)
 
     def deactivate(self):
