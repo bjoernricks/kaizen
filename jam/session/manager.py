@@ -81,9 +81,9 @@ class SessionManager(object):
                               "activate")
         self.deactivate_seq = Sequence("deactivate",
                                        self.phases.get("Activated"),
-                                       self.phases.get("Deactivated"))
-        self.deactivate_seq.add(self.phases.get("Deactivated"),
-                                "deactivate")
+                                       self.phases.get("Destrooted"))
+        self.deactivate_seq.add(self.phases.get("Activated"),
+                                "deactivate", True)
         self.install_seq = Sequence("install",
                                     self.phases.get("None"),
                                     self.phases.get("Activated"),
