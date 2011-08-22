@@ -19,6 +19,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 
 # 02110-1301 USA
 
+import inspect
 import os.path
 
 from jam.utils import realpath
@@ -44,7 +45,9 @@ class Session(object):
         self.verbose = self.config.get("verbose")
         self.debug = self.config.get("debug")
         self.prefix = self.config.get("prefix")
-        self.session_dir = self.config.get("sessions")
+        self.sessions_dir = self.config.get("sessions")
+        self.session_path = realpath(os.path.basename(
+                                     inspect.getfile(self.__class__)))
 
         self.__shadow = dict()
 
@@ -59,8 +62,7 @@ class Session(object):
         self.vars["name"] = self.name
         self.vars["src_dir"] = self.src_dir
         self.vars["build_dir"] = self.build_dir
-        self.vars["session_path"] = realpath(os.path.join(self.session_dir,
-                                             self.name))
+        self.vars["session_path"] = self.session_path
 
         if not self.src_path:
             self.src_path = os.path.join(src_dir, self.name 
