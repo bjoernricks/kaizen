@@ -61,7 +61,7 @@ class Sequence(object):
         if self.parent_seq:
             self.parent_seq.call(session)
         if current_phase < self.required_phase:
-            raise SequenceError(self.name, session.name,
+            raise SequenceError(self.name, session.session_name,
                     "session is in phase '%s' but required is '%s'" %\
                     (current_phase.name, self.required_phase.name))
         set_phase = False
