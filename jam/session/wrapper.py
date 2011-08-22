@@ -181,7 +181,12 @@ class SessionWrapper(object):
                                      Installed.session == self.session_name,
                                      Installed.version == self.version)
                                      ).first()
-        self.db.session.delete(installed)
+        if not installed:
+            self.log.warn("'%s' is not recognized as active but should be" \
+                          " deactivated. Either deactivation was forced or"\
+                          " the database may be currupted" % self.session_name)
+        else:
+            self.db.session.delete(installed)
 
     def activate(self):
         self.log.info("%s:phase:activate" % self.session_name)
