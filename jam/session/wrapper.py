@@ -32,7 +32,7 @@ from jam.utils import Loader, realpath, list_dir, list_subdir, extract_file
 from jam.download import Downloader
 from jam.phase.phase import Phases
 from jam.db.db import Db
-from jam.db.objects import Status
+from jam.db.objects import Status, Installed
 from jam.session.session import Session
 from jam.session.error import SessionError
 from jam.system.command import Patch
@@ -176,6 +176,12 @@ class SessionWrapper(object):
                 dir == self.config.get("prefix"):
                 os.rmdir(dir)
                 self.log.debug("Deleting directory '%s'" % dir)
+        installed = self.db.session.query(Installed).filter(
+                                     and_(
+                                     Installed.session == self.session_name,
+                                     Installed.version == self.version)
+                                     ).first()
+        self.db.session.delete(installed)
 
     def activate(self):
         self.log.info("%s:phase:activate" % self.session_name)
@@ -197,6 +203,14 @@ class SessionWrapper(object):
             if os.path.exists(file_path):
                 os.remove(file_path)
             os.symlink(destdir_file_path, file_path)
+        installed = Installed(self.session_name, self.version)
+        if not self.db.session.query(Installed).filter(
+                                     and_(
+                                     Installed.session == installed.session,
+                                     Installed.version == installed.version)
+                                     ).first():
+            self.db.session.add(installed)
+            self.db.session.commit()
 
     def configure(self):
         self.log.info("%s:phase:configure" % self.session_name)
