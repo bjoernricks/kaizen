@@ -76,27 +76,32 @@ class HttpDownloader(object):
 
 class LocalFileDownloader(object):
 
-    def __init__(self, url):
+    def __init__(self, url, root_dir=None):
         self.url = url
+        self.root_dir = root_dir
         self.log = jam.log.getLogger("jam.localfiledownloader")
 
     def copy(self, filename):
-        self.log.debug("copying '%s' to '%s'" % (self.url, filename))
-        shutil.copy(self.url, filename)
+        path = self.url.path
+        if not self.url.scheme and self.root_dir:
+            path = os.path.join(self.root_dir, path)
+        self.log.debug("copying '%s' to '%s'" % (path, filename))
+        shutil.copy(path, filename)
 
 
 class Downloader:
 
-    def __init__(self, urlstr):
+    def __init__(self, urlstr, root_dir=None):
         url = urlparse(urlstr)
         self.url = urlstr
+        self.root_dir = root_dir
         self.filename = os.path.basename(urlstr)
         self.log = jam.log.getLogger("jam.downloader")
-        
+
         if url.scheme == 'http' or url.scheme == 'https':
             self.downloader = HttpDownloader(urlstr)
         elif url.scheme == "file" or not url.scheme:
-            self.downloader = LocalFileDownloader(urlstr)
+            self.downloader = LocalFileDownloader(url, root_dir)
         # TODO: raise error if scheme is unknown
 
     def copy(self, destination, overwrite=False):
