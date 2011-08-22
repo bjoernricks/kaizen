@@ -153,13 +153,13 @@ class SessionWrapper(object):
                 os.makedirs(self.patch_dir)
             for patch in self.session.patches:
                 if isinstance(patch, list):
-                    patch_name = patch[0]
-                    patch_path = os.path.join(self.patch_dir, patch[1])
+                    patch_source = patch[0]
+                    patch_dest = os.path.join(self.patch_dir, patch[1])
                 else:
-                    patch_name = patch
-                    patch_path = self.patch_dir
-                dl = Downloader(patch_name)
-                dl.copy(patch_path, self.force)
+                    patch_source = patch
+                    patch_dest = self.patch_dir
+                dl = Downloader(patch_source, self.session.session_path,)
+                dl.copy(patch_dest, self.force)
 
     def deactivate(self):
         self.log.info("%s:phase:deactivate" % self.session_name)
