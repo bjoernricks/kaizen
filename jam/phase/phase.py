@@ -59,7 +59,6 @@ class Phases(object):
                              "Built",
                              "Destrooted",
                              "Activated",
-                             "Deactivated",
                            ]
         for i, name in enumerate(self.phase_names):
             self.phases[name] = Phase(name, i)
