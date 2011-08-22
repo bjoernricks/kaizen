@@ -46,7 +46,7 @@ class Session(object):
         self.debug = self.config.get("debug")
         self.prefix = self.config.get("prefix")
         self.sessions_dir = self.config.get("sessions")
-        self.session_path = realpath(os.path.basename(
+        self.session_path = realpath(os.path.dirname(
                                      inspect.getfile(self.__class__)))
 
         self.__shadow = dict()
