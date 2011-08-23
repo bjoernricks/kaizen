@@ -22,6 +22,7 @@
 import os.path
 import logging
 import shutil
+import re
 
 import jam.run
 import jam.log
@@ -145,4 +146,28 @@ class Copy(object):
                 os.makedirs(dest_dir)
             self.log.debug("Copy file '%s' to '%s'" % (self.src, self.dest))
             shutil.copy(self.src, self.dest)
+
+class Replace(object):
+
+    def __init__(self, pattern, replace, source, dest=None):
+        self.log = jam.log.getLogger("jam.replace")
+        self.pattern = pattern
+        self.replace = replace
+        self.source = source
+        self.dest = dest
+        if not self.dest:
+            self.dest = source
+
+    def run(self):
+        if not os.path.isfile(self.source):
+            self.log.error("Can't replace '%s' in file '%s'. File does not " \
+                           "exist." % (self.pattern, self.source))
+            return
+        f = open(self.source, "r")
+        content = f.read()
+        f.close()
+        replaced = re.sub(self.pattern, self.replace, content)
+        f = open(self.dest, "w")
+        f.write(replaced)
+        f.close()
 
