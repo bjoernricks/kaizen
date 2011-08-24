@@ -256,6 +256,31 @@ class SessionWrapper(object):
         self.log.info("%s:phase:distclean" % self.session_name)
         self.session.distclean()
 
+    def delete_destroot(self):
+        self.log.info("%s:phase:delete-destroot" % self.session_name)
+        if os.path.exists(self.dest_dir):
+            self.log.debug("Deleting destroot directory '%s'" % self.dest_dir)
+            shutil.rmtree(self.dest_dir)
+
+    def delete_build(self):
+        self.log.info("%s:phase:delete-build" % self.session_name)
+        if os.path.exists(self.build_dir):
+            self.log.debug("Deleting build directory '%s'" % self.build_dir)
+            shutil.rmtree(self.build_dir)
+
+    def delete_source(self):
+        self.log.info("%s:phase:delete-source" % self.session_name)
+        if os.path.exists(self.src_dir):
+            self.log.debug("Deleting source directory '%s'" % self.src_dir)
+            shutil.rmtree(self.src_dir)
+
+    def delete_download(self):
+        self.log.info("%s:phase:delete-download" % self.session_name)
+        if os.path.exists(self.download_cache_dir):
+            self.log.debug("Deleting download cache directory '%s'" % \
+                           self.download_cache_dir)
+            shutil.rmtree(self.download_cache_dir)
+
 
 class SessionLoader(Loader):
 
