@@ -163,6 +163,7 @@ class SessionWrapper(object):
 
     def deactivate(self):
         self.log.info("%s:phase:deactivate" % self.session_name)
+        self.session.pre_deactivate()
         (dirs, files) = list_subdir(self.dest_dir, True)
         for file in files:
             file_path = os.path.join("/", file)
@@ -187,6 +188,7 @@ class SessionWrapper(object):
                           " the database may be currupted" % self.session_name)
         else:
             self.db.session.delete(installed)
+        self.session.post_deactivate()
 
     def activate(self):
         self.log.info("%s:phase:activate" % self.session_name)
@@ -200,6 +202,7 @@ class SessionWrapper(object):
             if not os.path.exists(dir):
                 os.makedirs(dir)
                 self.log.debug("Creating directory '%s'" % dir)
+        self.session.pre_activate()
         for file in files:
             file_path = os.path.join("/", file)
             destdir_file_path = os.path.join(current_dir, file)
@@ -216,6 +219,7 @@ class SessionWrapper(object):
                                      ).first():
             self.db.session.add(installed)
             self.db.session.commit()
+        self.session.post_activate()
 
     def configure(self):
         self.log.info("%s:phase:configure" % self.session_name)
@@ -223,22 +227,30 @@ class SessionWrapper(object):
         if not os.path.exists(build_path):
             self.log.debug("Creating build dir '%s'" % build_path)
             os.makedirs(build_path)
+        self.session.pre_configure()
         self.session.configure()
+        self.session.post_configure()
 
     def build(self):
         self.log.info("%s:phase:build" % self.session_name)
+        self.session.pre_build()
         self.session.build()
+        self.session.post_build()
 
     def destroot(self):
         self.log.info("%s:phase:destroot" % self.session_name)
         if not os.path.exists(self.dest_dir):
             self.log.debug("Creating destroot dir '%s'" % self.dest_dir)
             os.makedirs(self.dest_dir)
+        self.session.pre_destroot()
         self.session.destroot()
+        self.session.post_destroot()
 
     def clean(self):
         self.log.info("%s:phase:clean" % self.session_name)
+        self.session.pre_clean()
         self.session.clean()
+        self.session.post_clean()
 
     def distclean(self):
         self.log.info("%s:phase:distclean" % self.session_name)
