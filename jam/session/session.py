@@ -71,7 +71,8 @@ class Session(object):
         self.vars["dist_version"] = self.dist_version
 
         if not self.src_path:
-            self.src_path = os.path.join(src_dir, self.dist_version)
+            self.src_path = os.path.join(src_dir, self.name
+                                         + "-" + self.version)
         self.vars["src_path"] = self.src_path
 
         if not self.build_path:
