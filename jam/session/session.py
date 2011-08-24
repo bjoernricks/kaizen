@@ -46,28 +46,32 @@ class Session(object):
         self.debug = self.config.get("debug")
         self.prefix = self.config.get("prefix")
         self.sessions_dir = self.config.get("sessions")
+        self.dist_version = self.version + "-" + self.revision
+        self.destroot_dir = self.config.get("destroot")
+        self.session_name = self.__module__.split(".")[0]
+        self.destroot_path = os.path.join(self.destroot_dir, self.session_name,
+                                          self.dist_version)
         self.session_path = realpath(os.path.dirname(
                                      inspect.getfile(self.__class__)))
 
         self.__shadow = dict()
 
         if not self.name:
-            module = self.__module__
-            self.name = module.split(".")[0]
+            self.name = self.session_name
 
         self.vars = dict()
         self.vars["prefix"] = self.config.get("prefix")
         self.vars["rootdir"] = self.config.get("rootdir")
         self.vars["version"] = self.version
+        self.vars["revision"] = self.revision
         self.vars["name"] = self.name
         self.vars["src_dir"] = self.src_dir
         self.vars["build_dir"] = self.build_dir
         self.vars["session_path"] = self.session_path
+        self.vars["dist_version"] = self.dist_version
 
         if not self.src_path:
-            self.src_path = os.path.join(src_dir, self.name 
-                                         + "-" + self.version)
-
+            self.src_path = os.path.join(src_dir, self.dist_version)
         self.vars["src_path"] = self.src_path
 
         if not self.build_path:
