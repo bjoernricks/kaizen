@@ -128,16 +128,51 @@ class Session(object):
     def configure(self):
         pass
 
+    def pre_configure(self):
+        pass
+
+    def post_configure(self):
+        pass
+
     def build(self):
+        pass
+
+    def pre_build(self):
+        pass
+
+    def post_build(self):
         pass
 
     def destroot(self):
         pass
 
+    def pre_destroot(self):
+        pass
+
+    def post_destroot(self):
+        pass
+
     def clean(self):
+        pass
+
+    def pre_clean(self):
+        pass
+
+    def post_clean(self):
         pass
 
     def distclean(self):
         pass
 
+    def pre_activate(self):
+        pass
+
+    def post_activate(self):
+        pass
+
+    def pre_deactivate(self):
+        pass
+
+    def post_deactivate(self):
+        pass
 
