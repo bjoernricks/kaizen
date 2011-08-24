@@ -147,6 +147,7 @@ class Copy(object):
             self.log.debug("Copy file '%s' to '%s'" % (self.src, self.dest))
             shutil.copy(self.src, self.dest)
 
+
 class Replace(object):
 
     def __init__(self, pattern, replace, source, dest=None):
