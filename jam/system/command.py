@@ -160,6 +160,7 @@ class Replace(object):
 
     def run(self):
         if not os.path.isfile(self.source):
+            #TODO raise exception
             self.log.error("Can't replace '%s' in file '%s'. File does not " \
                            "exist." % (self.pattern, self.source))
             return
