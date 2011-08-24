@@ -163,6 +163,9 @@ class Replace(object):
             self.log.error("Can't replace '%s' in file '%s'. File does not " \
                            "exist." % (self.pattern, self.source))
             return
+        self.log.debug("Replacing '%s' with '%s' in file '%s'." % (self.pattern,
+                                                                   self.replace,
+                                                                   self.source))
         f = open(self.source, "r")
         content = f.read()
         f.close()
