@@ -19,4 +19,4 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 
 # 02110-1301 USA
 
-from jam.system.command import Command, Configure, Make, CMake, Copy
+from jam.system.command import Command, Configure, Make, CMake, Copy, Replace
