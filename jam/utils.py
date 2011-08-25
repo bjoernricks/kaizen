@@ -110,7 +110,7 @@ class Loader(object):
             self.log.warn("Could not load any class with name '%s'" %
                           classname)
             return None
-        for loaededclass in classes:
+        for loadedclass in classes:
             if loadedclass.__name__ == classname:
                 self.log.info("Loaded class '%s'" % classname)
                 return loadedclass
