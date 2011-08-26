@@ -143,7 +143,7 @@ class SessionCreator(object):
         vars["url"] = self.url
         vars["rootdir"] = self.dir
         vars["sessions"] = self.session_dir
-        vars["sessionname"] = name.capitalize()
+        vars["sessionname"] = name.replace("-","").capitalize()
         
         if stdout:
             print template.replace(vars)
