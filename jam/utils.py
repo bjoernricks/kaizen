@@ -193,10 +193,9 @@ def extract_file(file_name, dest_dir):
         log.debug("Extracting tar file '%s' to '%s'" %
                       (file_name, dest_dir))
         file = tarfile.open(file_name)
-        file.extractall(dest_dir)
     elif zipfile.is_zipfile(file_name):
         log.debug("Extracting zip file '%s' to '%s'" %
                       (file_name, dest_dir))
         file = zipfile.ZipFile(file_name)
-        file.extractall(dest_fir)
+    file.extractall(dest_dir)
 
