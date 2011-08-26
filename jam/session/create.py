@@ -19,6 +19,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 
 # 02110-1301 USA
 
+import os
 import os.path
 import shutil
 
@@ -84,6 +85,8 @@ class SessionCreator(object):
         self.version = version
 
     def create(self, stdout=False):
+        if not os.path.isdir(self.dir):
+            os.makedirs(self.dir)
         self.tmp_dir = mkdtemp(prefix="tmp-session-", dir=self.dir)
         self.log.debug("Created temporary directory '%s'" % self.tmp_dir)
         downloader = Downloader(self.url)
