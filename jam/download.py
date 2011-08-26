@@ -34,14 +34,15 @@ class DownloaderError(Exception):
 
 class DownloaderHashError(DownloaderError):
 
-    def __init__(self, filename, expected, value):
+    def __init__(self, filename, expected, value, hashtype):
         self.filename = filename
         self.expected = expected
         self.value = value
+        self.hashtype = hashtype
 
     def __str__(self):
-        return "Invalid hash for '%s'. Calculated hash is '%s', expected was \
-               '%s'" % (self.filename, self.value, self.expected)
+        return "Invalid %s hash for '%s'. Calculated hash is '%s', expected was \
+               '%s'" % (self.hastype, self.filename, self.value, self.expected)
 
 
 class HttpDownloader(object):
@@ -128,7 +129,7 @@ class Downloader:
                 DownloaderError("Hash type '%s' for '%s' is not supported" %
                         (type, this.filename))
             if calc_value != value:
-                raise DownloaderHashError(self.filename, value, calc_value)
+                raise DownloaderHashError(self.filename, value, calc_value, type)
             else:
-                self.log.debug("Hash '%s' is valid for '%s'" % (value,
+                self.log.debug("%s hash '%s' is valid for '%s'" % (type, value,
                                                            self.filename))
