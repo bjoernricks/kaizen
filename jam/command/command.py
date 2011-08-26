@@ -264,9 +264,9 @@ class CreateCommand(Command):
         subparser.add_argument("--name", "-n", help="name of the new "\
                                "session. If empty jam will determine the "\
                                " name from the source file")
-        subparser.add_argument("--version", "-v", help="version of the new "\
+        subparser.add_argument("--session-version", "-s", help="version of the new "\
                                "session. If empty jam will determine the "\
-                               " version from the source file")
+                               " version from the source file", dest="version")
         subparser.add_argument("--keep", action="store_true", 
                                help="keep temporary directory")
         subparser.add_argument("--print", dest="stdout", action="store_true",
