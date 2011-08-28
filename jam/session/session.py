@@ -98,7 +98,11 @@ class Session(object):
         return args
 
     def __getattribute__(self, name):
-        value = object.__getattribute__(self, name)
+        try:
+            value = object.__getattribute__(self, name)
+        except AttributeError:
+            self.__dict__[name] = None
+            return None
         if not value:
             return value
         if name in ["src_path", "build_path", "args", "url",
