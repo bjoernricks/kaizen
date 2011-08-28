@@ -46,8 +46,25 @@ class ConfigureSession(MakeSession):
         args = self.args
         args.append("--prefix=" + self.prefix)
         args.append("--srcdir=" + self.src_path)
-        Configure(args, self.src_path, self.build_path,
-                  self.debug).run()
+        configure = Configure(args, self.src_path, self.build_path,
+                             self.debug)
+        if self.configure_cc:
+            configure.set_cc(self.configure_cc)
+        if self.configure_cpp:
+            configure.set_cpp(self.configure_cpp)
+        if self.configure_cflags:
+            configure.set_cflags(self.configure_cflags)
+        if self.configure_cppflags:
+            configure.set_cppflags(self.configure_cppflags)
+        if self.configure_ldflags:
+            configure.set_ldflags(self.configure_ldflags)
+        if self.configure_libs:
+            configure.set_libs(self.configure_libs)
+        if self.configure_cxx:
+            configure.set_cxx(self.configure_cxx)
+        if self.configure_cxxflags:
+            configure.set_cxxflags(self.configure_cxxflags)
+        configure.run()
 
 
 class CMakeSession(MakeSession):
