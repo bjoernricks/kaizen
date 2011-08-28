@@ -37,7 +37,32 @@ class BuildSystem(object):
         self.build_dir = build_dir
         self.cwd_dir = realpath(build_dir)
         self.verbose = verbose
+        self.env = dict()
         self.log = jam.log.getLogger("jam.buildsystem")
+
+    def set_cc(self, cc):
+        self.env["CC"] = cc
+
+    def set_cpp(self, cpp):
+        self.env["CPP"] = cpp
+
+    def set_cflags(self, cflags=[]):
+        self.env["CFLAGS"] = " ".join(cflags)
+
+    def set_cppflags(self, cppflags=[]):
+        self.env["CPPFLAGS"] = " ".join(cppflags)
+
+    def set_ldflags(self, ldflags=[]):
+        self.env["LDFLAGS"] = " ".join(ldflags)
+
+    def set_libs(self, libs=[]):
+        self.env["LIBS"] = " ".join(libs)
+
+    def set_cxx(self, cxx):
+        self.env["CXX"] = cxx
+
+    def set_cxxflags(self, cxxflags=[]):
+        self.env["CXXFLAGS"] = " ".join(cxxflags)
 
     def run(self):
         pass
