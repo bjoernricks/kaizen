@@ -69,12 +69,14 @@ class BuildSystem(object):
 
 
 class Configure(BuildSystem):
-    
+
     def run(self):
         cmd = [os.path.join(self.src_dir, "configure")]
         cmd.extend(self.args)
-        self.log.debug("Configure run '%s' in '%s'" % (cmd, self.cwd_dir))
-        jam.run.call(cmd, not self.verbose, cwd=self.cwd_dir)
+        self.log.debug("Configure run '%s' in '%s' with env '%s'" % (cmd,
+                        self.cwd_dir, self.env))
+        jam.run.call(cmd, not self.verbose, extra_env=self.env,
+                     cwd=self.cwd_dir)
 
 
 class CMake(BuildSystem):
@@ -83,8 +85,10 @@ class CMake(BuildSystem):
         cmd = ["cmake"]
         cmd.extend(args)
         cmd.append(realpath(self.src_dir))
-        self.log.debug("CMake run '%s' in '%s'" % (cmd, self.cwd_dir))
-        jam.run.call(cmd, not self.verbose, cwd=self.cwd_dir)
+        self.log.debug("CMake run '%s' in '%s' with env '%s'" % (cmd,
+                       self.cwd_dir, self.env))
+        jam.run.call(cmd, not self.verbose, extra_env=self.env,
+                     cwd=self.cwd_dir)
 
 
 class Make(object):
