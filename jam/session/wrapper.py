@@ -104,7 +104,7 @@ class SessionWrapper(object):
         return self.status.phase
 
     def depends(self):
-        self.log.info("%s:phase:depends" % self.session_name)
+        self.log.info("%s:running:depends" % self.session_name)
         from jam.session.depend import DependencyAnalyser
         return DependencyAnalyser(self.config, self).analyse()
 
