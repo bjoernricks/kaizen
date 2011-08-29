@@ -32,7 +32,7 @@ from jam.utils import Loader, realpath, list_dir, list_subdir, extract_file
 from jam.download import Downloader
 from jam.phase.phase import Phases
 from jam.db.db import Db
-from jam.db.objects import Status, Installed
+from jam.db.objects import Status, Installed, File
 from jam.session.session import Session
 from jam.session.error import SessionError
 from jam.system.command import Patch
@@ -164,6 +164,7 @@ class SessionWrapper(object):
     def deactivate(self):
         self.log.info("%s:phase:deactivate" % self.session_name)
         self.session.pre_deactivate()
+        # TODO use files from db
         (dirs, files) = list_subdir(self.dest_dir, True)
         for file in files:
             file_path = os.path.join("/", file)
@@ -177,6 +178,8 @@ class SessionWrapper(object):
                 dir == self.config.get("prefix"):
                 os.rmdir(dir)
                 self.log.debug("Deleting directory '%s'" % dir)
+        query = self.db.session.query(File).filter(File.session ==
+                                                   self.session_name).delete()
         installed = self.db.session.query(Installed).filter(
                                      and_(
                                      Installed.session == self.session_name,
@@ -188,37 +191,57 @@ class SessionWrapper(object):
                           " the database may be currupted" % self.session_name)
         else:
             self.db.session.delete(installed)
+            self.db.session.commit()
         self.session.post_deactivate()
 
     def activate(self):
         self.log.info("%s:phase:activate" % self.session_name)
-        (dirs, files) = list_subdir(self.dest_dir)
         current_dir = os.path.join(self.destroot_dir, "current")
         if os.path.exists(current_dir):
             os.remove(current_dir)
         os.symlink(self.dest_dir, current_dir)
+        (dirs, files) = list_subdir(self.dest_dir)
+        activate_files = []
+        for file in files:
+            file_path = os.path.join("/", file)
+            destdir_file_path = os.path.join(current_dir, file)
+            activate_files.append((file_path, destdir_file_path))
+        query = self.db.session.query(File).filter(and_(File.filename.in_(
+                                      [x for (x, y) in activate_files]),
+                                       File.session != self.session_name))
+        if query.count():
+            self.log.error("The following files are already installed by a " \
+                           "different session:")
+            for file in query:
+                self.log.error("Session: '%s', Filename: '%s'" % (file.session,
+                                                                 file.filename))
+                # FIXME: raise error
+                return
         for subdir in dirs:
             dir = os.path.join("/", subdir)
             if not os.path.exists(dir):
                 os.makedirs(dir)
                 self.log.debug("Creating directory '%s'" % dir)
         self.session.pre_activate()
-        for file in files:
-            file_path = os.path.join("/", file)
-            destdir_file_path = os.path.join(current_dir, file)
+        for (file_path, destdir_file_path) in activate_files:
             self.log.debug("Activating '%s' from '%s'" % (file_path,
                            destdir_file_path))
             if os.path.exists(file_path):
                 os.remove(file_path)
             os.symlink(destdir_file_path, file_path)
+            dbfile = File(file_path, self.session_name)
+            dbfile = self.db.session.merge(dbfile)
+            self.db.session.add(dbfile)
+        self.db.session.commit()
         installed = Installed(self.session_name, self.version)
-        if not self.db.session.query(Installed).filter(
-                                     and_(
-                                     Installed.session == installed.session,
-                                     Installed.version == installed.version)
-                                     ).first():
-            self.db.session.add(installed)
-            self.db.session.commit()
+        query = self.db.session.query(Installed).filter(
+                                     Installed.session == installed.session
+                                     )
+        #FIXME if a query.count > 0 old session must be deactivated
+        if query.count():
+            installed = self.db.session.merge(installed)
+        self.db.session.add(installed)
+        self.db.session.commit()
         self.session.post_activate()
 
     def configure(self):
