@@ -24,12 +24,12 @@ import os.path
 import sys
 import unittest
 
-import jam.log
-
 test_dir = os.path.dirname(__file__)
 sys.path.append(os.path.join(test_dir, os.pardir, os.pardir))
 
-from jam.session import SessionLoader, Session, SessionValidator
+import jam.log
+from jam.session import Session
+from jam.session.wrapper import SessionLoader, SessionValidator
 
 class MySession(Session):
     pass
