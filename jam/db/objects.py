@@ -39,7 +39,7 @@ class Installed(object):
         self.version = version
 
 
-class Files(object):
+class File(object):
 
     def __init__(self, filename, session):
         self.filename = filename
