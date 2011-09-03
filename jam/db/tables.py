@@ -77,7 +77,7 @@ class Tables(object):
                               ForeignKey(self.info_table.c.session),
                               primary_key = True),
                        Column('version', String, primary_key = True),
-                       Column('phase', PhaseType, nullable = False))
+                       Column('current_phase', PhaseType, nullable = False))
 
     def create(self):
         self.metadata.create_all()

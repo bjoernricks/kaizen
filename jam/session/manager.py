@@ -98,7 +98,7 @@ class SessionManager(object):
     def install_dependencies(self):
         dependencies = self.session_wrapper.depends()
         for dependency in dependencies.itervalues():
-            current_phase = dependency.session.status.phase
+            current_phase = dependency.session.get_current_phase()
             if not current_phase == self.phases.get("Activated"):
                 self.install_seq.call(dependency.session)
 

@@ -72,5 +72,5 @@ class Sequence(object):
                 set_phase = True
         # only set phase if method calls were successfully executed
         if set_phase:
-            session.set_phase(self.result_phase)
+            session.set_current_phase(self.result_phase)
 

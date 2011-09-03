@@ -143,19 +143,19 @@ class TableTest(unittest.TestCase):
 
         ins = dict(session="myapp",
                    version="123",
-                   phase="Built")
+                   current_phase="Built")
         res = table.insert(ins)
         res.execute()
 
         ins = dict(session="myapp",
                    version="1234",
-                   phase="Built")
+                   current_phase="Built")
         res = table.insert(ins)
         res.execute()
 
         ins = dict(session="myapp2",
                    version="123",
-                   phase="abc")
+                   current_phase="abc")
         res = table.insert(ins)
         try:
             res.execute()
@@ -167,49 +167,49 @@ class TableTest(unittest.TestCase):
 
         ins = dict(session="myapp",
                    version="123",
-                   phase="None")
+                   current_phase="None")
         res = table.insert(ins)
         res.execute()
         table.delete(table.c.session=="myapp").execute()
 
         ins = dict(session="myapp",
                    version="123",
-                   phase="Downloaded")
+                   current_phase="Downloaded")
         res = table.insert(ins)
         res.execute()
         table.delete(table.c.session=="myapp").execute()
 
         ins = dict(session="myapp",
                    version="123",
-                   phase="Extracted")
+                   current_phase="Extracted")
         res = table.insert(ins)
         res.execute()
         table.delete(table.c.session=="myapp").execute()
 
         ins = dict(session="myapp",
                    version="123",
-                   phase="Configured")
+                   current_phase="Configured")
         res = table.insert(ins)
         res.execute()
         table.delete(table.c.session=="myapp").execute()
 
         ins = dict(session="myapp",
                    version="123",
-                   phase="Destrooted")
+                   current_phase="Destrooted")
         res = table.insert(ins)
         res.execute()
         table.delete(table.c.session=="myapp").execute()
 
         ins = dict(session="myapp",
                    version="123",
-                   phase="Activated")
+                   current_phase="Activated")
         res = table.insert(ins)
         res.execute()
         table.delete(table.c.session=="myapp").execute()
 
         ins = dict(session="myapp",
                    version="123",
-                   phase="Patched")
+                   current_phase="Patched")
         res = table.insert(ins)
         res.execute()
 

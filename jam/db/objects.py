@@ -51,8 +51,11 @@ class Status(object):
     def __init__(self, session, version, phase=None):
         self.session = session
         self.version = version
-        self.phase = phase
+        self.current_phase = phase
 
-    def set_phase(self, phase):
-        self.phase = phase
+    def set_current_phase(self, phase):
+        self.current_phase = phase
+
+    def get_current_phase(self):
+        return self.current_phase
 
