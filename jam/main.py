@@ -94,4 +94,5 @@ def main():
     options.func(options)
 
 
-main()
+if __name__ == "__main__":
+        main()
