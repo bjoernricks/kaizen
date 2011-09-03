@@ -66,3 +66,5 @@ class Phases(object):
 
     def get(self, name):
         return self.phases[name]
+
+phases_list = Phases()
