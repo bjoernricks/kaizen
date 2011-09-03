@@ -35,7 +35,7 @@ class SessionDummy():
 
     def __init__(self):
         self.phase = dict()
-        self.name = "Dummy"
+        self.session_name = "Dummy"
         self.result_phase = []
         self.current_phase = None
 
@@ -75,14 +75,14 @@ class SessionDummy():
     def unpatch(self):
         self.set("unpatch")
 
-    def set_phase(self, phase):
+    def set_current_phase(self, phase):
         self.result_phase.append(phase)
         self.current_phase = phase
 
     def get_current_phase(self):
         return self.current_phase
 
-    def set_current_phase(self, phase):
+    def set_local_current_phase(self, phase):
         self.current_phase = phase
 
 
@@ -116,10 +116,10 @@ class SequenceTest(unittest.TestCase):
         sequence = Sequence("test_seq2", required_phase, result_phase)
         sequence.add(self.phases.get("Extracted"), "extract")
         sequence.add(self.phases.get("Built"), "build", True)
-        session_dummy.set_current_phase(self.phases.get("Patched"))
+        session_dummy.set_local_current_phase(self.phases.get("Patched"))
         sequence.call(session_dummy)
 
-        session_dummy.set_current_phase(self.phases.get("None"))
+        session_dummy.set_local_current_phase(self.phases.get("None"))
         try:
             sequence.call(session_dummy)
             self.fail("Current session phase is smaller then requred phase")
@@ -133,7 +133,7 @@ class SequenceTest(unittest.TestCase):
         sequence = Sequence("test_seq2", required_phase, result_phase)
         sequence.add(self.phases.get("Extracted"), "extract")
         sequence.add(self.phases.get("Built"), "build", True)
-        session_dummy.set_current_phase(self.phases.get("Patched"))
+        session_dummy.set_local_current_phase(self.phases.get("Patched"))
         sequence.call(session_dummy)
 
         self.assertFalse(session_dummy.get("extract"))
@@ -148,7 +148,7 @@ class SequenceTest(unittest.TestCase):
         sequence = Sequence("test_seq3", required_phase, result_phase)
         sequence.add(self.phases.get("Extracted"), "extract")
         sequence.add(self.phases.get("Built"), "build", True)
-        session_dummy.set_current_phase(self.phases.get("None"))
+        session_dummy.set_local_current_phase(self.phases.get("None"))
         sequence.call(session_dummy)
 
         self.assertTrue(session_dummy.get("extract"))
@@ -163,7 +163,7 @@ class SequenceTest(unittest.TestCase):
         sequence = Sequence("test_seq4", required_phase, result_phase)
         sequence.add(self.phases.get("Extracted"), "extract")
         sequence.add(self.phases.get("Built"), "build", True)
-        session_dummy.set_current_phase(self.phases.get("Built"))
+        session_dummy.set_local_current_phase(self.phases.get("Built"))
         sequence.call(session_dummy)
 
         self.assertFalse(session_dummy.get("extract"))
@@ -178,7 +178,7 @@ class SequenceTest(unittest.TestCase):
         sequence = Sequence("test_seq5", required_phase, result_phase)
         sequence.add(self.phases.get("Extracted"), "extract")
         sequence.add(self.phases.get("Built"), "build", True)
-        session_dummy.set_current_phase(self.phases.get("Activated"))
+        session_dummy.set_local_current_phase(self.phases.get("Activated"))
         sequence.call(session_dummy)
 
         self.assertFalse(session_dummy.get("extract"))
@@ -193,7 +193,7 @@ class SequenceTest(unittest.TestCase):
         sequence = Sequence("test_seq6", required_phase, result_phase)
         sequence.add(self.phases.get("Extracted"), "extract")
         sequence.add(self.phases.get("Built"), "build")
-        session_dummy.set_current_phase(self.phases.get("None"))
+        session_dummy.set_local_current_phase(self.phases.get("None"))
         sequence.call(session_dummy)
 
         self.assertTrue(session_dummy.get("extract"))
@@ -208,7 +208,7 @@ class SequenceTest(unittest.TestCase):
         sequence = Sequence("test_seq7", required_phase, result_phase)
         sequence.add(self.phases.get("Extracted"), "extract")
         sequence.add(self.phases.get("Built"), "build")
-        session_dummy.set_current_phase(self.phases.get("Extracted"))
+        session_dummy.set_local_current_phase(self.phases.get("Extracted"))
         sequence.call(session_dummy)
 
         self.assertFalse(session_dummy.get("extract"))
@@ -223,7 +223,7 @@ class SequenceTest(unittest.TestCase):
         sequence = Sequence("test_seq8", required_phase, result_phase)
         sequence.add(self.phases.get("Extracted"), "extract")
         sequence.add(self.phases.get("Built"), "build")
-        session_dummy.set_current_phase(self.phases.get("Built"))
+        session_dummy.set_local_current_phase(self.phases.get("Built"))
         sequence.call(session_dummy)
 
         self.assertFalse(session_dummy.get("extract"))
@@ -238,7 +238,7 @@ class SequenceTest(unittest.TestCase):
         sequence = Sequence("test_seq9", required_phase, result_phase)
         sequence.add(self.phases.get("Extracted"), "extract")
         sequence.add(self.phases.get("Built"), "build")
-        session_dummy.set_current_phase(self.phases.get("Activated"))
+        session_dummy.set_local_current_phase(self.phases.get("Activated"))
         sequence.call(session_dummy)
 
         self.assertFalse(session_dummy.get("extract"))
@@ -254,7 +254,7 @@ class SequenceTest(unittest.TestCase):
         sequence = Sequence("test_seq9", required_phase, result_phase)
         sequence.add(self.phases.get("Extracted"), "extract")
         sequence.add(self.phases.get("Built"), "build")
-        session_dummy.set_current_phase(self.phases.get("Activated"))
+        session_dummy.set_local_current_phase(self.phases.get("Activated"))
         sequence.call(session_dummy, True)
 
         self.assertTrue(session_dummy.get("extract"))
@@ -271,7 +271,7 @@ class SequenceTest(unittest.TestCase):
         sequence = Sequence("test_seq9", required_phase, result_phase)
         sequence.add(self.phases.get("Extracted"), "extract", True)
         sequence.add(self.phases.get("Built"), "build", True)
-        session_dummy.set_current_phase(self.phases.get("Activated"))
+        session_dummy.set_local_current_phase(self.phases.get("Activated"))
         sequence.call(session_dummy, True)
 
         self.assertTrue(session_dummy.get("extract"))
@@ -292,7 +292,7 @@ class SequenceTest(unittest.TestCase):
         sequence2 = Sequence("test_par_seq2", required_phase, result_phase2,
                              sequence1)
         sequence2.add(self.phases.get("Built"), "build")
-        session_dummy.set_current_phase(self.phases.get("Activated"))
+        session_dummy.set_local_current_phase(self.phases.get("Activated"))
         sequence2.call(session_dummy, True)
 
         self.assertFalse(session_dummy.get("extract"))
@@ -311,7 +311,7 @@ class SequenceTest(unittest.TestCase):
         sequence2 = Sequence("test_par_seq2", required_phase, result_phase2,
                              sequence1)
         sequence2.add(self.phases.get("Built"), "build")
-        session_dummy.set_current_phase(self.phases.get("None"))
+        session_dummy.set_local_current_phase(self.phases.get("None"))
         sequence2.call(session_dummy)
 
         self.assertTrue(session_dummy.get("extract"))
@@ -330,7 +330,7 @@ class SequenceTest(unittest.TestCase):
         sequence2 = Sequence("test_par_seq4", required_phase, result_phase2,
                              sequence1)
         sequence2.add(self.phases.get("Built"), "build")
-        session_dummy.set_current_phase(self.phases.get("Extracted"))
+        session_dummy.set_local_current_phase(self.phases.get("Extracted"))
         sequence2.call(session_dummy)
 
         self.assertFalse(session_dummy.get("extract"))
@@ -348,7 +348,7 @@ class SequenceTest(unittest.TestCase):
         sequence2 = Sequence("test_par_seq6", required_phase, result_phase2,
                              sequence1)
         sequence2.add(self.phases.get("Built"), "build")
-        session_dummy.set_current_phase(self.phases.get("Built"))
+        session_dummy.set_local_current_phase(self.phases.get("Built"))
         sequence2.call(session_dummy)
 
         self.assertFalse(session_dummy.get("extract"))
@@ -365,7 +365,7 @@ class SequenceTest(unittest.TestCase):
         sequence2 = Sequence("test_par_seq8", required_phase, result_phase2,
                              sequence1)
         sequence2.add(self.phases.get("Built"), "build")
-        session_dummy.set_current_phase(self.phases.get("Built"))
+        session_dummy.set_local_current_phase(self.phases.get("Built"))
         sequence2.call(session_dummy)
 
         self.assertTrue(session_dummy.get("extract"))
@@ -383,7 +383,7 @@ class SequenceTest(unittest.TestCase):
         sequence2 = Sequence("test_par_seq10", required_phase, result_phase2,
                              sequence1)
         sequence2.add(self.phases.get("Built"), "build", True)
-        session_dummy.set_current_phase(self.phases.get("Built"))
+        session_dummy.set_local_current_phase(self.phases.get("Built"))
         sequence2.call(session_dummy)
 
         self.assertTrue(session_dummy.get("extract"))
