@@ -1,0 +1,5 @@
+#!/usr/bin/env python
+
+from jam.main import main
+
+main()
