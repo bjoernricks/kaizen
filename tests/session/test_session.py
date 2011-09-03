@@ -156,10 +156,10 @@ class SessionValidatorTest(unittest.TestCase):
 
 def suite():
     suite = unittest.TestSuite()
-    suite.addTest(SessionLoaderTest("test_load"))
-    suite.addTest(SessionLoaderTest("test_load_derived"))
-    suite.addTest(SessionLoaderTest("test_load_sub"))
-    suite.addTest(SessionValidatorTest("test_validate"))
+    #suite.addTest(SessionLoaderTest("test_load"))
+    #suite.addTest(SessionLoaderTest("test_load_derived"))
+    #suite.addTest(SessionLoaderTest("test_load_sub"))
+    #suite.addTest(SessionValidatorTest("test_validate"))
 
     return suite
 
