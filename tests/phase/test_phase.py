@@ -57,9 +57,6 @@ class PhasesTest(unittest.TestCase):
         phase = phases.get("Activated")
         self.assertEquals("Activated", phase.name)
 
-        phase = phases.get("Deactivated")
-        self.assertEquals("Deactivated", phase.name)
-
         try:
             phases.get("abc")
             self.fail("phase abc doesn't exists")
@@ -93,9 +90,6 @@ class PhasesTest(unittest.TestCase):
 
         phaseactivated = phases.get("Activated")
         self.assertTrue(phaseactivated > phasedestrooted)
-
-        phasedeactivated = phases.get("Deactivated")
-        self.assertTrue(phasedeactivated > phaseactivated)
 
 
 class PhaseTest(unittest.TestCase):
