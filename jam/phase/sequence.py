@@ -19,6 +19,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 
 # 02110-1301 USA
 
+import jam.log
 
 class SequenceError(Exception):
 
@@ -49,6 +50,7 @@ class Sequence(object):
         self.required_phase = required_phase
         self.result_phase = result_phase
         self.sequence = []
+        self.log = jam.log.getLogger("jam.phase.sequence")
 
     def add(self, phase, method_name, always = False):
         self.add_entry(SequenceEntry(phase, method_name, always))
@@ -66,11 +68,18 @@ class Sequence(object):
                     (current_phase.name, self.required_phase.name))
         set_phase = False
         for entry in self.sequence:
-            if current_phase < entry.phase or entry.always or force:
-                method = getattr(session, entry.method_name)
-                method()
-                set_phase = True
-        # only set phase if method calls were successfully executed
+            if current_phase < entry.phase or entry.always:
+                set_phase = self.call_method(session, entry.method_name)
+            elif force:
+                self.log.warn("Forcing to call a phase can have several side "\
+                              "effects. You should be really aware of what " \
+                              "you are doing!")
+                set_phase = self.call_method(session, entry.method_name)
+        # only set phase if all method calls were successfully executed
         if set_phase:
             session.set_current_phase(self.result_phase)
 
+    def call_method(self, session, method_name):
+        method = getattr(session, method_name)
+        method() # may raise an error
+        return True
