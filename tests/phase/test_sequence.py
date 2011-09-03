@@ -30,6 +30,9 @@ sys.path.append(os.path.join(test_dir, os.pardir, os.pardir))
 from jam.phase.phase import Phase, phases_list
 from jam.phase.sequence import Sequence, SequenceEntry, SequenceError
 
+import jam.log
+
+jam.log.getRootLogger().set_level(jam.log.Logger.NONE)
 
 class SessionDummy():
 
