@@ -40,7 +40,7 @@ def find_test_modules(dirname, package = None):
     names = []
     for dir in dirs:
         dirname = dir.replace(test_dir + "/", "")
-        names.extend([dirname + "." + prefix + name[:-len(suffix)]
+        names.extend([dirname + "." + prefix + name[:-len(suffix)] + ".suite"
             for name in os.listdir(dir)
                 if name.startswith("test_") and name.endswith(suffix)])
     return names
