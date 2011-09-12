@@ -28,7 +28,7 @@ test_dir = os.path.dirname(__file__)
 sys.path.append(os.path.join(test_dir, os.pardir, os.pardir))
 
 from jam.phase.phase import Phase, phases_list
-from jam.phase.sequence import Sequence, SequenceEntry, SequenceError
+from jam.phase.sequence import Sequence, SequenceError
 
 import jam.log
 
@@ -37,17 +37,17 @@ jam.log.getRootLogger().set_level(jam.log.Logger.NONE)
 class SessionDummy():
 
     def __init__(self):
-        self.phase = dict()
+        self.methods = dict()
         self.session_name = "Dummy"
-        self.result_phase = []
+        self.result_phases = []
         self.current_phase = None
         self.phases = []
 
-    def set(self, phase_name):
-        self.phase[phase_name] = True
+    def set(self, method_name):
+        self.methods[method_name] = True
 
     def get(self, phase_name):
-        return self.phase.get(phase_name)
+        return self.methods.get(phase_name)
 
     def download(self):
         self.set("download")
@@ -80,7 +80,7 @@ class SessionDummy():
         self.set("unpatch")
 
     def set_current_phase(self, phase):
-        self.result_phase.append(phase)
+        self.result_phases.append(phase)
         self.current_phase = phase
 
     def get_current_phase(self):
@@ -90,311 +90,378 @@ class SessionDummy():
         self.current_phase = phase
 
     def get_phases(self):
-        return phases
+        return self.phases
+
+    def set_phase(self, phase):
+        if phase not in self.phases:
+            self.phases.append(phase)
+
+    def unset_phase(self, phase):
+        self.phases.remove(phase)
+
+    def set_test_phases(self, phases):
+        self.phases = phases
 
 
 class SequenceTest(unittest.TestCase):
 
-    def test_add(self):
-        required_phase = phases_list.get("None")
-        result_phase = phases_list.get("Activated")
-        sequence = Sequence("test_seq1", required_phase, result_phase)
-        sequence.add(phases_list.get("Extracted"), "extract")
-        sequence.add(phases_list.get("Built"), "build", True)
+    def test_must_be_called(self):
+        session = SessionDummy()
+        sequence = Sequence("mysequence", phases_list.get("Built"),
+                            phases_list.get("Activated"), ["mymethod"])
+        # result phase in session phase => must not
+        session.set_test_phases([phases_list.get("Activated")])
+        self.assertFalse(sequence.must_be_called(session))
 
-        self.assertEquals(2, len(sequence.sequence))
-        seq1 = sequence.sequence[0]
-        self.assertEquals(phases_list.get("Extracted"), seq1.phase)
-        self.assertEquals("extract", seq1.method_name)
-        self.assertFalse(seq1.always)
+        # result phase in session phase but always => must
+        sequence.always = True
+        self.assertTrue(sequence.must_be_called(session))
 
-        seq2 = sequence.sequence[1]
-        self.assertEquals(phases_list.get("Built"), seq2.phase)
-        self.assertEquals("build", seq2.method_name)
-        self.assertTrue(seq2.always)
+        # not always but result phase not in session phase
+        sequence.always = False
+        session.set_test_phases([])
+        self.assertTrue(sequence.must_be_called(session))
 
     def test_required_phase(self):
         session_dummy = SessionDummy()
         required_phase = phases_list.get("Patched")
         result_phase = phases_list.get("Activated")
-        sequence = Sequence("test_seq2", required_phase, result_phase)
-        sequence.add(phases_list.get("Extracted"), "extract")
-        sequence.add(phases_list.get("Built"), "build", True)
+        sequence = Sequence("test_seq2", required_phase, result_phase,
+                            ["extract"])
+        # Patched == Patched => run
         session_dummy.set_local_current_phase(phases_list.get("Patched"))
-        sequence.call(session_dummy)
+        sequence(session_dummy)
 
+        # Activated > Patched => run
+        session_dummy.set_local_current_phase(phases_list.get("Activated"))
+        sequence(session_dummy)
+
+        # None < Patched => Error
         session_dummy.set_local_current_phase(phases_list.get("None"))
         try:
-            sequence.call(session_dummy)
+            sequence(session_dummy)
             self.fail("Current session phase is smaller then requred phase")
         except SequenceError:
             pass
 
+    def test_call_methods(self):
+        session_dummy = SessionDummy()
+        required_phase = phases_list.get("Patched")
+        result_phase = phases_list.get("Activated")
+        sequence = Sequence("test_seq2", required_phase, result_phase, [])
+
+        self.assertEquals(session_dummy.get_phases(), [])
+        self.assertEquals(session_dummy.methods, dict()) 
+
+        sequence.method_names = ["build"]
+        sequence.call_methods(session_dummy)
+        self.assertTrue(session_dummy.get("build"))
+
+        session_dummy = SessionDummy()
+        sequence.method_names = ["build", "activate"]
+        sequence.call_methods(session_dummy)
+        self.assertTrue(session_dummy.get("build"))
+        self.assertTrue(session_dummy.get("activate"))
+
+        session_dummy = SessionDummy()
+        sequence.method_names = ["build", session_dummy.activate]
+        sequence.call_methods(session_dummy)
+        self.assertTrue(session_dummy.get("build"))
+        self.assertTrue(session_dummy.get("activate"))
+
+        session_dummy = SessionDummy()
+        sequence.method_names = [session_dummy.build, session_dummy.activate]
+        sequence.call_methods(session_dummy)
+        self.assertTrue(session_dummy.get("build"))
+        self.assertTrue(session_dummy.get("activate"))
+
     def test_call(self):
         session_dummy = SessionDummy()
         required_phase = phases_list.get("Patched")
-        result_phase = phases_list.get("Activated")
-        sequence = Sequence("test_seq2", required_phase, result_phase)
-        sequence.add(phases_list.get("Extracted"), "extract")
-        sequence.add(phases_list.get("Built"), "build", True)
+        result_phase = phases_list.get("Built")
+        sequence = Sequence("test_seq2", required_phase, result_phase,
+                            ["build"])
+
+        # current phase < result phase and result phase not in session 
+        # phases => run
+        self.assertEquals(session_dummy.get_phases(), [])
         session_dummy.set_local_current_phase(phases_list.get("Patched"))
         sequence.call(session_dummy)
-
-        self.assertFalse(session_dummy.get("extract"))
         self.assertTrue(session_dummy.get("build"))
-        self.assertEquals(len(session_dummy.result_phase), 1)
-        self.assertEquals(session_dummy.result_phase[0], result_phase)
-        self.assertEquals(session_dummy.get_current_phase(), result_phase)
 
+        # current phase == result phase but result phase not in session
+        # phases => run
         session_dummy = SessionDummy()
-        required_phase = phases_list.get("None")
-        result_phase = phases_list.get("Activated")
-        sequence = Sequence("test_seq3", required_phase, result_phase)
-        sequence.add(phases_list.get("Extracted"), "extract")
-        sequence.add(phases_list.get("Built"), "build", True)
-        session_dummy.set_local_current_phase(phases_list.get("None"))
-        sequence.call(session_dummy)
-
-        self.assertTrue(session_dummy.get("extract"))
-        self.assertTrue(session_dummy.get("build"))
-        self.assertEquals(len(session_dummy.result_phase), 1)
-        self.assertEquals(session_dummy.result_phase[0], result_phase)
-        self.assertEquals(session_dummy.get_current_phase(), result_phase)
-
-        session_dummy = SessionDummy()
-        required_phase = phases_list.get("Patched")
-        result_phase = phases_list.get("Activated")
-        sequence = Sequence("test_seq4", required_phase, result_phase)
-        sequence.add(phases_list.get("Extracted"), "extract")
-        sequence.add(phases_list.get("Built"), "build", True)
+        self.assertEquals(session_dummy.get_phases(), [])
         session_dummy.set_local_current_phase(phases_list.get("Built"))
         sequence.call(session_dummy)
-
-        self.assertFalse(session_dummy.get("extract"))
         self.assertTrue(session_dummy.get("build"))
-        self.assertEquals(len(session_dummy.result_phase), 1)
-        self.assertEquals(session_dummy.result_phase[0], result_phase)
-        self.assertEquals(session_dummy.get_current_phase(), result_phase)
 
+        # result phase in session phases => not run
         session_dummy = SessionDummy()
-        required_phase = phases_list.get("Patched")
-        result_phase = phases_list.get("Activated")
-        sequence = Sequence("test_seq5", required_phase, result_phase)
-        sequence.add(phases_list.get("Extracted"), "extract")
-        sequence.add(phases_list.get("Built"), "build", True)
-        session_dummy.set_local_current_phase(phases_list.get("Activated"))
+        self.assertEquals(session_dummy.get_phases(), [])
+        session_dummy.set_test_phases([phases_list.get("Built")])
+        self.assertEquals(len(session_dummy.get_phases()), 1)
         sequence.call(session_dummy)
+        self.assertFalse(session_dummy.get("build"))
+        self.assertEquals(len(session_dummy.get_phases()), 1)
 
-        self.assertFalse(session_dummy.get("extract"))
-        self.assertTrue(session_dummy.get("build"))
-        self.assertEquals(len(session_dummy.result_phase), 1)
-        self.assertEquals(session_dummy.result_phase[0], result_phase)
-        self.assertEquals(session_dummy.get_current_phase(), result_phase)
-
+        # result phase in session phases but force is set => run
         session_dummy = SessionDummy()
+        self.assertEquals(session_dummy.get_phases(), [])
+        session_dummy.set_test_phases([phases_list.get("Built")])
+        self.assertEquals(len(session_dummy.get_phases()), 1)
+        sequence.call(session_dummy, True)
+        self.assertTrue(session_dummy.get("build"))
+        self.assertEquals(len(session_dummy.get_phases()), 1)
+
+        # test parent sequence calls
+        sequence2 = Sequence("child_seq", required_phase,
+                             phases_list.get("Configured"),
+                             ["configure"], parent_seq=sequence)
+
+        # Built and Configured not in session phases => run both
+        session_dummy = SessionDummy()
+        self.assertEquals(session_dummy.get_phases(), [])
+        sequence2.call(session_dummy)
+        self.assertTrue(session_dummy.get("build"))
+        self.assertTrue(session_dummy.get("configure"))
+        self.assertEquals(len(session_dummy.get_phases()), 2)
+
+        # Configured in session phases => don't run
+        session_dummy = SessionDummy()
+        self.assertEquals(session_dummy.get_phases(), [])
+        session_dummy.set_test_phases([phases_list.get("Configured")])
+        self.assertEquals(len(session_dummy.get_phases()), 1)
+        sequence2.call(session_dummy)
+        self.assertFalse(session_dummy.get("build"))
+        self.assertFalse(session_dummy.get("configure"))
+        self.assertEquals(len(session_dummy.get_phases()), 1)
+
+        # Built in session phases => run only configure
+        session_dummy = SessionDummy()
+        self.assertEquals(session_dummy.get_phases(), [])
+        session_dummy.set_test_phases([phases_list.get("Built")])
+        self.assertEquals(len(session_dummy.get_phases()), 1)
+        sequence2.call(session_dummy)
+        self.assertFalse(session_dummy.get("build"))
+        self.assertTrue(session_dummy.get("configure"))
+        self.assertEquals(len(session_dummy.get_phases()), 2)
+
+    def test__call__(self):
+        session_dummy = SessionDummy()
+        self.assertEquals(len(session_dummy.result_phases), 0)
+
         required_phase = phases_list.get("None")
         result_phase = phases_list.get("Activated")
-        sequence = Sequence("test_seq6", required_phase, result_phase)
-        sequence.add(phases_list.get("Extracted"), "extract")
-        sequence.add(phases_list.get("Built"), "build")
+        sequence = Sequence("test_seq3", required_phase, result_phase,
+                            ["configure"])
         session_dummy.set_local_current_phase(phases_list.get("None"))
-        sequence.call(session_dummy)
+        sequence(session_dummy)
 
-        self.assertTrue(session_dummy.get("extract"))
-        self.assertTrue(session_dummy.get("build"))
-        self.assertEquals(len(session_dummy.result_phase), 1)
-        self.assertEquals(session_dummy.result_phase[0], result_phase)
+        self.assertTrue(session_dummy.get("configure"))
+        self.assertEquals(len(session_dummy.result_phases), 1)
+        self.assertEquals(session_dummy.result_phases[0], result_phase)
+        self.assertEquals(len(session_dummy.get_phases()), 1)
         self.assertEquals(session_dummy.get_current_phase(), result_phase)
+        self.assertEquals(session_dummy.get_phases()[0], result_phase)
 
+        # test two methods
         session_dummy = SessionDummy()
-        required_phase = phases_list.get("None")
-        result_phase = phases_list.get("Activated")
-        sequence = Sequence("test_seq7", required_phase, result_phase)
-        sequence.add(phases_list.get("Extracted"), "extract")
-        sequence.add(phases_list.get("Built"), "build")
-        session_dummy.set_local_current_phase(phases_list.get("Extracted"))
-        sequence.call(session_dummy)
+        sequence = Sequence("test_seq4", required_phase, result_phase, ["build",
+                            "configure"])
+        session_dummy.set_local_current_phase(phases_list.get("Configured"))
+        sequence(session_dummy)
 
-        self.assertFalse(session_dummy.get("extract"))
+        self.assertTrue(session_dummy.get("configure"))
         self.assertTrue(session_dummy.get("build"))
-        self.assertEquals(len(session_dummy.result_phase), 1)
-        self.assertEquals(session_dummy.result_phase[0], result_phase)
+        self.assertEquals(len(session_dummy.result_phases), 1)
+        self.assertEquals(session_dummy.result_phases[0], result_phase)
         self.assertEquals(session_dummy.get_current_phase(), result_phase)
+        self.assertEquals(len(session_dummy.get_phases()), 1)
+        self.assertEquals(session_dummy.get_phases()[0], result_phase)
 
+        # test always = True (result_phase is in phases)
         session_dummy = SessionDummy()
-        required_phase = phases_list.get("None")
-        result_phase = phases_list.get("Activated")
-        sequence = Sequence("test_seq8", required_phase, result_phase)
-        sequence.add(phases_list.get("Extracted"), "extract")
-        sequence.add(phases_list.get("Built"), "build")
-        session_dummy.set_local_current_phase(phases_list.get("Built"))
-        sequence.call(session_dummy)
+        sequence = Sequence("test_seq5", required_phase, result_phase,
+                            ["configure"], True)
+        session_dummy.set_local_current_phase(phases_list.get("Configured"))
+        session_dummy.set_test_phases([phases_list.get("Activated")])
+        sequence(session_dummy)
 
-        self.assertFalse(session_dummy.get("extract"))
-        self.assertFalse(session_dummy.get("build"))
-        self.assertEquals(len(session_dummy.result_phase), 0)
-        self.assertEquals(session_dummy.get_current_phase(),
-                          phases_list.get("Built"))
+        self.assertTrue(session_dummy.get("configure"))
+        self.assertEquals(len(session_dummy.result_phases), 1)
+        self.assertEquals(session_dummy.result_phases[0], result_phase)
+        self.assertEquals(session_dummy.get_current_phase(), result_phase)
+        self.assertEquals(len(session_dummy.get_phases()), 1)
+        self.assertEquals(session_dummy.get_phases()[0], result_phase)
 
+        # test force (result_phase is in phases but force is set)
         session_dummy = SessionDummy()
-        required_phase = phases_list.get("None")
-        result_phase = phases_list.get("Activated")
-        sequence = Sequence("test_seq9", required_phase, result_phase)
-        sequence.add(phases_list.get("Extracted"), "extract")
-        sequence.add(phases_list.get("Built"), "build")
-        session_dummy.set_local_current_phase(phases_list.get("Activated"))
-        sequence.call(session_dummy)
+        sequence = Sequence("test_seq5", required_phase, result_phase,
+                            ["configure"])
+        session_dummy.set_local_current_phase(phases_list.get("Configured"))
+        session_dummy.set_test_phases([phases_list.get("Activated")])
+        sequence(session_dummy, True)
 
-        self.assertFalse(session_dummy.get("extract"))
-        self.assertFalse(session_dummy.get("build"))
-        self.assertEquals(len(session_dummy.result_phase), 0)
-        self.assertEquals(session_dummy.get_current_phase(), 
-                          phases_list.get("Activated"))
-
-    def test_call_force(self):
-        session_dummy = SessionDummy()
-        required_phase = phases_list.get("None")
-        result_phase = phases_list.get("Activated")
-        sequence = Sequence("test_seq9", required_phase, result_phase)
-        sequence.add(phases_list.get("Extracted"), "extract")
-        sequence.add(phases_list.get("Built"), "build")
-        session_dummy.set_local_current_phase(phases_list.get("Activated"))
-        sequence.call(session_dummy, True)
-
-        self.assertTrue(session_dummy.get("extract"))
-        self.assertTrue(session_dummy.get("build"))
-        self.assertEquals(len(session_dummy.result_phase), 1)
-        self.assertEquals(session_dummy.result_phase[0],
-                          phases_list.get("Activated"))
-        self.assertEquals(session_dummy.get_current_phase(), 
-                          phases_list.get("Activated"))
-
-        session_dummy = SessionDummy()
-        required_phase = phases_list.get("None")
-        result_phase = phases_list.get("Activated")
-        sequence = Sequence("test_seq9", required_phase, result_phase)
-        sequence.add(phases_list.get("Extracted"), "extract", True)
-        sequence.add(phases_list.get("Built"), "build", True)
-        session_dummy.set_local_current_phase(phases_list.get("Activated"))
-        sequence.call(session_dummy, True)
-
-        self.assertTrue(session_dummy.get("extract"))
-        self.assertTrue(session_dummy.get("build"))
-        self.assertEquals(len(session_dummy.result_phase), 1)
-        self.assertEquals(session_dummy.result_phase[0],
-                          phases_list.get("Activated"))
-        self.assertEquals(session_dummy.get_current_phase(), 
-                          phases_list.get("Activated"))
-
-        session_dummy = SessionDummy()
-        required_phase = phases_list.get("None")
-        result_phase1 = phases_list.get("Activated")
-        sequence1 = Sequence("test_par_seq1", required_phase, result_phase1)
-        sequence1.add(phases_list.get("Extracted"), "extract")
-
-        result_phase2 = phases_list.get("Built")
-        sequence2 = Sequence("test_par_seq2", required_phase, result_phase2,
-                             sequence1)
-        sequence2.add(phases_list.get("Built"), "build")
-        session_dummy.set_local_current_phase(phases_list.get("Activated"))
-        sequence2.call(session_dummy, True)
-
-        self.assertFalse(session_dummy.get("extract"))
-        self.assertTrue(session_dummy.get("build"))
-        self.assertEquals(len(session_dummy.result_phase), 1)
-        self.assertEquals(session_dummy.result_phase[0], result_phase2)
+        self.assertTrue(session_dummy.get("configure"))
+        self.assertEquals(len(session_dummy.result_phases), 1)
+        self.assertEquals(session_dummy.result_phases[0], result_phase)
+        self.assertEquals(session_dummy.get_current_phase(), result_phase)
+        self.assertEquals(len(session_dummy.get_phases()), 1)
+        self.assertEquals(session_dummy.get_phases()[0], result_phase)
 
     def test_parent_sequence(self):
         session_dummy = SessionDummy()
         required_phase = phases_list.get("None")
-        result_phase1 = phases_list.get("Activated")
-        sequence1 = Sequence("test_par_seq1", required_phase, result_phase1)
-        sequence1.add(phases_list.get("Extracted"), "extract")
-
-        result_phase2 = phases_list.get("Built")
+        result_phase1 = phases_list.get("Built")
+        result_phase2 = phases_list.get("Activated")
+        sequence1 = Sequence("test_par_seq1", required_phase, result_phase1,
+                             ["build"])
         sequence2 = Sequence("test_par_seq2", required_phase, result_phase2,
-                             sequence1)
-        sequence2.add(phases_list.get("Built"), "build")
+                            ["activate"], parent_seq=sequence1)
+
         session_dummy.set_local_current_phase(phases_list.get("None"))
-        sequence2.call(session_dummy)
+        sequence2(session_dummy)
 
-        self.assertTrue(session_dummy.get("extract"))
         self.assertTrue(session_dummy.get("build"))
-        self.assertEquals(len(session_dummy.result_phase), 2)
-        self.assertEquals(session_dummy.result_phase[0], result_phase1)
-        self.assertEquals(session_dummy.result_phase[1], result_phase2)
+        self.assertTrue(session_dummy.get("activate"))
+        self.assertEquals(len(session_dummy.result_phases), 1)
+        self.assertEquals(session_dummy.result_phases[0], result_phase2)
+        self.assertEquals(len(session_dummy.get_phases()), 2)
+        self.assertEquals(session_dummy.get_phases()[0], result_phase1)
+        self.assertEquals(session_dummy.get_phases()[1], result_phase2)
+        self.assertEquals(session_dummy.get_current_phase(), result_phase2)
 
+        # phases contains built => run only activate
         session_dummy = SessionDummy()
-        required_phase = phases_list.get("None")
-        result_phase1 = phases_list.get("Activated")
-        sequence1 = Sequence("test_par_seq3", required_phase, result_phase1)
-        sequence1.add(phases_list.get("Extracted"), "extract")
+        session_dummy.set_test_phases([phases_list.get("Built")])
+        session_dummy.set_local_current_phase(phases_list.get("None"))
+        self.assertEquals(len(session_dummy.get_phases()), 1)
+        self.assertEquals(session_dummy.get_phases()[0], result_phase1)
 
-        result_phase2 = phases_list.get("Built")
-        sequence2 = Sequence("test_par_seq4", required_phase, result_phase2,
-                             sequence1)
-        sequence2.add(phases_list.get("Built"), "build")
-        session_dummy.set_local_current_phase(phases_list.get("Extracted"))
-        sequence2.call(session_dummy)
-
-        self.assertFalse(session_dummy.get("extract"))
-        self.assertTrue(session_dummy.get("build"))
-        self.assertEquals(len(session_dummy.result_phase), 1)
-        self.assertEquals(session_dummy.result_phase[0], result_phase2)
-
-        session_dummy = SessionDummy()
-        required_phase1 = phases_list.get("None")
-        result_phase = phases_list.get("Activated")
-        sequence1 = Sequence("test_par_seq5", required_phase, result_phase1)
-        sequence1.add(phases_list.get("Extracted"), "extract")
-
-        result_phase2 = phases_list.get("Built")
-        sequence2 = Sequence("test_par_seq6", required_phase, result_phase2,
-                             sequence1)
-        sequence2.add(phases_list.get("Built"), "build")
-        session_dummy.set_local_current_phase(phases_list.get("Built"))
-        sequence2.call(session_dummy)
-
-        self.assertFalse(session_dummy.get("extract"))
+        sequence2(session_dummy)
         self.assertFalse(session_dummy.get("build"))
-        self.assertEquals(len(session_dummy.result_phase), 0)
+        self.assertTrue(session_dummy.get("activate"))
+        self.assertEquals(len(session_dummy.result_phases), 1)
+        self.assertEquals(session_dummy.result_phases[0], result_phase2)
+        self.assertEquals(len(session_dummy.get_phases()), 2)
+        self.assertEquals(session_dummy.get_phases()[0], result_phase1)
+        self.assertEquals(session_dummy.get_phases()[1], result_phase2)
+        self.assertEquals(session_dummy.get_current_phase(), result_phase2)
 
+        # phases contains built and activate => not run
         session_dummy = SessionDummy()
-        required_phase = phases_list.get("None")
-        result_phase1 = phases_list.get("Activated")
-        sequence1 = Sequence("test_par_seq7", required_phase, result_phase1)
-        sequence1.add(phases_list.get("Extracted"), "extract", True)
+        session_dummy.set_test_phases([phases_list.get("Built"),
+                                       phases_list.get("Activated")])
+        session_dummy.set_local_current_phase(phases_list.get("None"))
+        self.assertEquals(len(session_dummy.result_phases), 0)
+        self.assertEquals(len(session_dummy.get_phases()), 2)
+        self.assertEquals(session_dummy.get_phases()[0], result_phase1)
+        self.assertEquals(session_dummy.get_phases()[1], result_phase2)
 
-        result_phase2 = phases_list.get("Built")
-        sequence2 = Sequence("test_par_seq8", required_phase, result_phase2,
-                             sequence1)
-        sequence2.add(phases_list.get("Built"), "build")
-        session_dummy.set_local_current_phase(phases_list.get("Built"))
-        sequence2.call(session_dummy)
-
-        self.assertTrue(session_dummy.get("extract"))
+        sequence2(session_dummy)
         self.assertFalse(session_dummy.get("build"))
-        self.assertEquals(len(session_dummy.result_phase), 1)
-        self.assertEquals(session_dummy.result_phase[0], result_phase1)
+        self.assertFalse(session_dummy.get("activate"))
+        self.assertEquals(len(session_dummy.result_phases), 0)
+        self.assertEquals(len(session_dummy.get_phases()), 2)
+        self.assertEquals(session_dummy.get_current_phase(),
+                          phases_list.get("None"))
+        self.assertEquals(session_dummy.get_phases()[0], result_phase1)
+        self.assertEquals(session_dummy.get_phases()[1], result_phase2)
 
+        # phases contains built but force is set => run only activate
         session_dummy = SessionDummy()
-        required_phase = phases_list.get("None")
-        result_phase1 = phases_list.get("Activated")
-        sequence1 = Sequence("test_par_seq9", required_phase, result_phase1)
-        sequence1.add(phases_list.get("Extracted"), "extract", True)
+        session_dummy.set_test_phases([phases_list.get("Built")])
+        session_dummy.set_local_current_phase(phases_list.get("None"))
+        self.assertEquals(len(session_dummy.get_phases()), 1)
+        self.assertEquals(session_dummy.get_phases()[0], result_phase1)
 
-        result_phase2 = phases_list.get("Built")
-        sequence2 = Sequence("test_par_seq10", required_phase, result_phase2,
-                             sequence1)
-        sequence2.add(phases_list.get("Built"), "build", True)
-        session_dummy.set_local_current_phase(phases_list.get("Built"))
-        sequence2.call(session_dummy)
+        sequence2(session_dummy, True)
+        self.assertFalse(session_dummy.get("build"))
+        self.assertTrue(session_dummy.get("activate"))
+        self.assertEquals(len(session_dummy.result_phases), 1)
+        self.assertEquals(session_dummy.result_phases[0], result_phase2)
+        self.assertEquals(len(session_dummy.get_phases()), 2)
+        self.assertEquals(session_dummy.get_phases()[0], result_phase1)
+        self.assertEquals(session_dummy.get_phases()[1], result_phase2)
+        self.assertEquals(session_dummy.get_current_phase(), result_phase2)
 
-        self.assertTrue(session_dummy.get("extract"))
+        # phases contains built and activate but force is set
+        # => run only activate
+        session_dummy = SessionDummy()
+        session_dummy.set_test_phases([phases_list.get("Built"), 
+                                       phases_list.get("Activated")])
+        session_dummy.set_local_current_phase(phases_list.get("None"))
+        self.assertEquals(len(session_dummy.get_phases()), 2)
+        self.assertEquals(session_dummy.get_phases()[0], result_phase1)
+        self.assertEquals(session_dummy.get_phases()[1], result_phase2)
+
+        sequence2(session_dummy, True)
+        self.assertFalse(session_dummy.get("build"))
+        self.assertTrue(session_dummy.get("activate"))
+        self.assertEquals(len(session_dummy.result_phases), 1)
+        self.assertEquals(session_dummy.result_phases[0], result_phase2)
+        self.assertEquals(len(session_dummy.get_phases()), 2)
+        self.assertEquals(session_dummy.get_phases()[0], result_phase1)
+        self.assertEquals(session_dummy.get_phases()[1], result_phase2)
+        self.assertEquals(session_dummy.get_current_phase(), result_phase2)
+
+        # phase contains activate but force is set => run both
+        session_dummy = SessionDummy()
+        session_dummy.set_test_phases([phases_list.get("Activated")])
+        session_dummy.set_local_current_phase(phases_list.get("None"))
+        self.assertEquals(len(session_dummy.get_phases()), 1)
+        self.assertEquals(session_dummy.get_phases()[0], result_phase2)
+
+        sequence2(session_dummy, True)
         self.assertTrue(session_dummy.get("build"))
-        self.assertEquals(len(session_dummy.result_phase), 2)
-        self.assertEquals(session_dummy.result_phase[0], result_phase1)
-        self.assertEquals(session_dummy.result_phase[1], result_phase2)
+        self.assertTrue(session_dummy.get("activate"))
+        self.assertEquals(len(session_dummy.result_phases), 1)
+        self.assertEquals(session_dummy.result_phases[0], result_phase2)
+        self.assertEquals(len(session_dummy.get_phases()), 2)
+        self.assertEquals(session_dummy.get_phases()[0], result_phase2)
+        self.assertEquals(session_dummy.get_phases()[1], result_phase1)
+        self.assertEquals(session_dummy.get_current_phase(), result_phase2)
+
+        # phases contains built and activate but always is set
+        # => run only activate
+        sequence2 = Sequence("test_par_seq2", required_phase, result_phase2,
+                            ["activate"], True, sequence1)
+        session_dummy = SessionDummy()
+        session_dummy.set_test_phases([phases_list.get("Built"), 
+                                       phases_list.get("Activated")])
+        session_dummy.set_local_current_phase(phases_list.get("None"))
+        self.assertEquals(len(session_dummy.get_phases()), 2)
+        self.assertEquals(session_dummy.get_phases()[0], result_phase1)
+        self.assertEquals(session_dummy.get_phases()[1], result_phase2)
+
+        sequence2(session_dummy, True)
+        self.assertFalse(session_dummy.get("build"))
+        self.assertTrue(session_dummy.get("activate"))
+        self.assertEquals(len(session_dummy.result_phases), 1)
+        self.assertEquals(session_dummy.result_phases[0], result_phase2)
+        self.assertEquals(len(session_dummy.get_phases()), 2)
+        self.assertEquals(session_dummy.get_phases()[0], result_phase1)
+        self.assertEquals(session_dummy.get_phases()[1], result_phase2)
+        self.assertEquals(session_dummy.get_current_phase(), result_phase2)
+
+        # phase contains activate but always is set => run both
+        session_dummy = SessionDummy()
+        session_dummy.set_test_phases([phases_list.get("Activated")])
+        session_dummy.set_local_current_phase(phases_list.get("None"))
+        self.assertEquals(len(session_dummy.get_phases()), 1)
+        self.assertEquals(session_dummy.get_phases()[0], result_phase2)
+
+        sequence2(session_dummy, True)
+        self.assertTrue(session_dummy.get("build"))
+        self.assertTrue(session_dummy.get("activate"))
+        self.assertEquals(len(session_dummy.result_phases), 1)
+        self.assertEquals(session_dummy.result_phases[0], result_phase2)
+        self.assertEquals(len(session_dummy.get_phases()), 2)
+        self.assertEquals(session_dummy.get_phases()[0], result_phase2)
+        self.assertEquals(session_dummy.get_phases()[1], result_phase1)
+        self.assertEquals(session_dummy.get_current_phase(), result_phase2)
 
 
 def suite():

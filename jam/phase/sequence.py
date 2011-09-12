@@ -21,6 +21,8 @@
 
 import jam.log
 
+log = jam.log.getLogger(__file__)
+
 class SequenceError(Exception):
 
     def __init__(self, sequence_name, session_name, value):
@@ -33,53 +35,56 @@ class SequenceError(Exception):
                 (self.sequence_name, self.session_name, self.value)
 
 
-class SequenceEntry(object):
-
-    def __init__(self, phase, method_name, always = False):
-        self.phase = phase
-        self.method_name = method_name
-        self.always = always
-
-
 class Sequence(object):
 
-    def __init__(self, name, required_phase, result_phase,
-                 parent_seq=None):
+    def __init__(self, name, required_phase, result_phase, method_names,
+                 always=False, parent_seq=None):
         self.name = name
         self.parent_seq = parent_seq
         self.required_phase = required_phase
         self.result_phase = result_phase
-        self.sequence = []
-        self.log = jam.log.getLogger("jam.phase.sequence")
+        self.method_names = method_names
+        self.always = always
 
-    def add(self, phase, method_name, always = False):
-        self.add_entry(SequenceEntry(phase, method_name, always))
+    def must_be_called(self, session):
+        return self.always or not (self.result_phase in session.get_phases())
 
-    def add_entry(self, entry):
-        self.sequence.append(entry)
-
-    def call(self, session, force=False):
+    def __call__(self, session, force=False):
+        if not self.method_names:
+            log.debug("No method to call is set. Nothing to do for sequence " \
+                      "'%s'." % self.name)
+            return
         current_phase = session.get_current_phase()
-        if self.parent_seq:
-            self.parent_seq.call(session)
         if current_phase < self.required_phase:
             raise SequenceError(self.name, session.session_name,
                     "session is in phase '%s' but required is '%s'" %\
                     (current_phase.name, self.required_phase.name))
-        set_phase = False
-        for entry in self.sequence:
-            if current_phase < entry.phase or entry.always:
-                set_phase = self.call_method(session, entry.method_name)
-            elif force:
-                self.log.warn("Forcing to call a phase can have several side "\
-                              "effects. You should be really aware of what " \
-                              "you are doing!")
-                set_phase = self.call_method(session, entry.method_name)
-        # only set phase if all method calls were successfully executed
+        set_phase = self.call(session, force)
         if set_phase:
             session.set_current_phase(self.result_phase)
 
-    def call_method(self, session, method_name):
-        method = getattr(session, method_name)
-        method() # may raise an error
-        return True
+    def call(self, session, force=False):
+        call_me = self.must_be_called(session)
+        if not call_me and force:
+            call_me = True
+            log.warn("Forcing to call a phase can have several side " \
+                     "effects. You should be really aware of what " \
+                     "you are doing!")
+        if call_me:
+            if self.parent_seq:
+                self.parent_seq.call(session)
+            self.call_methods(session)
+            session.set_phase(self.result_phase)
+            return True
+        return False
+
+    def call_methods(self, session):
+        for method_name in self.method_names:
+            if isinstance(method_name, basestring):
+                if not hasattr(session, method_name):
+                    raise SequenceError(self.name, session.session_name,
+                            "No such method '%s'." % method_name)
+                method = getattr(session, method_name)
+            else:
+                method = method_name
+            method() # may raise an error
