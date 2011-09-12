@@ -45,6 +45,10 @@ class Phase(object):
     def __hash__(self):
         return self.value
 
+    def __repr__(self):
+        return "<Phase name='%s' value='%s' id='%s'>" % (self.name, self.value,
+                                                         id(self))
+
 
 class Phases(object):
 
@@ -66,5 +70,6 @@ class Phases(object):
 
     def get(self, name):
         return self.phases[name]
+
 
 phases_list = Phases()
