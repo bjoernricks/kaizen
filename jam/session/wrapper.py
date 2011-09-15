@@ -30,7 +30,7 @@ from jam.external.sqlalchemy import and_
 
 from jam.utils import Loader, realpath, list_dir, list_subdir, extract_file
 from jam.download import Downloader
-from jam.phase.phase import Phases
+from jam.phase.phase import phases_list
 from jam.db.db import Db
 from jam.db.objects import Status, Installed, File
 from jam.session.session import Session
@@ -44,7 +44,6 @@ class SessionWrapper(object):
         self.session_name = name
         self.force = force
         self.session = None
-        self.phases = Phases()
         self.log = jam.log.getLogger("jam.sessionwrapper")
         self.init_session()
         self.db = Db(config)
@@ -93,7 +92,7 @@ class SessionWrapper(object):
                                             ).first()
         if not self.status:
             self.status = Status(self.session_name, self.version)
-            self.set_current_phase(self.phases.get("None"))
+            self.set_current_phase(phases_list.get("None"))
 
     def set_current_phase(self, phase):
         self.status.set_current_phase(phase)
