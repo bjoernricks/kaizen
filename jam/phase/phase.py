@@ -19,6 +19,14 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 
 # 02110-1301 USA
 
+class UnknownPhaseError(Exception):
+
+    def __init__(self, name):
+        self.name = name
+
+    def __str__(self):
+        return "Phase '%s' does not exist." % (self.name)
+
 
 class Phase(object):
 
@@ -69,6 +77,8 @@ class Phases(object):
 
 
     def get(self, name):
+        if not name in self.phases:
+            raise UnknownPhaseError(name)
         return self.phases[name]
 
 
