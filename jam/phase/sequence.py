@@ -91,3 +91,6 @@ class Sequence(object):
             else:
                 method = method_name
             method() # may raise an error
+
+    def __repr__(self):
+        return "<Sequence name='%s' id='%s'>" % (self.name, id(self))
