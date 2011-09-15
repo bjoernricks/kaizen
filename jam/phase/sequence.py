@@ -63,6 +63,9 @@ class Sequence(object):
         if set_phase:
             session.set_current_phase(self.result_phase)
 
+    def handle_phase(self, session):
+        session.set_phase(self.result_phase)
+
     def call(self, session, force=False):
         call_me = self.must_be_called(session)
         if not call_me and force:
@@ -74,7 +77,7 @@ class Sequence(object):
             if self.parent_seq:
                 self.parent_seq.call(session)
             self.call_methods(session)
-            session.set_phase(self.result_phase)
+            self.handle_phase(session)
             return True
         return False
 
