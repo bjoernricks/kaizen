@@ -23,6 +23,7 @@ import os
 import tarfile
 import zipfile
 import os.path
+import shutil
 
 import jam.log
 
@@ -32,7 +33,7 @@ from jam.utils import Loader, realpath, list_dir, list_subdir, extract_file
 from jam.download import Downloader
 from jam.phase.phase import phases_list
 from jam.db.db import Db
-from jam.db.objects import Status, Installed, File
+from jam.db.objects import Status, Installed, File, SessionPhase
 from jam.session.session import Session
 from jam.session.error import SessionError
 from jam.system.command import Patch
@@ -48,6 +49,7 @@ class SessionWrapper(object):
         self.init_session()
         self.db = Db(config)
         self.init_status()
+        self.load_phases()
         self.session.init()
 
     def load_session(self):
@@ -94,6 +96,17 @@ class SessionWrapper(object):
             self.status = Status(self.session_name, self.version)
             self.set_current_phase(phases_list.get("None"))
 
+    def load_phases(self):
+        phases = self.db.session.query(SessionPhase).filter(
+                                            and_(SessionPhase.session ==
+                                                 self.session_name,
+                                            SessionPhase.version == self.version)
+                                            ).all()
+        self.phases = [phase.phase for phase in phases]
+
+    def get_phases(self):
+        return self.phases
+
     def set_current_phase(self, phase):
         self.status.set_current_phase(phase)
         self.db.session.add(self.status)
@@ -101,6 +114,21 @@ class SessionWrapper(object):
 
     def get_current_phase(self):
         return self.status.get_current_phase()
+
+    def set_phase(self, phase):
+        sessionphase = SessionPhase(self.session_name, self.version, phase)
+        self.db.session.add(sessionphase)
+        self.db.session.commit()
+        self.load_phases()
+
+    def unset_phase(self, phase):
+        if phase in self.phases:
+            self.db.session.query(SessionPhase).filter(
+                    and_(SessionPhase.session == self.session_name,
+                    SessionPhase.version == self.version,
+                    SessionPhase.phase == phase)).delete()
+            self.db.session.commit()
+            self.load_phases()
 
     def depends(self):
         self.log.info("%s:running:depends" % self.session_name)
