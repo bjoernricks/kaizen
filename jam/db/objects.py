@@ -59,3 +59,13 @@ class Status(object):
     def get_current_phase(self):
         return self.current_phase
 
+class SessionPhase(object):
+
+    def __init__(self, session, version, phase):
+        self.session = session
+        self.version = version
+        self.phase = phase
+
+    def __repr__(self):
+        return "<SessionPhase id='%s' session='%s' version='%s' phase='%s'>" % (
+               id(self), self.session, self.version, self.phase.name)
