@@ -111,13 +111,24 @@ class SessionManager(object):
                                               self.phases.get("Downloaded"),
                                               ["delete_download"], False,
                                               self.delete_source_seq)
+        self.install_seq = Sequence("install",
+                                   self.phases.get("None"),
+                                   self.phases.get("Activated"), [],
+                                   False, self.activate_seq)
+
+        self.uninstall_seq = UnSequence("uninstall",
+                                        self.phases.get("Extracted"),
+                                        self.phases.get("Downloaded"),
+                                        self.phases.get("Extracted"),
+                                        [""], False,
+                                        self.delete_source_seq)
 
     def install_dependencies(self):
         dependencies = self.session_wrapper.depends()
         for dependency in dependencies.itervalues():
             current_phase = dependency.session.get_current_phase()
             if not current_phase == self.phases.get("Activated"):
-                self.activate_seq(dependency.session)
+                self.install_seq(dependency.session)
 
     def download(self, all=False, resume_on_error=True):
         if all:
@@ -158,7 +169,8 @@ class SessionManager(object):
         self.activate_seq(self.session_wrapper, self.force)
 
     def uninstall(self):
-        self.deactivate()
+        self.log.info("%s:running uninstall" % self.session_name)
+        self.uninstall_seq(self.session_wrapper, self.force)
 
     def activate(self):
         self.install_dependencies()
