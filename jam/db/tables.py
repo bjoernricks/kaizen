@@ -79,6 +79,13 @@ class Tables(object):
                        Column('version', String, primary_key = True),
                        Column('current_phase', PhaseType, nullable = False))
 
+        self.phases_table = Table("phases", self.metadata,
+                       Column('session', String,
+                              ForeignKey(self.info_table.c.session),
+                              primary_key = True),
+                       Column('version', String, primary_key = True),
+                       Column('phase', PhaseType, primary_key=True))
+
     def create(self):
         self.metadata.create_all()
 
