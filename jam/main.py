@@ -25,7 +25,7 @@ import sys
 import jam.log
 import jam.command
 
-from jam.config import Config, JAM_VERSION, JAM_CONFIG_FILES
+from jam.config import Config, JAM_CONFIG_FILES
 from jam.external.argparse import ArgumentParser
 from jam.utils import Loader
 
@@ -44,7 +44,7 @@ def main():
         raise Exception("jam requires Python 2.4 or higher.")
     usage = "%(prog)s [options] command {arguments}"
     description = "jam - Orchestrate your software"
-    version = "%(prog)s " + JAM_VERSION
+    version = "%(prog)s " + jam.__version__
 
     jamlogger = jam.log.getRootLogger()
 

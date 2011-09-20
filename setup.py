@@ -30,7 +30,7 @@ def read(fname):
                              fname)).read()
 
 setup(name="jam",
-      version=jam.config.JAM_VERSION,
+      version=jam.__version__
       description="",
       author="Björn Ricks",
       author_email="bjoern.ricks@gmail.com",
@@ -38,7 +38,7 @@ setup(name="jam",
       license = "LGPLv2+, GPLv2+",
       long_description=read("README.md"),
       packages=find_packages(),
-      package_data = { "" : ["*.txt", "*.md"],
+      package_data = {"" : ["*.txt", "*.md"],
                      },
       entry_points = { "console_scripts": ["jam=jam.main:main"] },
       classifiers=[

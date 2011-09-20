@@ -23,9 +23,10 @@ import os.path
 
 from ConfigParser import SafeConfigParser
 
+import jam
+
 from jam.utils import realpath
 
-JAM_VERSION = "0.1"
 JAM_CONFIG_FILES  = ["/etc/jamrc", realpath("~/.jam/jamrc")]
 
 class Config(object):
@@ -48,7 +49,7 @@ class Config(object):
             self.configparser.add_section("jam")
         prefix = self._get("prefix")
 
-        self.config["version"] = JAM_VERSION
+        self.config["version"] = jam.__version__
         self.config["prefix"] = prefix
         self.config["verbose"] = self._getbool("verbose", False)
         self.config["debug"] = self._getbool("debug", False)
