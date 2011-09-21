@@ -36,8 +36,10 @@ class Db(object):
     def __init__(self, config):
         if not "_already_init" in dir(self):
             rootdir = config.get("rootdir")
+            debug_db = config.get("debugdb")
             db_path = os.path.join(rootdir, "jam.db")
-            self.engine = create_engine("sqlite:///%s" % db_path)
+            self.engine = create_engine("sqlite:///%s" % db_path,
+                                        echo=debug_db)
             self.tables = Tables(self)
             self.tables.create()
             SqlAlchemySession = sessionmaker()
