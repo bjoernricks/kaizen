@@ -166,7 +166,7 @@ class SessionManager(object):
     def install(self):
         self.install_dependencies()
         self.log.info("%s:running install" % self.session_name)
-        self.activate_seq(self.session_wrapper, self.force)
+        self.install_seq(self.session_wrapper, self.force)
 
     def uninstall(self):
         self.log.info("%s:running uninstall" % self.session_name)
