@@ -60,6 +60,9 @@ class Tables(object):
                          Column('scm', String),
                          Column('scm_web', String))
 
+        # Installed table is now intended to record manually installed
+        # session. It doesn't include session which are installed as
+        # dependency
         self.installed_table = Table('installed', self.metadata,
                           Column('session', String,
                                  ForeignKey(self.info_table.c.session),
