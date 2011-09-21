@@ -25,6 +25,15 @@ import os.path
 from jam.utils import realpath
 
 class Session(object):
+    """
+    Base Class for all Sessions
+
+    All pre/post methods must not rely on any stuff that a corresponding
+    pre/post method has created, set, etc. That means e.g. the post_deactivate
+    method must not expect that the post_activate method has created a specific
+    symlink. In that case the post_deactivate method must check for the
+    existance of this sysmlink before removing it.
+    """
 
     depends = []
     url = ""
