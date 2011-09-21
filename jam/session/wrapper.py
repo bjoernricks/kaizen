@@ -33,7 +33,7 @@ from jam.utils import Loader, realpath, list_dir, list_subdir, extract_file
 from jam.download import Downloader
 from jam.phase.phase import phases_list
 from jam.db.db import Db
-from jam.db.objects import Status, Installed, File, SessionPhase
+from jam.db.objects import Status, File, SessionPhase
 from jam.session.session import Session
 from jam.session.error import SessionError
 from jam.system.command import Patch
@@ -207,18 +207,16 @@ class SessionWrapper(object):
                 self.log.debug("Deleting directory '%s'" % dir)
         query = self.db.session.query(File).filter(File.session ==
                                                    self.session_name).delete()
-        installed = self.db.session.query(Installed).filter(
+        installed = self.db.session.query(SessionPhase).filter(
                                      and_(
-                                     Installed.session == self.session_name,
-                                     Installed.version == self.version)
+                                     SessionPhase.session == self.session_name,
+                                     SessionPhase.phase ==
+                                     phases_list.get("Activated"))
                                      ).first()
         if not installed:
             self.log.warn("'%s' is not recognized as active but should be" \
                           " deactivated. Either deactivation was forced or"\
                           " the database may be currupted" % self.session_name)
-        else:
-            self.db.session.delete(installed)
-            self.db.session.commit()
         self.session.post_deactivate()
 
     def activate(self):
@@ -244,6 +242,17 @@ class SessionWrapper(object):
                                                                  file.filename))
                 # FIXME: raise error
                 return
+        # check if session is already installed
+        query = self.db.session.query(SessionPhase).filter(and_(
+                                      SessionPhase.session == self.session_name,
+                                      SessionPhase.phase ==
+                                      phases_list.get("Activated")
+                                     ))
+        # deactivate same session if already installed
+        if query.count():
+            self.deactivate()
+
+        self.session.post_activate()
         for subdir in dirs:
             dir = os.path.join("/", subdir)
             if not os.path.exists(dir):
@@ -260,16 +269,6 @@ class SessionWrapper(object):
             dbfile = self.db.session.merge(dbfile)
             self.db.session.add(dbfile)
         self.db.session.commit()
-        installed = Installed(self.session_name, self.version)
-        query = self.db.session.query(Installed).filter(
-                                     Installed.session == installed.session
-                                     )
-        #FIXME if a query.count > 0 old session must be deactivated
-        if query.count():
-            installed = self.db.session.merge(installed)
-        self.db.session.add(installed)
-        self.db.session.commit()
-        self.session.post_activate()
 
     def configure(self):
         self.log.info("%s:phase:configure" % self.session_name)
