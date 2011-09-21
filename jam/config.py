@@ -58,6 +58,7 @@ class Config(object):
         self.config["destroot"] = self._get("destroot")
         self.config["downloadroot"] = self._get("downloadroot")
         self.config["buildroot"] = self._get("buildroot")
+        self.config["debugdb"] = self._getbool("debugdb")
 
         jam_dir = self.config.get("rootdir", None)
         if not jam_dir:
