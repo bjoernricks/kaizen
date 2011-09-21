@@ -117,7 +117,7 @@ class SessionWrapper(object):
 
     def set_phase(self, phase):
         sessionphase = SessionPhase(self.session_name, self.version, phase)
-        self.db.session.add(sessionphase)
+        sessionphase = self.db.session.merge(sessionphase)
         self.db.session.commit()
         self.load_phases()
 
