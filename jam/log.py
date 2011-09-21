@@ -52,7 +52,7 @@ class Logger(object):
                         self.ERROR:   [ 'error',  self.COLOR_RED   ],
                         self.NONE:    [ 'none',   self.COLOR_NONE  ],
                         }
-        self.level = self.INFO
+        self.level = None
         self.name = name
         self.set_color(self._is_tty())
 
@@ -91,6 +91,9 @@ class Logger(object):
 
 
     def log(self, level, message):
+        cur_level = self.level
+        if not cur_level:
+            cur_level = getRootLogger().level
         if level < self.level:
             return
 
@@ -126,7 +129,6 @@ def getLogger(name):
     if name in loggers:
         return loggers[name]
     logger = Logger(name)
-    logger.set_level(getRootLogger().level)
     loggers[name] = logger
     return logger
 
