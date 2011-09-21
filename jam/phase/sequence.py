@@ -50,10 +50,6 @@ class Sequence(object):
         return self.always or not (self.result_phase in session.get_phases())
 
     def __call__(self, session, force=False):
-        if not self.method_names:
-            log.debug("No method to call is set. Nothing to do for sequence " \
-                      "'%s'." % self.name)
-            return
         current_phase = session.get_current_phase()
         if current_phase < self.required_phase:
             raise SequenceError(self.name, session.session_name,
