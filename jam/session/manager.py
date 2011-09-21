@@ -28,6 +28,8 @@ from jam.session.wrapper import SessionWrapper
 from jam.session.depend import DependencyAnalyser
 from jam.phase.phase import Phases
 from jam.phase.sequence import Sequence, UnSequence
+from jam.db.db import Db
+from jam.db.objects import Installed
 
 
 class SessionManager(object):
@@ -42,6 +44,7 @@ class SessionManager(object):
         self.log = jam.log.getLogger("jam.sessionmanager")
         self.session_wrapper = SessionWrapper(name, config, force)
         self.phases = Phases()
+        self.db = Db(config)
         self.init_sequences()
 
     def init_sequences(self):
@@ -167,17 +170,37 @@ class SessionManager(object):
         self.install_dependencies()
         self.log.info("%s:running install" % self.session_name)
         self.install_seq(self.session_wrapper, self.force)
+        self.common_activate()
 
     def uninstall(self):
         self.log.info("%s:running uninstall" % self.session_name)
         self.uninstall_seq(self.session_wrapper, self.force)
+        self.common_deactivate()
+
+    def common_deactivate(self):
+        installed = self.db.session.query(Installed).get(self.session_name)
+        if installed:
+            self.db.session.delete(installed)
+            self.db.session.commit()
+
+    def common_activate(self):
+        installed = self.db.session.query(Installed).get(self.session_name)
+        if not installed:
+            installed = Installed(self.session_name,
+                    self.session_wrapper.version)
+        else:
+            installed.version = self.session_wrapper.version
+        self.db.session.add(installed)
+        self.db.session.commit()
 
     def activate(self):
         self.install_dependencies()
         self.activate_seq(self.session_wrapper, self.force)
+        self.common_activate()
 
     def deactivate(self):
         self.deactivate_seq(self.session_wrapper, self.force)
+        self.common_deactivate()
 
     def patch(self):
         self.patch_seq(self.session_wrapper, self.force)
