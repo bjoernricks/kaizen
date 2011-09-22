@@ -27,7 +27,7 @@ import jam.log
 
 from tempfile import mkdtemp
 
-from jam.utils import Template, Hash, list_contents, extract_file, realpath
+from jam.utils import Template, Hash, list_contents, extract_file, real_path
 from jam.download import Downloader
 
 class SessionCreateError(Exception):
@@ -148,7 +148,7 @@ class SessionCreator(object):
         if stdout:
             print template.replace(vars)
         else:
-            new_session_dir = os.path.join(realpath(self.session_dir), name)
+            new_session_dir = os.path.join(real_path(self.session_dir), name)
             if not os.path.exists(new_session_dir):
                 os.makedirs(new_session_dir)
             try:

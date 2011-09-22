@@ -27,7 +27,7 @@ import re
 import jam.run
 import jam.log
 
-from jam.utils import realpath
+from jam.utils import real_path
 
 class BuildSystem(object):
 
@@ -35,7 +35,7 @@ class BuildSystem(object):
         self.args = args
         self.src_dir = src_dir
         self.build_dir = build_dir
-        self.cwd_dir = realpath(build_dir)
+        self.cwd_dir = real_path(build_dir)
         self.verbose = verbose
         self.env = dict()
         self.log = jam.log.getLogger("jam.buildsystem")
@@ -84,7 +84,7 @@ class CMake(BuildSystem):
     def run(self):
         cmd = ["cmake"]
         cmd.extend(args)
-        cmd.append(realpath(self.src_dir))
+        cmd.append(real_path(self.src_dir))
         self.log.debug("CMake run '%s' in '%s' with env '%s'" % (cmd,
                        self.cwd_dir, self.env))
         jam.run.call(cmd, not self.verbose, extra_env=self.env,
@@ -95,7 +95,7 @@ class Make(object):
 
     def __init__(self, dir, verbose=False):
         self.dir = dir
-        self.cwd_dir = realpath(dir)
+        self.cwd_dir = real_path(dir)
         self.verbose = verbose
         self.log = jam.log.getLogger("jam.make")
 
@@ -124,7 +124,7 @@ class Command(object):
     def __init__(self, cmd, args, cwd, verbose):
         self.cmd = cmd
         self.args = args
-        self.cwd_dir = realpath(cwd)
+        self.cwd_dir = real_path(cwd)
         self.verbose = verbose
         self.log = jam.log.getLogger("jam.command")
 

@@ -22,7 +22,7 @@
 import inspect
 import os.path
 
-from jam.utils import realpath
+from jam.utils import real_path
 
 class Session(object):
     """
@@ -60,7 +60,7 @@ class Session(object):
         self.session_name = self.__module__.split(".")[0]
         self.destroot_path = os.path.join(self.destroot_dir, self.session_name,
                                           self.dist_version)
-        self.session_path = realpath(os.path.dirname(
+        self.session_path = real_path(os.path.dirname(
                                      inspect.getfile(self.__class__)))
 
         self.__shadow = dict()

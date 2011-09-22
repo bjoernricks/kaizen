@@ -122,7 +122,7 @@ class Loader(object):
 class Template(object):
 
     def __init__(self, filename):
-        path = realpath(os.path.join(__name__, "..", "templates"))
+        path = real_path(os.path.join(__name__, "..", "templates"))
         f = open(os.path.join(path, filename), "r")
         try:
             text = f.read()
@@ -182,7 +182,7 @@ def list_subdir(dir, all_dirs=False):
     os.chdir(cwd)
     return (dirs, files)
 
-def realpath(path):
+def real_path(path):
     return os.path.abspath(os.path.expanduser(path))
 
 def extract_file(file_name, dest_dir):

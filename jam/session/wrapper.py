@@ -29,7 +29,7 @@ import jam.log
 
 from jam.external.sqlalchemy import and_
 
-from jam.utils import Loader, realpath, list_dir, list_subdir, extract_file
+from jam.utils import Loader, real_path, list_dir, list_subdir, extract_file
 from jam.download import Downloader
 from jam.phase.phase import phases_list
 from jam.db.db import Db
@@ -336,7 +336,7 @@ class SessionLoader(Loader):
     def __init__(self, config):
         self.config = config
         self.log = jam.log.getLogger("jam.sessionloader")
-        path = realpath(self.config.get("sessions"))
+        path = real_path(self.config.get("sessions"))
         self.add_path(path)
 
     def sessions(self, modulename):
