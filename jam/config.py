@@ -39,7 +39,7 @@ class Config(object):
         # set default values
         defaults["debug"] = False
         defaults["verbose"] = False
-        defaults["prefix"] = "/opt/local"
+        defaults["prefix"] = "/usr/local"
         defaults.update(options)
 
         self.configparser = SafeConfigParser(defaults)
