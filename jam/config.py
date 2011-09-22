@@ -60,6 +60,10 @@ class Config(object):
         self.config["buildroot"] = self._get("buildroot")
         self.config["debugdb"] = self._getbool("debugdb")
 
+        jam_package_path = os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                                        os.path.pardir))
+        self.config["packagepath"] = jam_package_path
+
         jam_dir = self.config.get("rootdir", None)
         if not jam_dir:
             jam_dir = os.path.join(prefix, "jam")
