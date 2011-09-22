@@ -78,6 +78,7 @@ class Session(object):
         self.vars["build_dir"] = self.build_dir
         self.vars["session_path"] = self.session_path
         self.vars["dist_version"] = self.dist_version
+        self.vars["package_path"] = self.config.get("packagepath")
 
         if not self.src_path:
             self.src_path = os.path.join(src_dir, self.name
