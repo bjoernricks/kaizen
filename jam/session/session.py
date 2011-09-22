@@ -55,7 +55,7 @@ class Session(object):
         self.verbose = self.config.get("verbose")
         self.debug = self.config.get("debug")
         self.prefix = self.config.get("prefix")
-        self.sessions_dir = self.config.get("sessions")
+        self.session_dirs = self.config.get("sessions")
         self.dist_version = self.version + "-" + self.revision
         self.destroot_dir = self.config.get("destroot")
         self.session_name = self.__module__.split(".")[0]
