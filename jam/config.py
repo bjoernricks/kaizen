@@ -113,6 +113,13 @@ class Config(object):
         except:
             return default
 
+    def _getlist(self, value, default=[]):
+        list_value = self._get(value, default)
+        if not list_value:
+            return default
+        # TODO use regex to split string
+        return list_value.split(",")
+
     def get(self, value):
         # TODO: raise error if value not found
         return self.config[value]
