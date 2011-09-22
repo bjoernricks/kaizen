@@ -30,6 +30,26 @@ from jam.utils import realpath
 JAM_CONFIG_FILES  = ["/etc/jamrc", realpath("~/.jam/jamrc")]
 
 class Config(object):
+    """
+    Config class for several jam settings
+
+    Variables are:
+    * version - String: jam version
+    * debug - Bool: debug is enabled/disabled (default is False)
+    * verbose - Bool: commands should print it's output (default is False)
+    * debugdb - Bool: database queries are printed (default is False)
+    * prefix - String: absolute path to the prefix (default is /usr/local)
+    * rootdir - String: path to the rootdir (default is %(prefix)s/jam)
+    * downloadroot - String: path to the directory to put in downloaded source
+                             (default is %(rootdir)s/cache
+    * destroot - String: path to the directory to put in installed files
+                         (default is %(rootdir)s/destroot)
+    * buildroot - String: path to the build directory (default is
+                          %(rootdir)s/cache)
+    * sessions - String: path to the sessions (default is %(rootdir)s/sessions)
+    * packagepath - String: absolute path to the jam python package (calculated
+                            at runtime)
+    """
 
     def __init__(self, files=[], options={}):
         self.options = options
