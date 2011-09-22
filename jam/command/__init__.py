@@ -26,4 +26,4 @@ from jam.command.command import BuildCommand, ActivateCommand, \
                                 DownloadCommand, DestrootCommand, \
                                 InstallCommand, UninstallCommand, \
                                 DropCommand, CreateCommand, PatchCommand, \
-                                UnPatchCommand
+                                UnPatchCommand, ListCommand

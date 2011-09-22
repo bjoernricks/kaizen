@@ -286,3 +286,16 @@ class CreateCommand(Command):
 
         creator.create(options.stdout)
 
+class ListCommand(Command):
+
+    def __init__(self, config):
+        description = ""
+        super(ListCommand, self).__init__("list", config, self.main, [],
+                                            description)
+
+    def add_parser(self, parser):
+        usage = None
+        subparser = super(ListCommand, self).add_parser(parser, usage)
+
+    def main(self):
+        pass
