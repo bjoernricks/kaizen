@@ -50,7 +50,7 @@ class Config(object):
         prefix = self._get("prefix")
 
         self.config["version"] = jam.__version__
-        self.config["prefix"] = prefix
+        self.config["prefix"] = realpath(prefix)
         self.config["verbose"] = self._getbool("verbose", False)
         self.config["debug"] = self._getbool("debug", False)
         self.config["rootdir"] = self._get("rootdir")
