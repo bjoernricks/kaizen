@@ -43,7 +43,7 @@ class MakeSession(Session):
 class ConfigureSession(MakeSession):
 
     def configure(self):
-        args = self.args
+        args = self.configure_args
         args.append("--prefix=" + self.prefix)
         args.append("--srcdir=" + self.src_path)
         configure = Configure(args, self.src_path, self.build_path,
@@ -72,7 +72,7 @@ class CMakeSession(MakeSession):
     depends = ["cmake"]
 
     def configure(self):
-        args = self.args
+        args = self.configure_args
         args.append("-DCMAKE_INSTALL_PREFIX=" + self.prefix)
         args.append("-DCMAKE_COLOR_MAKEFILE=TRUE")
         if self.verbose:

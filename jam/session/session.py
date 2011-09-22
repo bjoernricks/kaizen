@@ -41,7 +41,7 @@ class Session(object):
     version = ""
     revision = "0"
     hash = {}
-    args = []
+    configure_args = []
     name = ""
     src_path = None
     build_path = None
