@@ -7,5 +7,4 @@ jam/externals/argparse.py   PYTHON SOFTWARE FOUNDATION LICENSE VERSION 2
 jam/externals/sqlalchemy    MIT License
 jam/run.py                  GPLv2+
 jam/log.py                  GPLv2+
-jam.py                      GPLv2+
 
