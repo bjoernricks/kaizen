@@ -25,7 +25,7 @@ from jam.system import Configure, CMake, Make, Command, Copy
 class MakeSession(Session):
 
     def build(self):
-        Make(self.build_path, self.debug).run()
+        Make(self.build_path, self.debug).run(self.build_args)
 
     def destroot(self):
         Make(self.build_path, self.debug).install(self.dest_dir)
@@ -92,7 +92,9 @@ class PythonSession(Session):
 
     def build(self):
         #TODO drop configure and use --build-base=
-        Command("python", ["setup.py", "build"], self.build_path,
+        args = ["setup.py", "build"]
+        args.extend(self.build_args)
+        Command("python", args, self.build_path,
                 self.debug).run()
 
     def destroot(self):

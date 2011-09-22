@@ -42,6 +42,7 @@ class Session(object):
     revision = "0"
     hash = {}
     configure_args = []
+    build_args = []
     name = ""
     src_path = None
     build_path = None
@@ -108,8 +109,8 @@ class Session(object):
             return None
         if not value:
             return value
-        if name in ["src_path", "build_path", "args", "url",
-                             "patches"]:
+        if name in ["src_path", "build_path", "configure_args", "url",
+                    "build_args", "patches"]:
             if isinstance(value, list):
                 newlist = self.__shadow.get(name)
                 if not newlist:
