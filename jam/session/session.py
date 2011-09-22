@@ -99,14 +99,6 @@ class Session(object):
         else:
             return var % self.vars
 
-    def args_replace(self):
-        org_args = self.args
-        args = []
-        for arg in org_args:
-            newarg = self.var_replace(arg)
-            args.append(newarg)
-        return args
-
     def __getattribute__(self, name):
         try:
             value = object.__getattribute__(self, name)
