@@ -46,7 +46,7 @@ class Config(object):
                          (default is %(rootdir)s/destroot)
     * buildroot - String: path to the build directory (default is
                           %(rootdir)s/cache)
-    * sessions - String: path to the sessions (default is %(rootdir)s/sessions)
+    * sessions - List: paths to the sessions (default is [%(rootdir)s/sessions])
     * packagepath - String: absolute path to the jam python package (calculated
                             at runtime)
     """
@@ -74,7 +74,7 @@ class Config(object):
         self.config["verbose"] = self._getbool("verbose", False)
         self.config["debug"] = self._getbool("debug", False)
         self.config["rootdir"] = self._get("rootdir")
-        self.config["sessions"] = self._get("sessions")
+        self.config["sessions"] = self._getlist("sessions")
         self.config["destroot"] = self._get("destroot")
         self.config["downloadroot"] = self._get("downloadroot")
         self.config["buildroot"] = self._get("buildroot")
@@ -90,8 +90,8 @@ class Config(object):
             self.config["rootdir"] = jam_dir
         if not self.config.get("downloadroot", None):
             self.config["downloadroot"] =  os.path.join(jam_dir, "cache")
-        if not self.config.get("sessions", None):
-            self.config["sessions"] =  os.path.join(jam_dir, "session")
+        if not self.config.get("sessions"):
+            self.config["sessions"] =  [os.path.join(jam_dir, "session")]
         if not self.config.get("destroot", None):
             self.config["destroot"] = os.path.join(jam_dir, "destroot")
         if not self.config.get("buildroot", None):
