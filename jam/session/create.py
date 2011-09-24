@@ -176,6 +176,8 @@ class SessionCreator(object):
         vars["rootdir"] = self.dir
         vars["sessions"] = self.session_dir
         vars["sessionname"] = name.replace("-","").capitalize()
+        vars["detectedname"] = detected_name
+        vars["detectedversion"] = detected_version
         
         if stdout:
             print template.replace(vars)
