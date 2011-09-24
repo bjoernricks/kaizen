@@ -72,8 +72,16 @@ class FileDetector(TypeDetector):
         return self.name
 
 
+class PythonDetector(FileDetector):
+
+    def detect(self, dir, name):
+        retval = super(PythonDetector, self).detect(dir, name)
+        self.name = "python-" + self.name
+        return retval
+
+
 detectors = [FileDetector("CMakeList.txt", "cmake"),
-             FileDetector("setup.py", "python"),
+             PythonDetector("setup.py", "python"),
              FileDetector("configure", "autotools"),]
 
 
