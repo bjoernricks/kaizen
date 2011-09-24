@@ -120,43 +120,52 @@ class SessionCreator(object):
         sha1 = hashcalc.sha1()
         self.log.debug("sha1 hash is '%s'" % sha1)
 
-        name = self.name
-        if not self.name or not self.version:
-            filename = os.path.basename(source)
-            if not "-" in filename:
-                self.clean()
-                raise SessionCreateError("Could not determinte name and "\
-                                         "version from file '%s'" % filename)
+        filename = os.path.basename(source)
+        if not "-" in filename and (not self.name or not self.version):
+            self.clean()
+            raise SessionCreateError("Could not detect name and "\
+                    "version from file '%s'" % filename)
+
+        if "-" in filename:
             suffixes = [".tar.gz", ".tar.bz2", ".tgz", "tbz2", ".zip"]
             for suffix in suffixes:
                 if filename.endswith(suffix):
                     index = filename.rfind(suffix)
                     filename = filename[:index]
-            split = filename.split("-")
-            name = split[0]
-            version = "".join(split[1:])
-
-            if not self.version:
-                self.log.info("Determined session version is '%s'" % version)
-            if not self.name:
-                self.log.info("Determined session name is '%s'" % name)
-
-        if self.name:
+            split = filename.rsplit("-", 1)
+            detected_name = split[0]
+            name = detected_name.lower()
+            version = split[1]
+            detected_version = version
+            self.log.info("Detected session version is '%s'" % version)
+            self.log.info("Detected session name is '%s'" % name)
+        else:
             name = self.name
-        if self.version:
             version = self.version
+            detected_name = self.name
+            detected_version = self.version
+
         if not self.template:
             extract_file(source, self.tmp_dir)
+            template = None
             for detector in detectors:
-                template = detector.detect(self.tmp_dir)
-                if template:
+                if detector.detect(name, self.tmp_dir):
+                    template = detector.get_template()
+                    name = detector.get_name()
                     break
             if not template:
-                self.log.info("Could not determine template for '%s'. "
+                self.log.info("Could not detected template for '%s'. "
                               "Using default." % name)
                 template = Template("default.template")
         else:
             template = Template(self.templatename + ".template")
+
+        # name and version may be changed by template
+        # overwrite them again
+        if self.name:
+            name = self.name
+        if self.version:
+            version = self.version
 
         vars = dict()
         vars["name"] = name
