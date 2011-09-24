@@ -160,13 +160,6 @@ class SessionCreator(object):
         else:
             template = Template(self.templatename + ".template")
 
-        # name and version may be changed by template
-        # overwrite them again
-        if self.name:
-            name = self.name
-        if self.version:
-            version = self.version
-
         vars = dict()
         vars["name"] = name
         vars["version"] = version
@@ -178,6 +171,12 @@ class SessionCreator(object):
         vars["sessionname"] = name.replace("-","").capitalize()
         vars["detectedname"] = detected_name
         vars["detectedversion"] = detected_version
+
+        # self.name and self.version may contain templates
+        if self.name:
+            name = self.name % vars
+        if self.version:
+            version = self.version % vars
         
         if stdout:
             print template.replace(vars)
