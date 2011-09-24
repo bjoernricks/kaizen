@@ -171,7 +171,7 @@ class SessionCreator(object):
         if stdout:
             print template.replace(vars)
         else:
-            new_session_dir = os.path.join(real_path(self.session_dir), name)
+            new_session_dir = os.path.join(real_path(self.session_dir[0]), name)
             if not os.path.exists(new_session_dir):
                 os.makedirs(new_session_dir)
             try:
