@@ -15,8 +15,8 @@ class ${sessionname}(jam.session.PythonSession):
     # uncomment to set path to build directory (normally not necessary)
     # build_path = ""
 
-    # uncomment to pass additonal parameters to configure script
-    # args = [""]
+    # uncomment to pass additional parameters to setup.py script
+    # build_args = [""]
 
     # uncomment to add additonal patches 
     # all patches will be copied to %(downloadroot)s/%(session)s/patches
