@@ -37,24 +37,39 @@ class SessionCreateError(Exception):
 class TypeDetector(object):
 
     def detect(self, dir):
-        return None
+        pass
 
+    def get_template(self):
+        pass
+
+    def get_name(self):
+        pass
 
 class FileDetector(TypeDetector):
 
     def __init__(self, filename, templatename):
+        self.name = None
         self.filename = filename
         self.templatename = templatename
+        self.template = None
 
-    def detect(self, dir):
+    def detect(self, name, dir):
+        self.name = name
         (dirs, files) = list_contents(dir)
         if len(dirs) == 1:
             # only one subdir, look in subdir
             dir = os.path.join(dir, dirs[0])
             (dirs, files) = list_contents(dir)
         if self.filename in files:
-            return Template(self.templatename + ".template")
-        return None 
+            self.template = Template(self.templatename + ".template")
+            return True
+        return False
+
+    def get_template(self):
+        return self.template
+
+    def get_name(self):
+        return self.name
 
 
 detectors = [FileDetector("CMakeList.txt", "cmake"),
