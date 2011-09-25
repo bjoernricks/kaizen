@@ -254,7 +254,6 @@ class SessionWrapper(object):
         if query.count():
             self.deactivate()
 
-        self.session.post_activate()
         for subdir in dirs:
             dir = os.path.join("/", subdir)
             if not os.path.exists(dir):
@@ -271,6 +270,7 @@ class SessionWrapper(object):
             dbfile = self.db.session.merge(dbfile)
             self.db.session.add(dbfile)
         self.db.session.commit()
+        self.session.post_activate()
 
     def configure(self):
         self.log.info("%s:phase:configure" % self.session_name)
