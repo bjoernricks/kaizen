@@ -20,10 +20,10 @@
 # 02110-1301 USA
 
 from jam.command.command import BuildCommand, ActivateCommand, \
-                                DeactivateCommand, CleanCommand, \
-                                ConfigureCommand, DistcleanCommand, \
+                                DeactivateCommand, DeleteCommand, \
+                                ConfigureCommand, \
                                 DependsCommand, ExtractCommand, \
                                 DownloadCommand, DestrootCommand, \
                                 InstallCommand, UninstallCommand, \
-                                DropCommand, CreateCommand, PatchCommand, \
+                                CreateCommand, PatchCommand, \
                                 UnPatchCommand, ListCommand
