@@ -177,17 +177,6 @@ class UninstallCommand(PhaseCommand):
         self.manager.uninstall()
 
 
-class DropCommand(PhaseCommand):
-
-    def __init__(self, config):
-        description = ""
-        super(DropCommand, self).__init__("drop", config, description)
-
-    def main(self, options):
-        super(DropCommand, self).main(options)
-        self.manager.uninstall()
-
-
 class ActivateCommand(PhaseCommand):
 
     def __init__(self, config):
