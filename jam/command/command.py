@@ -36,7 +36,8 @@ class Command(object):
         if usage:
             self.usage = usage
         else:
-            self.usage = "%(prog)s [options] " + self.name + " {arguments}"
+            self.usage = "%(prog)s [global options] " + self.name + \
+                         " {arguments}"
         subparser = parser.add_parser(self.name, aliases=self.aliases,
                                       usage=self.usage,
                                       description=self.description)
