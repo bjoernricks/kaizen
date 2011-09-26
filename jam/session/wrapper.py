@@ -206,7 +206,7 @@ class SessionWrapper(object):
         # delete activated files
         query = self.db.session.query(File).filter(File.session ==
                                                     self.session_name)
-        for file in query.all()
+        for file in query.all():
             if os.path.lexists(file):
                 self.log.debug("Deactivating '%s'" % file.filename)
                 os.remove(file.filename)
