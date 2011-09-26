@@ -55,7 +55,9 @@ class SessionNameCommand(Command):
                                                  description)
 
     def add_parser(self, parser):
-        subparser = super(SessionNameCommand, self).add_parser(parser)
+        usage = "%(prog)s [global options] " + self.name + " <sessionname> " \
+                "{arguments}"
+        subparser = super(SessionNameCommand, self).add_parser(parser, usage)
         subparser.add_argument("sessionname", nargs=1)
         return subparser
 
