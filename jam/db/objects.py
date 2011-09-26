@@ -46,6 +46,13 @@ class File(object):
         self.session = session
 
 
+class Directory(object):
+
+    def __init__(self, directory, session):
+        self.directory = directory
+        self.session = session
+
+
 class Status(object):
 
     def __init__(self, session, version, phase=None):
