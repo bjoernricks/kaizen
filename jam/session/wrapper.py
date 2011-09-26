@@ -33,7 +33,7 @@ from jam.utils import Loader, real_path, list_dir, list_subdir, extract_file
 from jam.download import Downloader
 from jam.phase.phase import phases_list
 from jam.db.db import Db
-from jam.db.objects import Status, File, SessionPhase
+from jam.db.objects import Status, File, Directory, SessionPhase
 from jam.session.session import Session
 from jam.session.error import SessionError
 from jam.system.command import Patch
@@ -190,23 +190,6 @@ class SessionWrapper(object):
 
     def deactivate(self):
         self.log.info("%s:phase:deactivate" % self.session_name)
-        self.session.pre_deactivate()
-        # TODO use files from db
-        (dirs, files) = list_subdir(self.dest_dir, True)
-        for file in files:
-            file_path = os.path.join("/", file)
-            if os.path.lexists(file_path):
-                self.log.debug("Deactivating '%s'" % file_path)
-                os.remove(file_path)
-        dirs.sort(reverse=True)
-        for subdir in dirs:
-            dir = os.path.join("/", subdir)
-            if os.path.exists(dir) and not os.listdir(dir) and not \
-                dir == self.config.get("prefix"):
-                os.rmdir(dir)
-                self.log.debug("Deleting directory '%s'" % dir)
-        query = self.db.session.query(File).filter(File.session ==
-                                                   self.session_name).delete()
         installed = self.db.session.query(SessionPhase).filter(
                                      and_(
                                      SessionPhase.session == self.session_name,
@@ -217,6 +200,34 @@ class SessionWrapper(object):
             self.log.warn("'%s' is not recognized as active but should be" \
                           " deactivated. Either deactivation was forced or"\
                           " the database may be currupted" % self.session_name)
+
+        self.session.pre_deactivate()
+
+        # delete activated files
+        query = self.db.session.query(File).filter(File.session ==
+                                                    self.session_name)
+        for file in query.all()
+            if os.path.lexists(file):
+                self.log.debug("Deactivating '%s'" % file.filename)
+                os.remove(file.filename)
+            else:
+                self.log.warn("File '%s' couldn't be deactivated because it "\
+                              "doesn't exist anymore" % file.filename)
+            self.db.session.delete(file)
+        self.db.session.commit()
+
+        # delete empty directories
+        query = self.db.session.query(Directory).filter(Directory.session ==
+                                                        self.session_name)
+        for directory in query.all():
+            dir = directory.directory
+            if os.path.exists(dir) and not os.listdir(dir) and not \
+                dir == self.config.get("prefix"):
+                os.rmdir(dir)
+                self.log.debug("Deleting directory '%s'" % dir)
+            self.db.session.delete(directory)
+        self.db.session.commit()
+
         self.session.post_deactivate()
 
     def activate(self):
@@ -227,6 +238,17 @@ class SessionWrapper(object):
         if os.path.lexists(current_dir):
             os.remove(current_dir)
         os.symlink(self.dest_dir, current_dir)
+
+        (dirs, files) = list_subdir(self.dest_dir)
+        # create necessary directories and run pre_activate
+        # in pre_activate a session may create directories, files, etc.
+        for subdir in dirs:
+            dir = os.path.join("/", subdir)
+            if not os.path.exists(dir):
+                os.makedirs(dir)
+                self.log.debug("Creating directory '%s'" % dir)
+        self.session.pre_activate()
+
         (dirs, files) = list_subdir(self.dest_dir)
         activate_files = []
         for file in files:
@@ -254,12 +276,15 @@ class SessionWrapper(object):
         if query.count():
             self.deactivate()
 
+        # record created directories in db
         for subdir in dirs:
             dir = os.path.join("/", subdir)
-            if not os.path.exists(dir):
-                os.makedirs(dir)
-                self.log.debug("Creating directory '%s'" % dir)
-        self.session.pre_activate()
+            dbdir = Directory(self.session_name, dir)
+            dbdir = self.db.session.merge(dbdir)
+            self.db.session.add(dbdir)
+        self.db.session.commit()
+
+        # create symlinks and record installed files in db
         for (file_path, destdir_file_path) in activate_files:
             self.log.debug("Activating '%s' from '%s'" % (file_path,
                            destdir_file_path))
