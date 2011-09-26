@@ -207,12 +207,13 @@ class SessionWrapper(object):
         query = self.db.session.query(File).filter(File.session ==
                                                     self.session_name)
         for file in query.all():
-            if os.path.lexists(file):
-                self.log.debug("Deactivating '%s'" % file.filename)
-                os.remove(file.filename)
+            file_path = file.filename
+            if os.path.lexists(file_path):
+                self.log.debug("Deactivating '%s'" % file_path)
+                os.remove(file_path)
             else:
                 self.log.warn("File '%s' couldn't be deactivated because it "\
-                              "doesn't exist anymore" % file.filename)
+                              "doesn't exist anymore" % file_path)
             self.db.session.delete(file)
         self.db.session.commit()
 
