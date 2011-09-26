@@ -217,8 +217,15 @@ class SessionManager(object):
     def depends(self):
         return self.session_wrapper.depends()
 
-    def drop(self):
-        self.log.info("%s:phase:drop" % self.session_name)
-        #TODO remove session destdir
+    def delete_destroot(self):
+        self.delete_destroot_seq(self.session_wrapper, self.force)
 
+    def delete_build(self):
+        self.delete_build_seq(self.session_wrapper, self.force)
+
+    def delete_source(self):
+        self.delete_source_seq(self.session_wrapper, self.force)
+
+    def delete_download(self):
+        self.delete_download_seq(self.session_wrapper, self.force)
 
