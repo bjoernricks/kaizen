@@ -41,8 +41,8 @@ class DownloaderHashError(DownloaderError):
         self.hashtype = hashtype
 
     def __str__(self):
-        return "Invalid %s hash for '%s'. Calculated hash is '%s', expected was \
-               '%s'" % (self.hastype, self.filename, self.value, self.expected)
+        return "Invalid %s hash for '%s'. Calculated hash is '%s', expected " \
+               "was '%s'" % (self.hashtype, self.filename, self.value, self.expected)
 
 
 class HttpDownloader(object):
