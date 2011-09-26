@@ -339,6 +339,14 @@ class SessionWrapper(object):
             self.log.debug("Deleting destroot directory '%s'" % self.dest_dir)
             shutil.rmtree(self.dest_dir)
 
+        current_dir = os.path.join(self.destroot_dir, "current")
+        if not os.path.exists(current_dir) and os.path.islink(current_dir):
+            os.remove(current_dir)
+        #if os.path.exists(self.destroot_dir) and not \
+        #        os.listdir(self.destroot_dir) \
+        #        and not self.destroot_dir == self.config.get("prefix"):
+        #    os.remove(self.destroot_dir)
+
     def delete_build(self):
         self.log.info("%s:phase:delete-build" % self.session_name)
         if os.path.exists(self.build_dir):
