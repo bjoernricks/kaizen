@@ -199,26 +199,43 @@ class DeactivateCommand(PhaseCommand):
         self.manager.deactivate()
 
 
-class CleanCommand(PhaseCommand):
+class DeleteCommand(PhaseCommand):
 
     def __init__(self, config):
-        description = ""
-        super(CleanCommand, self).__init__("clean", config, description)
+        description = "clean a session"
+        super(DeleteCommand, self).__init__("delete", config, description,
+                                           ["del", "clean", "drop"])
+
+    def add_parser(self, parser):
+        subparser = super(DeleteCommand, self).add_parser(parser)
+        subparser.add_argument("--download", action="store_true",
+                               help="delete the download directory")
+        subparser.add_argument("--source", action="store_true",
+                               help="delete the source directory")
+        subparser.add_argument("--build", action="store_true",
+                               help="delete the build directory [default]")
+        subparser.add_argument("--clean", action="store_true",
+                               help="clean the build directoryi")
+        subparser.add_argument("--dist", action="store_true",
+                               help="distclean the build directory")
+        subparser.add_argument("--destroot", action="store_true",
+                               help="delete the destroot directory")
+        return subparser
 
     def main(self, options):
-        super(CleanCommand, self).main(options)
-        self.manager.clean()
-
-
-class DistcleanCommand(PhaseCommand):
-
-    def __init__(self, config):
-        description = ""
-        super(DistcleanCommand, self).__init__("distclean", config, description)
-
-    def main(self, options):
-        super(DistcleanCommand, self).main(options)
-        self.manager.distclean()
+        super(DeleteCommand, self).main(options)
+        if options.dist:
+            self.manager.distclean()
+        elif options.source:
+            self.manager.delete_source()
+        elif options.destroot:
+            self.manager.delete_destroot()
+        elif options.download:
+            self.manager.delete_download()
+        elif options.clean:
+            self.manager.clean()
+        else:
+            self.manager.delete_build()
 
 
 class DependsCommand(PhaseCommand):
