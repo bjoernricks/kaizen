@@ -212,7 +212,7 @@ class SessionManager(object):
         self.session_wrapper.clean()
 
     def distclean(self):
-        self.log.normal(self.session_wrapper.distclean())
+        self.distclean_seq(self.session_wrapper, self.force)
 
     def depends(self):
         return self.session_wrapper.depends()
