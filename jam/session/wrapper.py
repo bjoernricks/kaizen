@@ -195,7 +195,7 @@ class SessionWrapper(object):
         (dirs, files) = list_subdir(self.dest_dir, True)
         for file in files:
             file_path = os.path.join("/", file)
-            if os.path.exists(file_path):
+            if os.path.lexists(file_path):
                 self.log.debug("Deactivating '%s'" % file_path)
                 os.remove(file_path)
         dirs.sort(reverse=True)
@@ -222,7 +222,9 @@ class SessionWrapper(object):
     def activate(self):
         self.log.info("%s:phase:activate" % self.session_name)
         current_dir = os.path.join(self.destroot_dir, "current")
-        if os.path.exists(current_dir):
+
+        # lexists -> returns True also for broken links
+        if os.path.lexists(current_dir):
             os.remove(current_dir)
         os.symlink(self.dest_dir, current_dir)
         (dirs, files) = list_subdir(self.dest_dir)
@@ -262,7 +264,7 @@ class SessionWrapper(object):
         for (file_path, destdir_file_path) in activate_files:
             self.log.debug("Activating '%s' from '%s'" % (file_path,
                            destdir_file_path))
-            if os.path.exists(file_path):
+            if os.path.lexists(file_path):
                 os.remove(file_path)
             os.symlink(destdir_file_path, file_path)
             dbfile = File(file_path, self.session_name)
