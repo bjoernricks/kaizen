@@ -75,6 +75,12 @@ class Tables(object):
                              ForeignKey(self.info_table.c.session),
                              nullable = False))
 
+        self.dirs_table = Table('directories', self.metadata,
+                          Column('directory', String, primary_key=True),
+                          Column('session', String,
+                                 ForeignKey(self.info_table.c.session),
+                                 primary_key=True))
+
         self.status_table = Table('status', self.metadata,
                        Column('session', String,
                               ForeignKey(self.info_table.c.session),
