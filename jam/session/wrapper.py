@@ -190,7 +190,7 @@ class SessionWrapper(object):
             self.log.info("Copying source file from '%s'." % self.session.url)
             (archive_source, archive_dest) = self.get_download(self.session.url,
                                                 self.data_dir)
-            dl = Downloader(archive_source)
+            dl = self.session.downloader(archive_source)
             download_file = dl.copy(archive_dest, self.force)
             dl.verify(self.session.hash)
         if self.session.patches:
@@ -200,7 +200,7 @@ class SessionWrapper(object):
             for patch in self.session.patches:
                 (patch_source, patch_dest) = self.get_download(patch,
                                                  self.patch_dir)
-                dl = Downloader(patch_source, self.session.session_path)
+                dl = UrlDownloader(patch_source, self.session.session_path)
                 dl.copy(patch_dest, self.force)
 
     def deactivate(self):

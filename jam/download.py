@@ -91,7 +91,7 @@ class LocalFileDownloader(object):
         shutil.copy(path, filename)
 
 
-class Downloader:
+class UrlDownloader(object):
 
     def __init__(self, urlstr, root_dir=None):
         url = urlparse(urlstr)
