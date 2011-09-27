@@ -29,7 +29,7 @@ import zipfile
 
 import jam.log
 
-from jam.error import JamJamRuntimeError
+from jam.error import JamRuntimeError
 try:
     from hashlib import md5 # requires python 2.5
     from hashlib import sha1 # requires python 2.5
