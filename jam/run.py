@@ -36,8 +36,8 @@ class SubprocessError(JamError):
         self.output = output
 
     def __str__(self):
-        retval = "Command %s finished with return code %d" \
-                    % (self.command, self.returncode))
+        retval = "Command %s finished with return code %d" % (self.command,
+                     self.returncode)
         if self.output:
             retval += "Output was: '%s'" % self.output
         return retval
