@@ -28,7 +28,7 @@ import jam.log
 from tempfile import mkdtemp
 
 from jam.utils import Template, Hash, list_contents, extract_file, real_path
-from jam.download import Downloader
+from jam.download import UrlDownloader
 from jam.session.error import SessionCreateError
 
 
@@ -108,7 +108,7 @@ class SessionCreator(object):
             os.makedirs(self.dir)
         self.tmp_dir = mkdtemp(prefix="tmp-session-", dir=self.dir)
         self.log.debug("Created temporary directory '%s'" % self.tmp_dir)
-        downloader = Downloader(self.url)
+        downloader = UrlDownloader(self.url)
         source = downloader.copy(self.tmp_dir)
         hashcalc = Hash(source)
         md5 = hashcalc.md5()
