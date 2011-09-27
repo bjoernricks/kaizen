@@ -156,13 +156,30 @@ class SessionWrapper(object):
         if not os.path.exists(self.src_dir):
             self.log.debug("Creating source dir '%s'" % self.src_dir)
             os.makedirs(self.src_dir)
-        filename = os.path.basename(self.session.url)
+        filename = self.get_download_file(self.session.url)
         archive_file = os.path.join(self.data_dir, filename)
         if os.path.isfile(archive_file):
             self.log.info("Extract '%s' to '%s'" % (archive_file, self.src_dir))
             extract_file(archive_file, self.src_dir)
         else:
-            self.log.info("Nothing to extract.")
+            # TODO raise error
+            self.log.error("Nothing to extract. Could not find file '%s'" %
+                           archive_file)
+
+    def get_download_file(self, file):
+        if isinstance(file, list):
+            return file[1]
+        else:
+            return os.path.basename(file)
+
+    def get_download(self, file, dir):
+        if isinstance(file, list):
+            file_source = file[0]
+            file_dest = os.path.join(dir, file[1])
+        else:
+            file_source = file
+            file_dest = dir
+        return file_source, file_dest
 
     def download(self):
         self.log.info("%s:phase:download" % self.session_name)
@@ -171,20 +188,18 @@ class SessionWrapper(object):
             os.makedirs(self.data_dir)
         if self.session.url:
             self.log.info("Copying source file from '%s'." % self.session.url)
-            dl = Downloader(self.session.url) 
-            download_file = dl.copy(self.data_dir, self.force)
+            (archive_source, archive_dest) = self.get_download(self.session.url,
+                                                self.data_dir)
+            dl = Downloader(archive_source)
+            download_file = dl.copy(archive_dest, self.force)
             dl.verify(self.session.hash)
         if self.session.patches:
             if not os.path.exists(self.patch_dir):
                 self.log.debug("Creating patch dir '%s'" % self.patch_dir)
                 os.makedirs(self.patch_dir)
             for patch in self.session.patches:
-                if isinstance(patch, list):
-                    patch_source = patch[0]
-                    patch_dest = os.path.join(self.patch_dir, patch[1])
-                else:
-                    patch_source = patch
-                    patch_dest = self.patch_dir
+                (patch_source, patch_dest) = self.get_download(patch,
+                                                 self.patch_dir)
                 dl = Downloader(patch_source, self.session.session_path)
                 dl.copy(patch_dest, self.force)
 
