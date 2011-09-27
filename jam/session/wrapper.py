@@ -30,7 +30,7 @@ import jam.log
 from jam.external.sqlalchemy import and_
 
 from jam.utils import Loader, real_path, list_dir, list_subdir, extract_file
-from jam.download import Downloader
+from jam.download import UrlDownloader
 from jam.phase.phase import phases_list
 from jam.db.db import Db
 from jam.db.objects import Status, File, Directory, SessionPhase
