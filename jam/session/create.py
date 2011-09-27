@@ -181,7 +181,7 @@ class SessionCreator(object):
             if not os.path.exists(new_session_dir):
                 os.makedirs(new_session_dir)
             try:
-                sessionfile = os.path.join(new_session_dir, name + ".py")
+                sessionfile = os.path.join(new_session_dir, "rules.py")
                 f = open(sessionfile, "w")
                 self.log.info("Creating new session file '%s'" % sessionfile)
                 f.write(template.replace(vars))
