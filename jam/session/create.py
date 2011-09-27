@@ -29,9 +29,7 @@ from tempfile import mkdtemp
 
 from jam.utils import Template, Hash, list_contents, extract_file, real_path
 from jam.download import Downloader
-
-class SessionCreateError(Exception):
-    pass
+from jam.session.error import SessionCreateError
 
 
 class TypeDetector(object):

@@ -25,15 +25,22 @@
 import os
 import subprocess
 
+from jam.error import JamError
 
-class SubprocessError(EnvironmentError):
+
+class SubprocessError(JamError):
 
     def __init__(self, command, returncode, output=None):
-        EnvironmentError.__init__(self,
-                                  "Command %r finished with return code %d"
-                                  % (command, returncode))
+        self.command = command
         self.returncode = returncode
         self.output = output
+
+    def __str__(self):
+        retval = "Command %s finished with return code %d" \
+                    % (self.command, self.returncode))
+        if self.output:
+            retval += "Output was: '%s'" % self.output
+        return retval
 
 
 def call(command, suppress_output=False, extra_env=None, inputdata=None,

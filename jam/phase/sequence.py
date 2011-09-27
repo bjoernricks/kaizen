@@ -21,9 +21,11 @@
 
 import jam.log
 
+from jam.error import JamError
+
 log = jam.log.getLogger(__file__)
 
-class SequenceError(Exception):
+class SequenceError(JamError):
 
     def __init__(self, sequence_name, session_name, value):
         self.sequence_name = sequence_name

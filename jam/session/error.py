@@ -19,7 +19,9 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 
 # 02110-1301 USA
 
-class SessionError(Exception):
+from jam.error import JamError
+
+class SessionError(JamError):
 
     def __init__(self, session_name, value):
         self.session_name = session_name
@@ -27,5 +29,9 @@ class SessionError(Exception):
 
     def __str__(self):
         return "Error in session '%s': %s" % (self.session_name, self.value)
+
+
+class SessionCreateError(JamError):
+    pass
 
 

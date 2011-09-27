@@ -29,6 +29,7 @@ import zipfile
 
 import jam.log
 
+from jam.error import JamJamRuntimeError
 try:
     from hashlib import md5 # requires python 2.5
     from hashlib import sha1 # requires python 2.5
@@ -58,7 +59,7 @@ class Hash(object):
     def _calculate_hash(self, hashalgorithm):
         """ calculates a hash of a file """
         if not os.path.isfile(self.filename):
-            raise RuntimeError("Could not calculate hash. File not found: %s"
+            raise JamRuntimeError("Could not calculate hash. File not found: %s"
                                 % self.filename)
         f = file(self.filename, 'rb')
         m = hashalgorithm()
@@ -187,7 +188,7 @@ def real_path(path):
 
 def extract_file(file_name, dest_dir):
     if not os.path.isfile(file_name):
-        raise RuntimeError("Unable to extract file. '%s' is does not exit or \
+        raise JamRuntimeError("Unable to extract file. '%s' is does not exit or \
                            is not a file." % file_name)
     if tarfile.is_tarfile(file_name):
         log.debug("Extracting tar file '%s' to '%s'" %
@@ -198,7 +199,7 @@ def extract_file(file_name, dest_dir):
                       (file_name, dest_dir))
         file = zipfile.ZipFile(file_name)
     else:
-        raise RuntimeError("Unable to extract file. '%s' can not be recognized " \
+        raise JamRuntimeError("Unable to extract file. '%s' can not be recognized " \
                            "as a valid source archive." % file_name)
     file.extractall(dest_dir)
 

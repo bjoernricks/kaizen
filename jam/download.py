@@ -28,8 +28,9 @@ import jam.log
 from urlparse import urlparse
 
 from jam.utils import Hash
+from jam.error import JamError
 
-class DownloaderError(Exception):
+class DownloaderError(JamError):
     pass
 
 class DownloaderHashError(DownloaderError):
