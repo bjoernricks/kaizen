@@ -26,6 +26,7 @@ from ConfigParser import SafeConfigParser
 import jam
 
 from jam.utils import real_path
+from jam.error import JamRuntimeError
 
 JAM_CONFIG_FILES  = ["/etc/jamrc", real_path("~/.jam/jamrc")]
 
@@ -121,6 +122,7 @@ class Config(object):
         return list_value.split(",")
 
     def get(self, value):
-        # TODO: raise error if value not found
+        if value not in self.config:
+            raise JamRuntimeError("Value for '%s' not found in config." % value)
         return self.config[value]
 
