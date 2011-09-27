@@ -23,6 +23,7 @@ import inspect
 import os.path
 
 from jam.utils import real_path
+from jam.download import UrlDownloader
 
 class Session(object):
     """
@@ -46,6 +47,8 @@ class Session(object):
     name = ""
     src_path = None
     build_path = None
+
+    downloader = UrlDownloader
 
     def __init__(self, config, src_dir, build_dir, dest_dir):
         self.config = config
