@@ -398,7 +398,7 @@ class SessionLoader(Loader):
         return self.classes(module, Session)
 
     def load(self, sessionname):
-        sessionstring = sessionname + "." + sessionname
+        sessionstring = sessionname + ".rules"
         sessions = self.sessions(sessionstring)
         if not sessions:
             self.log.warn("Could not load any session with name '%s'" %
