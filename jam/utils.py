@@ -197,5 +197,8 @@ def extract_file(file_name, dest_dir):
         log.debug("Extracting zip file '%s' to '%s'" %
                       (file_name, dest_dir))
         file = zipfile.ZipFile(file_name)
+    else:
+        raise RuntimeError("Unable to extract file. '%s' can not be recognized " \
+                           "as a valid source archive." % file_name)
     file.extractall(dest_dir)
 
