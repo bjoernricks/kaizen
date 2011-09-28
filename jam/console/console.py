@@ -31,13 +31,14 @@ class Console(object):
     def list_session_phases(self, config, sessionname):
         manager = SessionManager(config, sessionname)
         phases = manager.get_session_phases()
+        print ", ".join([phase.name for phase in phases])
 
-    def list_session_dependencies(self, config, session):
+    def list_session_dependencies(self, config, sessionname):
         manager = SessionManager(config, sessionname)
-        dependency_names = self.manager.depends().keys()
+        dependency_names = manager.depends().keys()
         if not dependency_names:
             return
-        print "Session %s depends on:" % options.sessionname[0]
+        print "Session %s depends on:" % sessionname
         for dependency_name in dependency_names:
             print "--> %s" % dependency_name
 
