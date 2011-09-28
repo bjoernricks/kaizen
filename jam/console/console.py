@@ -27,11 +27,18 @@ class Console(object):
     def list_session_files(self, config, sessionname):
         manager = SessionManager(config, sessionname)
         files = manager.get_installed_files()
+        if files:
+            print "\n".join([file.filename for file in files])
+        else:
+            print "'%s' has no files installed" % sessionname
 
     def list_session_phases(self, config, sessionname):
         manager = SessionManager(config, sessionname)
         phases = manager.get_session_phases()
-        print ", ".join([phase.name for phase in phases])
+        if phases:
+            print ", ".join([phase.name for phase in phases])
+        else:
+            print "'%s' has no phase" % sessionname
 
     def list_session_dependencies(self, config, sessionname):
         manager = SessionManager(config, sessionname)
