@@ -116,7 +116,8 @@ class UrlDownloader(object):
             self.downloader = HttpDownloader(urlstr)
         elif url.scheme == "file" or not url.scheme:
             self.downloader = LocalFileDownloader(url, root_dir)
-        # TODO: raise error if scheme is unknown
+        else:
+            raise UnkownUrlScheme(url.scheme, self.url)
 
     def copy(self, destination, overwrite=False):
         if os.path.isdir(destination):
