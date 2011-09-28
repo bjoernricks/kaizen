@@ -21,6 +21,7 @@
 
 from jam.session.manager import SessionManager
 from jam.session.create import SessionCreator
+from jam.console.console import Console
 
 
 class Command(object):
@@ -241,7 +242,7 @@ class DeleteCommand(PhaseCommand):
             self.manager.delete_build()
 
 
-class DependsCommand(PhaseCommand):
+class DependsCommand(SessionNameCommand):
 
     def __init__(self, config):
         description = ""
@@ -249,13 +250,7 @@ class DependsCommand(PhaseCommand):
                                              ["deps"])
 
     def main(self, options):
-        super(DependsCommand, self).main(options)
-        dependency_names = self.manager.depends().keys()
-        if not dependency_names:
-            return
-        print "Session %s depends on:" % options.sessionname[0]
-        for dependency_name in dependency_names:
-            print "--> %s" % dependency_name
+        Console().list_session_dependencies(self.config, options.sessionname[0])
 
 
 class CreateCommand(Command):
