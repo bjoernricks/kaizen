@@ -24,24 +24,27 @@ from jam.session.manager import SessionManager
 
 class Console(object):
 
-    def list_session_files(self, config, sessionname):
-        manager = SessionManager(config, sessionname)
+    def __init__(self, config):
+        self.config = config
+
+    def list_session_files(self, sessionname):
+        manager = SessionManager(self.config, sessionname)
         files = manager.get_installed_files()
         if files:
             print "\n".join([file.filename for file in files])
         else:
             print "'%s' has no files installed" % sessionname
 
-    def list_session_phases(self, config, sessionname):
-        manager = SessionManager(config, sessionname)
+    def list_session_phases(self, sessionname):
+        manager = SessionManager(self.config, sessionname)
         phases = manager.get_session_phases()
         if phases:
             print ", ".join([phase.name for phase in phases])
         else:
             print "'%s' has no phase" % sessionname
 
-    def list_session_dependencies(self, config, sessionname):
-        manager = SessionManager(config, sessionname)
+    def list_session_dependencies(self, sessionname):
+        manager = SessionManager(self.config, sessionname)
         dependency_names = manager.depends().keys()
         if not dependency_names:
             return
@@ -49,10 +52,10 @@ class Console(object):
         for dependency_name in dependency_names:
             print "--> %s" % dependency_name
 
-    def build_session(self, config, sessionname, force=False):
-        manager = SessionManager(config, sessionname, force)
+    def build_session(self, sessionname, force=False):
+        manager = SessionManager(self.config, sessionname, force)
         manager.build()
 
-    def patch_session(self, config, sessionname, force=False):
-        manager = SessionManager(config, sessionname, force)
+    def patch_session(self, sessionname, force=False):
+        manager = SessionManager(self.config, sessionname, force)
         manager.patch()

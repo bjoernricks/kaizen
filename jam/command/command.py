@@ -84,8 +84,8 @@ class BuildCommand(SessionNameCommand):
         super(BuildCommand, self).__init__("build", config, description)
 
     def main(self, options):
-        Console().build_session(self.config, options.sessionname[0],
-                                options.force)
+        Console(self.config).build_session(options.sessionname[0],
+                                           options.force)
 
 
 class PatchCommand(SessionNameCommand):
@@ -95,8 +95,8 @@ class PatchCommand(SessionNameCommand):
         super(PatchCommand, self).__init__("patch", config, description)
 
     def main(self, options):
-        Console().patch_session(self.config, options.sessionname[0],
-                                options.force)
+        Console(self.config).patch_session(options.sessionname[0],
+                                           options.force)
 
 
 class UnPatchCommand(PhaseCommand):
@@ -250,7 +250,7 @@ class DependsCommand(SessionNameCommand):
                                              ["deps"])
 
     def main(self, options):
-        Console().list_session_dependencies(self.config, options.sessionname[0])
+        Console(self.config).list_session_dependencies(options.sessionname[0])
 
 
 class CreateCommand(Command):
@@ -298,7 +298,7 @@ class ListCommand(SessionNameCommand):
     def __init__(self, config):
         description = ""
         super(ListCommand, self).__init__("list", config, [], description)
-        self.console = Console()
+        self.console = Console(self.config)
 
     def add_parser(self, parser):
         subparser = super(ListCommand, self).add_parser(parser)
