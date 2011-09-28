@@ -77,15 +77,15 @@ class PhaseCommand(SessionNameCommand):
                                       force=options.force)
 
 
-class BuildCommand(PhaseCommand):
+class BuildCommand(SessionNameCommand):
 
     def __init__(self, config):
         description = "run build process"
         super(BuildCommand, self).__init__("build", config, description)
 
     def main(self, options):
-        super(BuildCommand, self).main(options)
-        self.manager.build()
+        Console().build_session(self.config, options.sessionname[0],
+                                options.force)
 
 
 class PatchCommand(PhaseCommand):
