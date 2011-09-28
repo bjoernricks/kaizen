@@ -205,3 +205,17 @@ class Replace(object):
         f.write(replaced)
         f.close()
 
+
+class Delete(object):
+
+    def __init__(self, dir):
+        self.dir = dir
+        self.log = jam.log.getLogger(__name__ + ".delete")
+
+    def run(self):
+        self.log.debug("deleting '%s'" % self.dir)
+        # TODO: delete also files
+        #       delete only content of dir
+        #       delete also content of symlinks shutil.rmtree doesn't work for
+        #       symlinks
+        shutil.rmtree(self.dir)
