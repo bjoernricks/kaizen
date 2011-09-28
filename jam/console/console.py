@@ -49,3 +49,6 @@ class Console(object):
         for dependency_name in dependency_names:
             print "--> %s" % dependency_name
 
+    def build_session(self, config, sessionname, force=False):
+        manager = SessionManager(config, sessionname, force)
+        manager.build()
