@@ -293,16 +293,25 @@ class CreateCommand(Command):
 
         creator.create(options.stdout)
 
-class ListCommand(Command):
+class ListCommand(SessionNameCommand):
 
     def __init__(self, config):
         description = ""
-        super(ListCommand, self).__init__("list", config, self.main, [],
-                                            description)
+        super(ListCommand, self).__init__("list", config, [], description)
+        self.console = Console()
 
     def add_parser(self, parser):
-        usage = None
-        subparser = super(ListCommand, self).add_parser(parser, usage)
+        subparser = super(ListCommand, self).add_parser(parser)
+        group = subparser.add_mutually_exclusive_group(required=True)
+        group.add_argument("--files", help="list installed files of a session",
+                           action="store_true")
+        group.add_argument("--phases", help="list the current phases of a " \
+                           "session", action="store_true")
 
-    def main(self):
-        pass
+    def main(self, options):
+        session_name = options.sessionname[0]
+        if options.phases:
+            self.console.list_session_phases(self.config, session_name)
+        elif options.files:
+            self.console.list_session_files(self.config, session_name)
+
