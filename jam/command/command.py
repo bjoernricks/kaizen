@@ -99,18 +99,18 @@ class PatchCommand(SessionNameCommand):
                                            options.force)
 
 
-class UnPatchCommand(PhaseCommand):
+class UnPatchCommand(SessionNameCommand):
 
     def __init__(self, config):
         description = "revert patches applied sources"
         super(UnPatchCommand, self).__init__("unpatch", config, description)
 
     def main(self, options):
-        super(UnPatchCommand, self).main(options)
-        self.manager.unpatch()
+        Console(self.config).unpatch_session(options.sessionname[0],
+                                             options.force)
 
 
-class ConfigureCommand(PhaseCommand):
+class ConfigureCommand(SessionNameCommand):
 
     def __init__(self, config):
         description = ""
@@ -118,22 +118,22 @@ class ConfigureCommand(PhaseCommand):
                                                ["conf"])
 
     def main(self, options):
-        super(ConfigureCommand, self).main(options)
-        self.manager.configure()
+        Console(self.config).configure_session(options.sessionname[0],
+                                               options.force)
 
 
-class ExtractCommand(PhaseCommand):
+class ExtractCommand(SessionNameCommand):
 
     def __init__(self, config):
         description = ""
         super(ExtractCommand, self).__init__("extract", config, description, ["ex"])
 
     def main(self, options):
-        super(ExtractCommand, self).main(options)
-        self.manager.extract()
+        Console(self.config).extract_session(options.sessionname[0],
+                                             options.force)
 
 
-class DownloadCommand(PhaseCommand):
+class DownloadCommand(SessionNameCommand):
 
     def __init__(self, config):
         description = ""
@@ -141,11 +141,11 @@ class DownloadCommand(PhaseCommand):
                                               ["down"])
 
     def main(self, options):
-        super(DownloadCommand, self).main(options)
-        self.manager.download()
+        Console(self.config).download_session(options.sessionname[0],
+                                              options.force)
 
 
-class DestrootCommand(PhaseCommand):
+class DestrootCommand(SessionNameCommand):
 
     def __init__(self, config):
         description = ""
@@ -153,11 +153,11 @@ class DestrootCommand(PhaseCommand):
                                               ["dest"])
 
     def main(self, options):
-        super(DestrootCommand, self).main(options)
-        self.manager.destroot()
+        Console(self.config).destroot_session(options.sessionname[0],
+                                              options.force)
 
 
-class InstallCommand(PhaseCommand):
+class InstallCommand(SessionNameCommand):
 
     def __init__(self, config):
         description = ""
@@ -165,11 +165,11 @@ class InstallCommand(PhaseCommand):
                                              ["inst"])
 
     def main(self, options):
-        super(InstallCommand, self).main(options)
-        self.manager.install()
+        Console(self.config).install_session(options.sessionname[0],
+                                             options.force)
 
 
-class UninstallCommand(PhaseCommand):
+class UninstallCommand(SessionNameCommand):
 
     def __init__(self, config):
         description = ""
@@ -177,33 +177,33 @@ class UninstallCommand(PhaseCommand):
                                                ["uninst", "remove"])
 
     def main(self, options):
-        super(UninstallCommand, self).main(options)
-        self.manager.uninstall()
+        Console(self.config).uninstall_session(options.sessionname[0],
+                                               options.force)
 
 
-class ActivateCommand(PhaseCommand):
+class ActivateCommand(SessionNameCommand):
 
     def __init__(self, config):
         description = ""
         super(ActivateCommand, self).__init__("activate", config, description)
 
     def main(self, options):
-        super(ActivateCommand, self).main(options)
-        self.manager.activate()
+        Console(self.config).activate_session(options.sessionname[0],
+                                              options.force)
 
 
-class DeactivateCommand(PhaseCommand):
+class DeactivateCommand(SessionNameCommand):
 
     def __init__(self, config):
         description = ""
         super(DeactivateCommand, self).__init__("deactivate", config, description)
 
     def main(self, options):
-        super(DeactivateCommand, self).main(options)
-        self.manager.deactivate()
+        Console(self.config).deactivate_session(options.sessionname[0],
+                                                options.force)
 
 
-class DeleteCommand(PhaseCommand):
+class DeleteCommand(SessionNameCommand):
 
     def __init__(self, config):
         description = "clean a session"
@@ -212,34 +212,37 @@ class DeleteCommand(PhaseCommand):
 
     def add_parser(self, parser):
         subparser = super(DeleteCommand, self).add_parser(parser)
-        subparser.add_argument("--download", action="store_true",
-                               help="delete the download directory")
-        subparser.add_argument("--source", action="store_true",
-                               help="delete the source directory")
-        subparser.add_argument("--build", action="store_true",
-                               help="delete the build directory [default]")
-        subparser.add_argument("--clean", action="store_true",
-                               help="clean the build directoryi")
-        subparser.add_argument("--dist", action="store_true",
-                               help="distclean the build directory")
-        subparser.add_argument("--destroot", action="store_true",
-                               help="delete the destroot directory")
+        group = subparser.add_mutually_exclusive_group()
+        group.add_argument("--download", action="store_true",
+                           help="delete the download directory")
+        group.add_argument("--source", action="store_true",
+                           help="delete the source directory")
+        group.add_argument("--build", action="store_true",
+                           help="delete the build directory [default]")
+        group.add_argument("--clean", action="store_true",
+                           help="clean the build directoryi")
+        group.add_argument("--distclean", action="store_true",
+                           help="distclean the build directory")
+        group.add_argument("--destroot", action="store_true",
+                           help="delete the destroot directory")
         return subparser
 
     def main(self, options):
-        super(DeleteCommand, self).main(options)
+        console = Console(self.config)
+        sessionname = options.sesssionname[0]
+        force = options.force
         if options.dist:
-            self.manager.distclean()
+            console.distclean(sessionname, force)
         elif options.source:
-            self.manager.delete_source()
+            console.delete_source_session(sessionname, force)
         elif options.destroot:
-            self.manager.delete_destroot()
+            console.delete_destroot_session(sessionname, force)
         elif options.download:
-            self.manager.delete_download()
+            console.delete_download(sessionname, force)
         elif options.clean:
-            self.manager.clean()
+            console.clean_session(sessionname, force)
         else:
-            self.manager.delete_build()
+            console.delete_build_session(sessionname, force)
 
 
 class DependsCommand(SessionNameCommand):
