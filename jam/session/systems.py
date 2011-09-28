@@ -20,7 +20,7 @@
 # 02110-1301 USA
 
 from jam.session.session import Session
-from jam.system import Configure, CMake, Make, Command, Copy
+from jam.system.command import Configure, CMake, Make, Command, Copy, Delete
 
 class MakeSession(Session):
 
@@ -81,8 +81,7 @@ class CMakeSession(MakeSession):
               self.debug).run()
 
     def distclean(self):
-        # todo delete content of build_path
-        pass
+        Delete(self.build_dir).run()
 
 
 class PythonSession(Session):
