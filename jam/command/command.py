@@ -66,17 +66,6 @@ class SessionNameCommand(Command):
         pass
 
 
-class PhaseCommand(SessionNameCommand):
-
-    def __init__(self, name, config, description, aliases=[]):
-        super(PhaseCommand, self).__init__(name, config, aliases,
-                                           description)
-
-    def main(self, options):
-        self.manager = SessionManager(self.config, options.sessionname[0],
-                                      force=options.force)
-
-
 class BuildCommand(SessionNameCommand):
 
     def __init__(self, config):
