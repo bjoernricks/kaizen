@@ -88,15 +88,15 @@ class BuildCommand(SessionNameCommand):
                                 options.force)
 
 
-class PatchCommand(PhaseCommand):
+class PatchCommand(SessionNameCommand):
 
     def __init__(self, config):
         description = "apply patches to sources"
         super(PatchCommand, self).__init__("patch", config, description)
 
     def main(self, options):
-        super(PatchCommand, self).main(options)
-        self.manager.patch()
+        Console().patch_session(self.config, options.sessionname[0],
+                                options.force)
 
 
 class UnPatchCommand(PhaseCommand):
