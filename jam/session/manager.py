@@ -229,3 +229,8 @@ class SessionManager(object):
     def delete_download(self):
         self.delete_download_seq(self.session_wrapper, self.force)
 
+    def get_installed_files(self):
+        return self.session_wrapper.get_installed_files()
+
+    def get_session_phases(self):
+        return self.session_wrapper.get_phases()
