@@ -50,9 +50,9 @@ class Command(object):
 
 class SessionNameCommand(Command):
 
-    def __init__(self, name, config, func, aliases=[], description=None):
-        super(SessionNameCommand, self).__init__(name, config, func, aliases,
-                                                 description)
+    def __init__(self, name, config, aliases=[], description=None):
+        super(SessionNameCommand, self).__init__(name, config, self.main,
+                                                 aliases, description)
 
     def add_parser(self, parser):
         usage = "%(prog)s [global options] " + self.name + " <sessionname> " \
@@ -61,11 +61,14 @@ class SessionNameCommand(Command):
         subparser.add_argument("sessionname", nargs=1)
         return subparser
 
+    def main(self, options):
+        pass
+
 
 class PhaseCommand(SessionNameCommand):
 
     def __init__(self, name, config, description, aliases=[]):
-        super(PhaseCommand, self).__init__(name, config, self.main, aliases,
+        super(PhaseCommand, self).__init__(name, config, aliases,
                                            description)
 
     def main(self, options):
