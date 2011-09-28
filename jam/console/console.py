@@ -52,3 +52,7 @@ class Console(object):
     def build_session(self, config, sessionname, force=False):
         manager = SessionManager(config, sessionname, force)
         manager.build()
+
+    def patch_session(self, config, sessionname, force=False):
+        manager = SessionManager(config, sessionname, force)
+        manager.patch()
