@@ -138,7 +138,7 @@ class SessionWrapper(object):
     def patch(self):
         self.log.info("%s:phase:patch" % self.session_name)
         for patch in self.session.patches:
-            patch_name = os.path.basename(patch)
+            patch_name = self.get_download_file(patch)
             Patch(os.path.join(self.patch_dir, patch_name),
                   self.session.src_path,
                   self.config.get("verbose")).run()
