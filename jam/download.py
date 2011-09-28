@@ -33,6 +33,7 @@ from jam.error import JamError
 class DownloaderError(JamError):
     pass
 
+
 class DownloaderHashError(DownloaderError):
 
     def __init__(self, filename, expected, value, hashtype):
@@ -44,6 +45,17 @@ class DownloaderHashError(DownloaderError):
     def __str__(self):
         return "Invalid %s hash for '%s'. Calculated hash is '%s', expected " \
                "was '%s'" % (self.hashtype, self.filename, self.value, self.expected)
+
+
+class UnkownUrlScheme(DownloaderError):
+
+    def __init__(self, urlscheme, filename):
+        self.urlscheme = urlscheme
+        self.filename = filename
+
+    def __str__(self):
+        return "Unkown urlscheme '%s'. Can't download '%s'" % (self.urlscheme,
+                    self.filename)
 
 
 class HttpDownloader(object):
