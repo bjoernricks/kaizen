@@ -150,7 +150,7 @@ class Patch(Command):
 class Copy(object):
 
     def __init__(self, src, dest):
-        self.log = jam.log.getLogger("jam.copy")
+        self.log = jam.log.getLogger(__name__ + ".copy")
         self.src = src
         self.dest = dest
 
@@ -180,7 +180,7 @@ class Copy(object):
 class Replace(object):
 
     def __init__(self, pattern, replace, source, dest=None):
-        self.log = jam.log.getLogger("jam.replace")
+        self.log = jam.log.getLogger(__name__ + ".replace")
         self.pattern = pattern
         self.replace = replace
         self.source = source
