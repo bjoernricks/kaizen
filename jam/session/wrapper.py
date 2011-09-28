@@ -219,9 +219,7 @@ class SessionWrapper(object):
         self.session.pre_deactivate()
 
         # delete activated files
-        query = self.db.session.query(File).filter(File.session ==
-                                                    self.session_name)
-        for file in query.all():
+        for file in self.get_installed_files():
             file_path = file.filename
             if os.path.lexists(file_path):
                 self.log.debug("Deactivating '%s'" % file_path)
@@ -380,6 +378,11 @@ class SessionWrapper(object):
             self.log.debug("Deleting download cache directory '%s'" % \
                            self.download_cache_dir)
             shutil.rmtree(self.download_cache_dir)
+
+    def get_installed_files(self):
+        query = self.db.session.query(File).filter(File.session ==
+                                                    self.session_name)
+        return query.all()
 
 
 class SessionLoader(Loader):
