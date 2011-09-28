@@ -83,7 +83,7 @@ class CMake(BuildSystem):
 
     def run(self):
         cmd = ["cmake"]
-        cmd.extend(args)
+        cmd.extend(self.args)
         cmd.append(real_path(self.src_dir))
         self.log.debug("CMake run '%s' in '%s' with env '%s'" % (cmd,
                        self.cwd_dir, self.env))
