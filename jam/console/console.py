@@ -59,3 +59,64 @@ class Console(object):
     def patch_session(self, sessionname, force=False):
         manager = SessionManager(self.config, sessionname, force)
         manager.patch()
+
+    def unpatch_session(self, sessionname, force=False):
+        manager = SessionManager(self.config, sessionname, force)
+        manager.unpatch()
+
+    def configure_session(self, sessionname, force=False):
+        manager = SessionManager(self.config, sessionname, force)
+        manager.configure()
+
+    def extract_session(self, sessionname, force=False):
+        manager = SessionManager(self.config, sessionname, force)
+        manager.extract()
+
+    def download_session(self, sessionname, force=False):
+        manager = SessionManager(self.config, sessionname, force)
+        manager.download()
+
+    def destroot_session(self, sessionname, force=False):
+        manager = SessionManager(self.config, sessionname, force)
+        manager.destroot()
+
+    def install_session(self, sessionname, force=False):
+        manager = SessionManager(self.config, sessionname, force)
+        manager.install()
+
+    def uninstall_session(self, sessionname, force=False):
+        manager = SessionManager(self.config, sessionname, force)
+        manager.uninstall()
+
+    def activate_session(self, sessionname, force=False):
+        manager = SessionManager(self.config, sessionname, force)
+        manager.activate()
+
+    def deactivate_session(self, sessionname, force=False):
+        manager = SessionManager(self.config, sessionname, force)
+        manager.deactivate()
+
+    def distclean_session(self, sessionname, force=False):
+        manager = SessionManager(self.config, sessionname, force)
+        manager.distclean()
+
+    def clean_session(self, sessionname, force=False):
+        manager = SessionManager(self.config, sessionname, force)
+        manager.clean()
+
+    def delete_source_session(self, sessionname, force=False):
+        manager = SessionManager(self.config, sessionname, force)
+        manager.delete_source()
+
+    def delete_destroot_session(self, sessionname, force=False):
+        manager = SessionManager(self.config, sessionname, force)
+        manager.delete_destroot()
+
+    def delete_download_session(self, sessionname, force=False):
+        manager = SessionManager(self.config, sessionname, force)
+        manager.delete_download()
+
+    def delete_build_session(self, sessionname, force=False):
+        manager = SessionManager(self.config, sessionname, force)
+        manager.delete_build()
+
