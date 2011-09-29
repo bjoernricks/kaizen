@@ -391,8 +391,7 @@ class SessionLoader(Loader):
         self.config = config
         self.log = jam.log.getLogger("jam.sessionloader")
         paths = self.config.get("sessions")
-        for path in paths:
-            self.add_path(real_path(path.strip()))
+        self.add_paths([real_path(path.strip()) for path in paths])
 
     def sessions(self, modulename):
         module = self.module(modulename)
