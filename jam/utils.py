@@ -79,7 +79,7 @@ class Loader(object):
 
     def add_path(self, path):
         if not path in sys.path:
-            sys.path.append(path)
+            sys.path.insert(0, path)
 
     def module(self, name):
         try:
