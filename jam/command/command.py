@@ -50,7 +50,7 @@ class Command(object):
 
 class SessionNameCommand(Command):
 
-    def __init__(self, name, config, aliases=[], description=None):
+    def __init__(self, name, config, description=None, aliases=[]):
         super(SessionNameCommand, self).__init__(name, config, self.main,
                                                  aliases, description)
 
@@ -288,7 +288,7 @@ class ListCommand(SessionNameCommand):
 
     def __init__(self, config):
         description = ""
-        super(ListCommand, self).__init__("list", config, [], description)
+        super(ListCommand, self).__init__("list", config, description)
         self.console = Console(self.config)
 
     def add_parser(self, parser):
