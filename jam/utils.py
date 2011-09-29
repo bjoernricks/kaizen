@@ -81,6 +81,11 @@ class Loader(object):
         if not path in sys.path:
             sys.path.insert(0, path)
 
+    def add_paths(self, paths):
+        paths = [path for path in paths if path not in sys.path]
+        for i, path in enumerate(paths):
+            sys.path.insert(i, path)
+
     def module(self, name):
         try:
             module =  __import__(name, globals(), locals(), ['*'])
