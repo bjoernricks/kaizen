@@ -302,7 +302,7 @@ class ListCommand(SessionNameCommand):
     def main(self, options):
         session_name = options.sessionname[0]
         if options.phases:
-            self.console.list_session_phases(self.config, session_name)
+            self.console.list_session_phases(session_name)
         elif options.files:
-            self.console.list_session_files(self.config, session_name)
+            self.console.list_session_files(session_name)
 
