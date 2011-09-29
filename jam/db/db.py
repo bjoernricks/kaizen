@@ -39,6 +39,8 @@ class Db(object):
             rootdir = config.get("rootdir")
             debug_db = config.get("debugdb")
             db_path = os.path.join(rootdir, "jam.db")
+            if not os.path.exists(rootdir):
+                os.makedirs(rootdir)
             self.engine = create_engine("sqlite:///%s" % db_path,
                                         echo=debug_db)
             self.tables = Tables(self)
