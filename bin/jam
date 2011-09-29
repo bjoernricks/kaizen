@@ -3,7 +3,10 @@
 import sys
 import os.path
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), os.path.pardir))
+pardir = os.path.join(os.path.dirname(__file__), os.path.pardir)
+# add parent dir to first python search path if running within the sources
+if os.path.isdir(os.path.join(pardir, "jam")):
+    sys.path.insert(0, pardir)
 
 from jam.console import main
 
