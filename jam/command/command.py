@@ -130,7 +130,12 @@ class DownloadCommand(SessionNameCommand):
 
     def main(self, options):
         Console(self.config).download_session(options.sessionname[0],
-                                              options.force)
+                                              options.all, options.force)
+
+    def add_parser(self, parser):
+        subparser = super(DownloadCommand, self).add_parser(parser)
+        subparser.add_argument("--all", action="store_true",
+                               help="download also sources from dependencies")
 
 
 class DestrootCommand(SessionNameCommand):
