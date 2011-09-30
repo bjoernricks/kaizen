@@ -72,9 +72,9 @@ class Console(object):
         manager = SessionManager(self.config, sessionname, force)
         manager.extract()
 
-    def download_session(self, sessionname, force=False):
+    def download_session(self, sessionname, download_all, force=False):
         manager = SessionManager(self.config, sessionname, force)
-        manager.download()
+        manager.download(download_all)
 
     def destroot_session(self, sessionname, force=False):
         manager = SessionManager(self.config, sessionname, force)
