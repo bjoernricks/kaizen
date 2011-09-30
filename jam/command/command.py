@@ -126,7 +126,7 @@ class DownloadCommand(SessionNameCommand):
     def __init__(self, config):
         description = ""
         super(DownloadCommand, self).__init__("download", config, description,
-                                              ["down"])
+                                              ["down", "fetch"])
 
     def main(self, options):
         Console(self.config).download_session(options.sessionname[0],
