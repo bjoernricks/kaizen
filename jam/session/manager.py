@@ -26,7 +26,7 @@ import jam.log
 from jam.session.error import SessionError
 from jam.session.wrapper import SessionWrapper
 from jam.session.depend import DependencyAnalyser
-from jam.phase.phase import Phases
+from jam.phase.phase import phases_list
 from jam.phase.sequence import Sequence, UnSequence
 from jam.db.db import Db
 from jam.db.objects import Installed
@@ -43,86 +43,85 @@ class SessionManager(object):
         self.session_name = name
         self.log = jam.log.getLogger("jam.sessionmanager")
         self.session_wrapper = SessionWrapper(name, config, force)
-        self.phases = Phases()
         self.db = Db(config)
         self.init_sequences()
 
     def init_sequences(self):
-        self.download_seq = Sequence("download", self.phases.get("None"),
-                                     self.phases.get("Downloaded"),
+        self.download_seq = Sequence("download", phases_list.get("None"),
+                                     phases_list.get("Downloaded"),
                                      ["download"])
 
-        self.extract_seq = Sequence("extract", self.phases.get("None"),
-                                    self.phases.get("Extracted"), ["extract"],
+        self.extract_seq = Sequence("extract", phases_list.get("None"),
+                                    phases_list.get("Extracted"), ["extract"],
                                     False, self.download_seq)
-        self.patch_seq = Sequence("patch", self.phases.get("None"),
-                                  self.phases.get("Patched"), ["patch"], False,
+        self.patch_seq = Sequence("patch", phases_list.get("None"),
+                                  phases_list.get("Patched"), ["patch"], False,
                                   self.extract_seq)
         self.configure_seq = Sequence("configure",
-                                      self.phases.get("None"),
-                                      self.phases.get("Configured"),
+                                      phases_list.get("None"),
+                                      phases_list.get("Configured"),
                                       ["configure"], False, self.patch_seq)
-        self.build_seq = Sequence("build", self.phases.get("None"),
-                                  self.phases.get("Built"), ["build"], False,
+        self.build_seq = Sequence("build", phases_list.get("None"),
+                                  phases_list.get("Built"), ["build"], False,
                                   self.configure_seq)
         self.destroot_seq = Sequence("destroot",
-                                     self.phases.get("None"),
-                                     self.phases.get("Destrooted"),
+                                     phases_list.get("None"),
+                                     phases_list.get("Destrooted"),
                                      ["destroot"], False, self.build_seq)
         self.activate_seq = Sequence("activate",
-                                     self.phases.get("None"),
-                                     self.phases.get("Activated"), ["activate"],
+                                     phases_list.get("None"),
+                                     phases_list.get("Activated"), ["activate"],
                                      False, self.destroot_seq)
         self.deactivate_seq = UnSequence("deactivate",
-                                         self.phases.get("Activated"),
-                                         self.phases.get("Destrooted"),
-                                         self.phases.get("Activated"),
+                                         phases_list.get("Activated"),
+                                         phases_list.get("Destrooted"),
+                                         phases_list.get("Activated"),
                                          ["deactivate"])
         self.delete_destroot_seq = UnSequence("delete_destroot",
-                                              self.phases.get("Destrooted"),
-                                              self.phases.get("Built"),
-                                              self.phases.get("Destrooted"),
+                                              phases_list.get("Destrooted"),
+                                              phases_list.get("Built"),
+                                              phases_list.get("Destrooted"),
                                               ["delete_destroot"], False,
                                               self.deactivate_seq)
         self.distclean_seq = UnSequence("distclean",
-                                        self.phases.get("Configured"),
-                                        self.phases.get("Built"),
-                                        self.phases.get("Configured"),
+                                        phases_list.get("Configured"),
+                                        phases_list.get("Built"),
+                                        phases_list.get("Configured"),
                                         ["distclean"], False,
                                         self.delete_destroot_seq)
         self.delete_build_seq = UnSequence("delete_destroot",
-                                           self.phases.get("Built"),
-                                           self.phases.get("Patched"),
-                                           self.phases.get("Built"),
+                                           phases_list.get("Built"),
+                                           phases_list.get("Patched"),
+                                           phases_list.get("Built"),
                                            ["delete_build"], False,
                                            self.distclean_seq)
         self.unpatch_seq = UnSequence("unpatch",
-                                      self.phases.get("Patched"),
-                                      self.phases.get("Extracted"),
-                                      self.phases.get("Patched"),
+                                      phases_list.get("Patched"),
+                                      phases_list.get("Extracted"),
+                                      phases_list.get("Patched"),
                                       ["unpatch"], False,
                                       self.delete_build_seq)
         self.delete_source_seq = UnSequence("delete_source",
-                                            self.phases.get("Extracted"),
-                                            self.phases.get("Downloaded"),
-                                            self.phases.get("Extracted"),
+                                            phases_list.get("Extracted"),
+                                            phases_list.get("Downloaded"),
+                                            phases_list.get("Extracted"),
                                             ["delete_source"], False,
                                             self.unpatch_seq)
         self.delete_download_seq = UnSequence("delete_download",
-                                              self.phases.get("Downloaded"),
-                                              self.phases.get("None"),
-                                              self.phases.get("Downloaded"),
+                                              phases_list.get("Downloaded"),
+                                              phases_list.get("None"),
+                                              phases_list.get("Downloaded"),
                                               ["delete_download"], False,
                                               self.delete_source_seq)
         self.install_seq = Sequence("install",
-                                   self.phases.get("None"),
-                                   self.phases.get("Activated"), [],
+                                   phases_list.get("None"),
+                                   phases_list.get("Activated"), [],
                                    False, self.activate_seq)
 
         self.uninstall_seq = UnSequence("uninstall",
-                                        self.phases.get("Extracted"),
-                                        self.phases.get("Downloaded"),
-                                        self.phases.get("Extracted"),
+                                        phases_list.get("Extracted"),
+                                        phases_list.get("Downloaded"),
+                                        phases_list.get("Extracted"),
                                         [""], False,
                                         self.delete_source_seq)
 
@@ -130,7 +129,7 @@ class SessionManager(object):
         dependencies = self.session_wrapper.depends()
         for dependency in dependencies.itervalues():
             current_phase = dependency.session.get_current_phase()
-            if not current_phase == self.phases.get("Activated"):
+            if not current_phase == phases_list.get("Activated"):
                 self.install_seq(dependency.session)
 
     def download(self, all=False, resume_on_error=True):
