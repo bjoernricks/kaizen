@@ -29,7 +29,7 @@ from jam.session.depend import DependencyAnalyser
 from jam.phase.phase import phases_list
 from jam.phase.sequence import Sequence, UnSequence
 from jam.db.db import Db
-from jam.db.objects import Installed
+from jam.db.objects import Installed, SessionPhase
 
 
 class SessionManager(object):
@@ -233,3 +233,18 @@ class SessionManager(object):
 
     def get_session_phases(self):
         return self.session_wrapper.get_phases()
+
+
+class SessionsList(object):
+
+    def __init__(self, config):
+        self.db = Db(config)
+
+    def get_installed_sessions(self):
+        return self.db.session.query(Installed).order_by(Installed.session).all()
+
+    def get_activated_sessions(self):
+        return self.db.session.query(SessionPhase).filter(
+                                     SessionPhase.phase ==
+                                     phases_list.get("Activated")).order_by(
+                                             SessionPhase.session).all()
