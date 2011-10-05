@@ -22,6 +22,7 @@
 import os
 import os.path
 import inspect
+import imp
 import string
 import sys
 import tarfile
@@ -76,24 +77,46 @@ class Loader(object):
 
     def __init__(self):
         self.log = jam.log.getLogger("jam.loader")
+        self.paths = []
 
     def add_path(self, path):
-        if not path in sys.path:
-            sys.path.insert(0, path)
+        self.paths.append(path)
 
     def add_paths(self, paths):
-        paths = [path for path in paths if path not in sys.path]
-        for i, path in enumerate(paths):
-            sys.path.insert(i, path)
+        self.paths.extend(paths)
+
+    def find_module(self, module, paths):
+        file, pathname, description = imp.find_module(module, paths)
+        try:
+            return imp.load_module(module, file, pathname, description)
+        finally:
+            if file:
+                file.close()
 
     def module(self, name):
+        if "." in name:
+            paths = []
+            index = name.rfind(".")
+            package = name[:index]
+            module_name = name[index+1:]
+            module_path = package.replace(".", os.path.sep)
+            for path in self.paths:
+                paths.append(os.path.join(path, module_path))
+        else:
+            module_name = name
+            paths = self.paths
+        if not paths:
+            paths = self.paths
         try:
-            module =  __import__(name, globals(), locals(), ['*'])
+            if module_name in sys.modules:
+                del sys.modules[module_name]
+            module = self.find_module(module_name, paths)
             self.log.debug("Imported module '%s'" % module)
             return module
         except ImportError, error:
             self.log.warn("Could not import module '%s'. %s" % (name, error))
             return None
+
 
     def classes(self, module, parentclass=None, all=False):
         classes = []
