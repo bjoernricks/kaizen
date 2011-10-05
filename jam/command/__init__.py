@@ -21,7 +21,7 @@
 
 from jam.command.command import BuildCommand, ActivateCommand, \
                                 DeactivateCommand, DeleteCommand, \
-                                ConfigureCommand, \
+                                ConfigureCommand, ShowCommand, \
                                 DependsCommand, ExtractCommand, \
                                 DownloadCommand, DestrootCommand, \
                                 InstallCommand, UninstallCommand, \

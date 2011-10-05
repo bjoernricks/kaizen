@@ -37,7 +37,7 @@ class Command(object):
             self.usage = usage
         else:
             self.usage = "%(prog)s [global options] " + self.name + \
-                         " {arguments}"
+                         " {optional arguments}"
         subparser = parser.add_parser(self.name, aliases=self.aliases,
                                       usage=self.usage,
                                       description=self.description)
@@ -289,6 +289,7 @@ class CreateCommand(Command):
 
         creator.create(options.stdout)
 
+
 class ListCommand(SessionNameCommand):
 
     def __init__(self, config):
@@ -311,3 +312,25 @@ class ListCommand(SessionNameCommand):
         elif options.files:
             self.console.list_session_files(session_name)
 
+
+class ShowCommand(Command):
+
+    def __init__(self, config):
+        description = ""
+        super(ShowCommand, self).__init__("show", config, self.main, [],
+                                          description)
+        self.console = Console(self.config)
+
+    def add_parser(self, parser):
+        subparser = super(ShowCommand, self).add_parser(parser)
+        group = subparser.add_mutually_exclusive_group(required=True)
+        group.add_argument("--installed", help="show installed sessions",
+                           action="store_true")
+        group.add_argument("--activated", help="show installed sessions",
+                           action="store_true")
+
+    def main(self, options):
+        if options.installed:
+            self.console.list_installed_sessions()
+        elif options.activated:
+            self.console.list_activated_sessions()
