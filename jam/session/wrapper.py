@@ -388,6 +388,7 @@ class SessionWrapper(object):
 class SessionLoader(Loader):
 
     def __init__(self, config):
+        super(SessionLoader, self).__init__()
         self.config = config
         self.log = jam.log.getLogger("jam.sessionloader")
         paths = self.config.get("sessions")
