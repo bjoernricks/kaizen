@@ -19,7 +19,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 
 # 02110-1301 USA
 
-from jam.session.manager import SessionManager
+from jam.session.manager import SessionManager, SessionsList
 
 
 class Console(object):
@@ -51,6 +51,18 @@ class Console(object):
         print "Session %s depends on:" % sessionname
         for dependency_name in dependency_names:
             print "--> %s" % dependency_name
+
+    def list_installed_sessions(self):
+        slist = SessionsList(self.config)
+        installed = slist.get_installed_sessions()
+        for session in installed:
+            print "%s\t%s" % (session.session, session.version)
+
+    def list_activated_sessions(self):
+        slist = SessionsList(self.config)
+        installed = slist.get_activated_sessions()
+        for session in installed:
+            print "%s\t%s" % (session.session, session.version)
 
     def build_session(self, sessionname, force=False):
         manager = SessionManager(self.config, sessionname, force)
