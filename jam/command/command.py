@@ -25,7 +25,7 @@ from jam.console.console import Console
 
 class Command(object):
 
-    def __init__(self, name, config, func, aliases=[], description=None):
+    def __init__(self, name, config, func, aliases=[], description=""):
         self.name = name
         self.func = func
         self.aliases = aliases
@@ -40,7 +40,8 @@ class Command(object):
                          " {optional arguments}"
         subparser = parser.add_parser(self.name, aliases=self.aliases,
                                       usage=self.usage,
-                                      description=self.description)
+                                      description=self.description,
+                                      help=self.description)
         subparser.set_defaults(func=self.func)
         return subparser
 
