@@ -44,7 +44,7 @@ class Logger(object):
               "%(message)s"
               "%(coloroff)s")
 
-    def __init__(self, name):
+    def __init__(self, name, level=None):
         self.levels = { self.NORMAL:  [ 'normal', self.COLOR_BLACK ],
                         self.DEBUG:   [ 'debug',  self.COLOR_GREEN ],
                         self.INFO:    [ 'info',   self.COLOR_GREEN ],
@@ -52,9 +52,9 @@ class Logger(object):
                         self.ERROR:   [ 'error',  self.COLOR_RED   ],
                         self.NONE:    [ 'none',   self.COLOR_NONE  ],
                         }
-        self.level = None
         self.name = name
         self.set_color(self._is_tty())
+        self.set_level(level)
 
     def set_level(self, level):
         self.level = level
@@ -94,7 +94,7 @@ class Logger(object):
         cur_level = self.level
         if not cur_level:
             cur_level = getRootLogger().level
-        if level < self.level:
+        if level < cur_level:
             return
 
         out = [sys.stdout, sys.stderr][level >= self.WARNING]
@@ -123,7 +123,7 @@ class Logger(object):
         print msg
 
 
-loggers = {"jam": Logger("jam")}
+loggers = {"jam": Logger("jam", Logger.INFO)}
 
 def getLogger(name):
     if name in loggers:
