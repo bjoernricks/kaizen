@@ -55,14 +55,18 @@ class Console(object):
     def list_installed_sessions(self):
         slist = SessionsList(self.config)
         installed = slist.get_installed_sessions()
-        for session in installed:
-            print "%s\t%s" % (session.session, session.version)
+        max_length = max([len(s.session) for s in installed])
+        for s in installed:
+            print "%s%s%s" % (s.session, self._get_filler(s.session,
+                              max_length), s.version)
 
     def list_activated_sessions(self):
         slist = SessionsList(self.config)
         installed = slist.get_activated_sessions()
-        for session in installed:
-            print "%s\t%s" % (session.session, session.version)
+        max_length = max([len(s.session) for s in installed])
+        for s in installed:
+            print "%s%s%s" % (s.session, self._get_filler(s.session,
+                              max_length), s.version)
 
     def build_session(self, sessionname, force=False):
         manager = SessionManager(self.config, sessionname, force)
@@ -132,3 +136,5 @@ class Console(object):
         manager = SessionManager(self.config, sessionname, force)
         manager.delete_build()
 
+    def _get_filler(self, text, max_length):
+        return " " * (max_length - len(text) + 1)
