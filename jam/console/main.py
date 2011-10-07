@@ -83,7 +83,7 @@ class Main(object):
 
         subparsers = parser.add_subparsers(dest="command", title="commands",
                                            description="valid commands",
-                                           help="additional help")
+                                           metavar="")
 
         for command in Loader().classes(jam.command, all=True):
             command(self.config).add_parser(subparsers)
