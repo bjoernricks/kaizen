@@ -19,7 +19,11 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 
 # 02110-1301 USA
 
+import os.path
+
 import jam.log
+
+from ConfigParser import RawConfigParser
 
 from jam.session.wrapper import SessionWrapper
 from jam.session.error import SessionError
@@ -78,3 +82,53 @@ class Dependency(object):
 
     def add_dependencies(self, dependencies):
         self.dependencies.extend(dependencies)
+
+
+class SystemProvider(object):
+
+    def __init__(self, config):
+        self.config = config
+        self.log = jam.log.getLogger("jam.session.systemprovider")
+        self.configparser = None
+
+    def load(self, filename=None):
+        if not filename:
+            filename = self.config.get("system")
+        if not filename or not os.path.isfile(filename):
+            self.log.debug("no config file found for system povided "\
+                           "dependencies")
+            return
+        self.configparser = RawConfigParser()
+        self.configparser.read(filename)
+        if not self.configparser.has_section("provides"):
+            self.log.debug("system config file '%s' has to provides section" % \
+                           filename)
+
+    def provides(self, name):
+        return self.configparser and self.configparser.has_option("provides",
+                                                                  name)
+
+    def get(self, name):
+        if not self.provides(name):
+            return None
+        version = self.configparser.get("provides", name)
+        return SystemDependency(name, version)
+
+    def add(self, name, version):
+        if not self.configparser:
+            return
+        if version is None:
+            version = ''
+        self.configparser.set("provides", name, version)
+
+    def remove(self, name):
+        if not self.configparser:
+            return False
+        return self.configparser.remove_option("provides", name)
+
+    def save(self, filename=None):
+        if not filename:
+            filename = self.config.get("system")
+        f = open(filename, "w")
+        self.configparser.write(f)
+        f.close()
