@@ -25,7 +25,7 @@ import jam.log
 
 from jam.session.error import SessionError
 from jam.session.wrapper import SessionWrapper
-from jam.session.depend import DependencyAnalyser
+from jam.session.depend import DependencyAnalyser, Dependency
 from jam.phase.phase import phases_list
 from jam.phase.sequence import Sequence, UnSequence
 from jam.db.db import Db
@@ -128,6 +128,8 @@ class SessionManager(object):
     def install_dependencies(self):
         dependencies = self.session_wrapper.depends()
         for dependency in dependencies.itervalues():
+            if not dependency.get_type() == Dependency.SESSION:
+                continue
             current_phase = dependency.session.get_current_phase()
             if not current_phase == phases_list.get("Activated"):
                 self.install_seq(dependency.session)
@@ -136,6 +138,8 @@ class SessionManager(object):
         if all:
             dependencies = self.session_wrapper.depends()
             for dependency in dependencies.itervalues():
+                if not dependency.get_type() == Dependency.SESSION:
+                    continue
                 if not resume_on_error:
                     self.download_seq(dependency.session)
                 else:
