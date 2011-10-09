@@ -20,12 +20,14 @@
 # 02110-1301 USA
 
 from jam.session.manager import SessionManager, SessionsList
+from jam.session.depend import Dependency, SystemProvider
 
 
 class Console(object):
 
     def __init__(self, config):
         self.config = config
+        self.quiet = self.config.get("quiet")
 
     def list_session_files(self, sessionname):
         manager = SessionManager(self.config, sessionname)
@@ -45,12 +47,23 @@ class Console(object):
 
     def list_session_dependencies(self, sessionname):
         manager = SessionManager(self.config, sessionname)
-        dependency_names = manager.depends().keys()
-        if not dependency_names:
+        dependencies = manager.depends()
+        if not dependencies:
+            print "%s has no dependencies" % sessionname
             return
         print "Session %s depends on:" % sessionname
-        for dependency_name in dependency_names:
-            print "--> %s" % dependency_name
+        max_length = max([len(name) for name in dependencies.keys()])
+        for name, dependency in dependencies.items():
+            if dependency.get_type() == Dependency.NONE:
+                provided_by = "not available"
+            elif dependency.get_type() == Dependency.SESSION:
+                provided_by = "provided by session"
+            elif dependency.get_type() == Dependency.SYSTEM:
+                provided_by = "provided by system"
+            else:
+                provided_by = "unknown"
+            print "--> %s%s(%s)" % (name, self._get_filler(name, max_length),
+                                    provided_by)
 
     def list_installed_sessions(self):
         slist = SessionsList(self.config)
