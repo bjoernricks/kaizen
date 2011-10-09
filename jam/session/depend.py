@@ -89,6 +89,21 @@ class Dependency(object):
         self.dependencies.extend(dependencies)
 
 
+class SessionDependency(Dependency):
+
+    def __init__(self, session, name, version=None):
+        self.session = session
+        super(SessionDependency, self).__init__(name, version,
+                                                Dependency.SESSION)
+
+
+class SystemDependency(Dependency):
+
+    def __init__(self, name, version=None):
+        super(SystemDependency, self).__init__(name, version,
+                                               Dependency.SYSTEM)
+
+
 class SystemProvider(object):
 
     def __init__(self, config):
