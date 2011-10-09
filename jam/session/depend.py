@@ -34,7 +34,9 @@ class DependencyAnalyser(object):
         self.config = config
         self.session = session
         self.dependencies = dict()
+        self.systemprovider = SystemProvider(config)
         self.log = jam.log.getLogger("jam.dependencies")
+        self.systemprovider.load()
 
     def analyse_session(self, session):
         dependencies = []
@@ -50,17 +52,21 @@ class DependencyAnalyser(object):
                 continue
             if name in self.dependencies:
                 dependency = self.dependencies[name] 
+            elif self.systemprovider and self.systemprovider.provides(name):
+                dependency = self.systemprovider.get(name)
+                self.dependencies[name] = dependency
             else:
                 try:
                     depend_session = SessionWrapper(name, self.config)
+                    dependency = SessionDependency(depend_session, name, version)
+                    self.dependencies[name] = dependency
+                    cur_deps = self.analyse_session(depend_session)
+                    dependency.add_dependencies(cur_deps)
                 except SessionError, e:
                     self.log.error("Error while loading dependency '%s': %s" % \
                                    (name, e))
-                    continue
-                dependency = Dependency(depend_session, name, version)
-                self.dependencies[name] = dependency
-                cur_deps = self.analyse_session(depend_session)
-                dependency.add_dependencies(cur_deps)
+                    dependency = Dependency(name)
+                    self.dependencies[name] = dependency
             dependencies.append(dependency)
         return dependencies
 
