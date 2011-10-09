@@ -71,10 +71,10 @@ class Config(object):
 
         if not self.configparser.has_section("jam"):
             self.configparser.add_section("jam")
-        prefix = self._get("prefix")
+        prefix = real_path(self._get("prefix"))
 
         self.config["version"] = jam.__version__
-        self.config["prefix"] = real_path(prefix)
+        self.config["prefix"] = prefix
         self.config["verbose"] = self._getbool("verbose", False)
         self.config["quiet"] = self._getbool("quiet", False)
         self.config["debug"] = self._getbool("debug", False)
