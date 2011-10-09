@@ -335,3 +335,36 @@ class ShowCommand(Command):
             self.console.list_installed_sessions()
         elif options.activated:
             self.console.list_activated_sessions()
+
+
+class SystemProvidesCommand(Command):
+
+    def __init__(self, config):
+        description = "add or remove software provided by the system"
+        super(SystemProvidesCommand, self).__init__("systemprovide", config,
+                                          self.main, [], description)
+        self.console = Console(self.config)
+
+    def add_parser(self, parser):
+        usage = "%(prog)s [global options] " + self.name + \
+                " <--add|--remove> name [version]"
+        subparser = super(SystemProvidesCommand, self).add_parser(parser, usage)
+        group = subparser.add_mutually_exclusive_group(required=True)
+        group.add_argument("--add", help="add software provided by the system",
+                           action="store_true")
+        group.add_argument("--remove", help="remove software provided by the " \
+                           "system", action="store_true")
+        subparser.add_argument("name", nargs=1, help="name of the " \
+                               "software provided by the system")
+        subparser.add_argument("version", nargs="?", help="version of the" \
+                               " software provided by the system")
+
+    def main(self, options):
+        name = options.name[0]
+        version = None
+        if options.version:
+            version = options.version[0]
+        if options.add:
+            self.console.add_system_provides(name, version)
+        elif options.remove:
+            self.console.remove_system_provides(name)
