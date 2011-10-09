@@ -36,6 +36,8 @@ class Config(object):
 
     Variables are:
     * version - String: jam version
+    * quiet - Bool: only return parsable output and don't display addition user
+                    related output
     * debug - Bool: debug is enabled/disabled (default is False)
     * verbose - Bool: commands should print it's output (default is False)
     * debugdb - Bool: database queries are printed (default is False)
@@ -59,6 +61,7 @@ class Config(object):
 
         # set default values
         defaults["debug"] = False
+        defaults["quiet"] = False
         defaults["verbose"] = False
         defaults["prefix"] = "/usr/local"
         defaults.update(options)
@@ -73,6 +76,7 @@ class Config(object):
         self.config["version"] = jam.__version__
         self.config["prefix"] = real_path(prefix)
         self.config["verbose"] = self._getbool("verbose", False)
+        self.config["quiet"] = self._getbool("quiet", False)
         self.config["debug"] = self._getbool("debug", False)
         self.config["rootdir"] = self._get("rootdir")
         self.config["sessions"] = self._getlist("sessions")
