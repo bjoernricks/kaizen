@@ -149,5 +149,25 @@ class Console(object):
         manager = SessionManager(self.config, sessionname, force)
         manager.delete_build()
 
+    def add_system_provides(self, name, version):
+        provider = SystemProvider(self.config)
+        provider.load()
+        provider.add(name, version)
+        provider.save()
+        if not self.quiet:
+            print "added software '%s' provided by the system successfully" % \
+                    name
+
+    def remove_system_provides(self, name):
+        provider = SystemProvider(self.config)
+        provider.load()
+        success = provider.remove(name)
+        provider.save()
+        if not self.quiet:
+            if success:
+                print "removed '%s' sucessfully" % name
+            else:
+                print "'%s' couldn't be removed" % name
+
     def _get_filler(self, text, max_length):
         return " " * (max_length - len(text) + 1)
