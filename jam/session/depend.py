@@ -71,11 +71,16 @@ class DependencyAnalyser(object):
 
 class Dependency(object):
 
-    def __init__(self, session, name, version=None):
-        self.session = session
+    NONE, SESSION, SYSTEM = range(3)
+
+    def __init__(self, name, version=None, type=NONE):
+        self.type = type
         self.name = name
         self.version = version
         self.dependencies = []
+
+    def get_type(self):
+        return self.type
 
     def add_dependency(self, dependency):
         self.dependencies.append(dependency)
