@@ -133,8 +133,11 @@ class UrlDownloader(object):
 
     def verify(self, hashes):
         hashcalc = Hash(self.filename)
+        # TODO support more hash algorithms and calculate all hashes with the
+        # same filedesriptor. Currently the file is opened several times
+        # hashcalc.set_hashes(['hasha', 'hashb'])
+        # calc_hash_dict = hashcalc.calculate_hashes()
         for (type, value) in hashes.items():
-            hashcalc.md5()
             if type == 'md5':
                 calc_value = hashcalc.md5()
             elif type == 'sha1':
@@ -143,6 +146,7 @@ class UrlDownloader(object):
                 DownloaderError("Hash type '%s' for '%s' is not supported" %
                         (type, this.filename))
             if calc_value != value:
+                # TODO calc all hashes and raise error afterwards
                 raise DownloaderHashError(self.filename, value, calc_value, type)
             else:
                 self.log.debug("%s hash '%s' is valid for '%s'" % (type, value,
