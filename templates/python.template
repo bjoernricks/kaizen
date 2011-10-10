@@ -8,6 +8,8 @@ class ${sessionname}(jam.session.PythonSession):
     version = "${version}"
     name = "${detectedname}"
 
+    depends = ["python"]
+
     # uncomment to set path to source directory
     # default is %(src_dir)s/%(name)s-%(version)s
     # src_path = ""
@@ -22,6 +24,3 @@ class ${sessionname}(jam.session.PythonSession):
     # all patches will be copied to %(downloadroot)s/%(session)s/patches
     # e.g. patches = ["01-patch.diff", "http://url.com/remotepatch.diff"]
     # patches = [""]
-
-    # uncomment to add a dependency on an other session
-    # depends = [""]
