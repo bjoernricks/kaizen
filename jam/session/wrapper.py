@@ -186,7 +186,7 @@ class SessionWrapper(object):
         if not os.path.exists(self.data_dir):
             self.log.debug("Creating data dir '%s'" % self.data_dir)
             os.makedirs(self.data_dir)
-        if self.session.url:
+        if self.session.url and self.session.downloader:
             self.log.info("Copying source file from '%s'." % self.session.url)
             (archive_source, archive_dest) = self.get_download(self.session.url,
                                                 self.data_dir)
