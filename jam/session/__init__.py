@@ -24,6 +24,7 @@ from jam.session.manager import SessionManager
 from jam.session.error import SessionError
 
 from jam.session.systems import MakeSession, ConfigureSession, \
-                                CMakeSession, PythonSession
+                                CMakeSession, PythonSession, \
+                                PythonDevelopSession
 
 from jam.session.create import SessionCreator
