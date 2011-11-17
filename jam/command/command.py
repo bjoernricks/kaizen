@@ -223,7 +223,7 @@ class DeleteCommand(SessionNameCommand):
 
     def main(self, options):
         console = Console(self.config)
-        sessionname = options.sesssionname[0]
+        sessionname = options.sessionname[0]
         force = options.force
         if options.dist:
             console.distclean(sessionname, force)
