@@ -86,6 +86,8 @@ class CMakeSession(MakeSession):
 
 class PythonSession(Session):
 
+    depends = ["python"]
+
     def configure(self):
         Copy(self.src_path, self.build_path).run()
 

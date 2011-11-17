@@ -8,7 +8,8 @@ class ${sessionname}(jam.session.PythonSession):
     version = "${version}"
     name = "${detectedname}"
 
-    depends = ["python"]
+    # jam.session.PythonSession already depends on python
+    # depends = ["python"]
 
     # uncomment to set path to source directory
     # default is %(src_dir)s/%(name)s-%(version)s
