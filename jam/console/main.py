@@ -93,6 +93,9 @@ class Main(object):
                                  "for a command use 'command --help'")
 
         options = parser.parse_args()
+        if not hasattr(options, "func"):
+            parser.print_help()
+            return
         options.func(options)
 
 
