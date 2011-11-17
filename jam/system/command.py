@@ -127,6 +127,10 @@ class Command(object):
         self.cwd_dir = real_path(cwd)
         self.verbose = verbose
         self.log = jam.log.getLogger("jam.command")
+        self.env = dict()
+
+    def set_env(self, key, value):
+        self.env[key] = value
 
     def run(self):
         cmd = [self.cmd]
@@ -134,7 +138,7 @@ class Command(object):
             new_arg = arg.split()
             cmd.extend(new_arg)
         self.log.debug("Running command '%s' in '%s'" % (cmd, self.cwd_dir))
-        jam.run.call(cmd, not self.verbose, cwd=self.cwd_dir)
+        jam.run.call(cmd, not self.verbose, cwd=self.cwd_dir, extra_env=self.env)
 
 
 class Patch(Command):
