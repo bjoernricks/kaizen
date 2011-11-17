@@ -92,7 +92,6 @@ class PythonSession(Session):
         Copy(self.src_path, self.build_path).run()
 
     def build(self):
-        #TODO drop configure and use --build-base=
         args = ["setup.py", "build"]
         args.extend(self.build_args)
         Command("python", args, self.build_path,
