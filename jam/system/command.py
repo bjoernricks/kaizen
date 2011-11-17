@@ -217,9 +217,15 @@ class Delete(object):
         self.log = jam.log.getLogger(__name__ + ".delete")
 
     def run(self):
-        self.log.debug("deleting '%s'" % self.dir)
-        # TODO: delete also files
-        #       delete only content of dir
+        # TODO: delete only content of dir
         #       delete also content of symlinks shutil.rmtree doesn't work for
         #       symlinks
-        shutil.rmtree(self.dir)
+        if os.path.isdir(self.dir):
+            self.log.debug("deleting directory '%s' recursively" % self.dir)
+            shutil.rmtree(self.dir)
+        elif os.path.isfile(self.dir):
+            self.log.debug("deleting file '%s'" % self.dir)
+            os.remove(self.dir)
+        else:
+            self.log.error("Could not delete '%s'. It's not a file or directory"
+                    % self.dir)
