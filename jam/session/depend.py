@@ -127,8 +127,9 @@ class SystemProvider(object):
         self.configparser = RawConfigParser()
         self.configparser.read(filename)
         if not self.configparser.has_section("provides"):
-            self.log.debug("system config file '%s' has to provides section" % \
-                           filename)
+            self.log.debug("system config file '%s' has to provides section. "\
+                           "Section will be created." % filename)
+            self.configparser.add_section("provides")
 
     def provides(self, name):
         return self.configparser and self.configparser.has_option("provides",
