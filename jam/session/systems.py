@@ -19,6 +19,10 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 
 # 02110-1301 USA
 
+import sys
+import os
+import os.path
+
 from jam.session.session import Session
 from jam.system.command import Configure, CMake, Make, Command, Copy, Delete
 
@@ -111,4 +115,27 @@ class PythonSession(Session):
     def distclean(self):
         pass
 
+
+class PythonDevelopSession(PythonSession):
+
+    def configure(self):
+        pass
+
+    def destroot(self):
+        dev_dir = self.dest_dir + self.prefix
+        cmd = Command("python", ["setup.py", "develop",
+                      "--prefix=" + dev_dir],
+                      self.build_path,
+                      self.debug)
+        python_version = ".".join(
+                        [str(value) for value in sys.version_info[:2]])
+        self.path = os.path.join(dev_dir, "lib", "python" + python_version,
+                            "site-packages")
+        os.makedirs(self.path)
+        cmd.set_env("PYTHONPATH", self.path)
+        cmd.run()
+
+    def post_destroot(self):
+        Delete(os.path.join(self.path, "site.py")).run()
+        Delete(os.path.join(self.path, "site.pyc")).run()
 
