@@ -76,7 +76,7 @@ class PythonDetector(FileDetector):
         return "python-" + self.name
 
 
-detectors = [FileDetector("CMakeList.txt", "cmake"),
+detectors = [FileDetector("CMakeLists.txt", "cmake"),
              PythonDetector("setup.py", "python"),
              FileDetector("configure", "autotools"),]
 
