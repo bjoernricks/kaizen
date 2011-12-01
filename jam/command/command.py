@@ -232,7 +232,7 @@ class DeleteCommand(SessionNameCommand):
         elif options.destroot:
             console.delete_destroot_session(sessionname, force)
         elif options.download:
-            console.delete_download(sessionname, force)
+            console.delete_download_session(sessionname, force)
         elif options.clean:
             console.clean_session(sessionname, force)
         else:
