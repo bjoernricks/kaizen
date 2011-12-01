@@ -52,14 +52,7 @@ class Sequence(object):
         return self.always or not (self.result_phase in session.get_phases())
 
     def __call__(self, session, force=False):
-        current_phase = session.get_current_phase()
-        if current_phase < self.required_phase:
-            raise SequenceError(self.name, session.session_name,
-                    "session is in phase '%s' but required is '%s'" %\
-                    (current_phase.name, self.required_phase.name))
-        set_phase = self.call(session, force)
-        if set_phase:
-            session.set_current_phase(self.result_phase)
+        self.call(session, force)
 
     def handle_phase(self, session):
         session.set_phase(self.result_phase)
