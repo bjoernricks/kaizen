@@ -63,3 +63,11 @@ class SessionPhase(object):
     def __repr__(self):
         return "<SessionPhase id='%s' session='%s' version='%s' phase='%s'>" % (
                id(self), self.session, self.version, self.phase.name)
+
+class Version(object):
+
+    def __init__(self, version):
+        self.version = version
+
+    def __repr__(self):
+        return "<Version id='%s' version='%s'>" & (id(self), self.version)

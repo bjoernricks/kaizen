@@ -88,6 +88,9 @@ class Tables(object):
                        Column('version', String, primary_key = True),
                        Column('phase', PhaseType, primary_key=True))
 
+        self.dbversion_table = Table("schema", self.metadata,
+                        Column("version", String, primary_key=True))
+
     def create(self):
         self.metadata.create_all()
 
