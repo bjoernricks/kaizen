@@ -226,7 +226,7 @@ class DeleteCommand(SessionNameCommand):
         sessionname = options.sessionname[0]
         force = options.force
         if options.distclean:
-            console.distclean(sessionname, force)
+            console.distclean_session(sessionname, force)
         elif options.source:
             console.delete_source_session(sessionname, force)
         elif options.destroot:
