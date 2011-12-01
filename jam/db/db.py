@@ -22,8 +22,7 @@
 import os.path
 
 from jam.db.tables import Tables
-from jam.db.objects import Info, Installed, File, Directory, Status, \
-                           SessionPhase
+from jam.db.objects import Info, Installed, File, Directory, SessionPhase
 from jam.external.sqlalchemy import String, create_engine
 from jam.external.sqlalchemy.orm import mapper, sessionmaker
 
@@ -51,7 +50,6 @@ class Db(object):
             mapper(Installed, self.tables.installed_table)
             mapper(File, self.tables.files_table)
             mapper(Directory, self.tables.dirs_table)
-            mapper(Status, self.tables.status_table)
             mapper(SessionPhase, self.tables.phases_table)
             self._already_init = True
 
