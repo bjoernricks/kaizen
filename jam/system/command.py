@@ -181,6 +181,18 @@ class Copy(object):
             shutil.copy(self.src, self.dest)
 
 
+class Move(object):
+
+    def __init__(self, src, dest):
+        self.log = jam.log.getLogger(__name__ + ".move")
+        self.src = src
+        self.dest = dest
+
+    def run(self):
+        self.log.debug("Moving '%s' to '%s'" % (self.src, self.dest))
+        shutil.move(self.src, self.dest)
+
+
 class Replace(object):
 
     def __init__(self, pattern, replace, source, dest=None):
