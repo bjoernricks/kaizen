@@ -33,7 +33,7 @@ from jam.utils import Loader, real_path, list_dir, list_subdir, extract_file
 from jam.download import UrlDownloader
 from jam.phase.phase import phases_list
 from jam.db.db import Db
-from jam.db.objects import Status, File, Directory, SessionPhase
+from jam.db.objects import File, Directory, SessionPhase
 from jam.session.session import Session
 from jam.session.error import SessionError
 from jam.system.command import Patch
@@ -48,7 +48,6 @@ class SessionWrapper(object):
         self.log = jam.log.getLogger("jam.sessionwrapper")
         self.init_session()
         self.db = Db(config)
-        self.init_status()
         self.load_phases()
         self.session.init()
 
@@ -86,16 +85,6 @@ class SessionWrapper(object):
                                (self.config.get("sessions"),
                                "\n".join(validator.errors)))
 
-    def init_status(self):
-        self.status = self.db.session.query(Status).filter(
-                                            and_(Status.session ==
-                                                 self.session_name,
-                                            Status.version == self.version)
-                                            ).first()
-        if not self.status:
-            self.status = Status(self.session_name, self.version)
-            self.set_current_phase(phases_list.get("None"))
-
     def load_phases(self):
         phases = self.db.session.query(SessionPhase).filter(
                                             and_(SessionPhase.session ==
@@ -106,14 +95,6 @@ class SessionWrapper(object):
 
     def get_phases(self):
         return self.phases
-
-    def set_current_phase(self, phase):
-        self.status.set_current_phase(phase)
-        self.db.session.add(self.status)
-        self.db.session.commit()
-
-    def get_current_phase(self):
-        return self.status.get_current_phase()
 
     def set_phase(self, phase):
         sessionphase = SessionPhase(self.session_name, self.version, phase)
