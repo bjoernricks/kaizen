@@ -96,6 +96,11 @@ class Session(object):
         self.build_path = real_path(self.build_path)
         self.vars["build_path"] = self.build_path
 
+        self.init()
+
+    def init(self):
+        pass
+
     def var_replace(self, var):
         if isinstance(var, list):
             for i, val in enumerate(var):
