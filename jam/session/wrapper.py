@@ -376,7 +376,8 @@ class SessionLoader(Loader):
         self.add_paths([real_path(path.strip()) for path in paths])
 
     def sessions(self, modulename):
-        module = self.module(modulename)
+        as_module = "jam.session._modules." + modulename
+        module = self.module(modulename, as_module)
         if not module:
             return None 
         return self.classes(module, Session)
