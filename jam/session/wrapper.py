@@ -225,6 +225,19 @@ class SessionWrapper(object):
 
         self.session.post_deactivate()
 
+    def check_files_installed(self, files):
+        query = self.db.session.query(File).filter(and_(File.filename.in_(
+                                      [x for (x, y) in files]),
+                                       File.session != self.session_name))
+        if query.count():
+            self.log.error("The following files are already installed by a " \
+                           "different session:")
+            for file in query:
+                self.log.error("Session: '%s', Filename: '%s'" % (file.session,
+                                                                 file.filename))
+                # FIXME: raise error
+                return
+
     def activate(self):
         self.log.info("%s:phase:activate" % self.session_name)
         current_dir = os.path.join(self.destroot_dir, "current")
@@ -246,21 +259,25 @@ class SessionWrapper(object):
 
         (dirs, files) = list_subdir(self.dest_dir)
         activate_files = []
+        check_files = []
+        i = 0
         for file in files:
             file_path = os.path.join("/", file)
             destdir_file_path = os.path.join(current_dir, file)
-            activate_files.append((file_path, destdir_file_path))
-        query = self.db.session.query(File).filter(and_(File.filename.in_(
-                                      [x for (x, y) in activate_files]),
-                                       File.session != self.session_name))
-        if query.count():
-            self.log.error("The following files are already installed by a " \
-                           "different session:")
-            for file in query:
-                self.log.error("Session: '%s', Filename: '%s'" % (file.session,
-                                                                 file.filename))
-                # FIXME: raise error
-                return
+            check_files.append((file_path, destdir_file_path))
+            # sqlite has a limit for max variables in a sql query
+            # therefore split this up in several queries
+            i += 1
+            if i > 100:
+                i = 0
+                self.check_files_installed(check_files)
+                activate_files.extend(check_files)
+                check_files = []
+
+        if check_files:
+            self.check_files_installed(check_files)
+            activate_files.extend(check_files)
+
         # check if session is already installed
         query = self.db.session.query(SessionPhase).filter(and_(
                                       SessionPhase.session == self.session_name,
