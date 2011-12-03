@@ -130,8 +130,8 @@ class SessionManager(object):
         for dependency in dependencies.itervalues():
             if not dependency.get_type() == Dependency.SESSION:
                 continue
-            current_phase = dependency.session.get_current_phase()
-            if not current_phase == phases_list.get("Activated"):
+            if not phases_list.get("Activated") in \
+                dependency.session.get_phases():
                 self.install_seq(dependency.session)
 
     def download(self, all=False, resume_on_error=True):

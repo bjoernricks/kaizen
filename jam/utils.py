@@ -85,15 +85,19 @@ class Loader(object):
     def add_paths(self, paths):
         self.paths.extend(paths)
 
-    def find_module(self, module, paths):
+    def find_module(self, module, paths, as_module=None):
+        if not as_module:
+            as_module = module
         file, pathname, description = imp.find_module(module, paths)
         try:
-            return imp.load_module(module, file, pathname, description)
+            return imp.load_module(as_module, file, pathname, description)
         finally:
             if file:
                 file.close()
 
-    def module(self, name):
+    def module(self, name, as_module=None):
+        if not as_module:
+            as_module = module
         if "." in name:
             paths = []
             index = name.rfind(".")
@@ -108,9 +112,12 @@ class Loader(object):
         if not paths:
             paths = self.paths
         try:
-            if module_name in sys.modules:
-                del sys.modules[module_name]
-            module = self.find_module(module_name, paths)
+            if as_module in sys.modules:
+                self.log.warn("Reloading '%s' module. This overwrites the " \
+                        "previous loaded module with the same name." % \
+                        as_module)
+                del sys.modules[as_module]
+            module = self.find_module(module_name, paths, as_module)
             self.log.debug("Imported module '%s'" % module)
             return module
         except ImportError, error:
