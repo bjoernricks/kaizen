@@ -143,11 +143,11 @@ class Command(object):
 
 class Patch(Command):
 
-    def __init__(self, patchfile, cwd, verbose, reverse=False):
+    def __init__(self, patchfile, cwd, verbose, reverse=False, num=1):
         args = []
         if reverse:
             args.append("-R")
-        args.extend(["-p1", "-i", patchfile])
+        args.extend(["-p" + str(num), "-i", patchfile])
         super(Patch, self).__init__("patch", args, cwd, verbose)
 
 
