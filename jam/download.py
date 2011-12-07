@@ -22,6 +22,7 @@
 import urllib2
 import os.path
 import shutil
+import ftplib
 
 import jam.log
 
@@ -56,6 +57,26 @@ class UnkownUrlScheme(DownloaderError):
     def __str__(self):
         return "Unkown urlscheme '%s'. Can't download '%s'" % (self.urlscheme,
                     self.filename)
+
+
+class FtpDownloader(object):
+
+    def __init__(self, url):
+        self.url = url
+        self.log = jam.log.getLogger("jam.ftpdownloader")
+
+    def copy(self, filename):
+        ftp = ftplib.FTP(self.url.netloc)
+        ftp.login()
+        f = open(filename, 'w')
+        try:
+            filesize = ftp.size(self.url.path)
+            self.log.info("downloading %s to %s (%.2f KiB)" % \
+                          (self.url.geturl(), filename, filesize / 1024))
+            ftp.retrbinary("RETR " + self.url.path, f.write)
+            ftp.quit()
+        finally:
+            f.close()
 
 
 class HttpDownloader(object):
@@ -116,6 +137,8 @@ class UrlDownloader(object):
             self.downloader = HttpDownloader(urlstr)
         elif url.scheme == "file" or not url.scheme:
             self.downloader = LocalFileDownloader(url, root_dir)
+        elif url.scheme == "ftp":
+            self.downloader = FtpDownloader(url)
         else:
             raise UnkownUrlScheme(url.scheme, self.url)
 
