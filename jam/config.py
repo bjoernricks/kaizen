@@ -106,6 +106,8 @@ class Config(object):
             self.config["destroot"] = os.path.join(jam_dir, "destroot")
         if not self.config.get("buildroot", None):
             self.config["buildroot"] = os.path.join(jam_dir, "cache")
+        if not self.config.get("appsdir", None):
+            self.config["appsdir"] = os.path.join(prefix, "Applications")
 
     def _get(self, value, default=None):
         if value in self.options and self.options[value]:

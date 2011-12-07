@@ -67,6 +67,7 @@ class Session(object):
         self.session_path = real_path(os.path.dirname(
                                      inspect.getfile(self.__class__)))
         self.package_path = self.config.get("packagepath")
+        self.apps_dir = self.config.get("appsdir")
 
         self.__shadow = dict()
 
@@ -84,6 +85,7 @@ class Session(object):
         self.vars["session_path"] = self.session_path
         self.vars["dist_version"] = self.dist_version
         self.vars["package_path"] = self.package_path
+        self.vars["apps_dir"] = self.apps_dir
 
         if not self.src_path:
             self.src_path = os.path.join(src_dir, self.name
