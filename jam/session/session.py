@@ -106,11 +106,13 @@ class Session(object):
     def var_replace(self, var):
         if isinstance(var, list):
             for i, val in enumerate(var):
-                var[i] = val % self.vars
+                var[i] = self.var_replace(val)
             else:
                 return var
-        else:
+        elif isinstance(var, basestring):
             return var % self.vars
+        else:
+            return var
 
     def __getattribute__(self, name):
         try:
