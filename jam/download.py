@@ -71,8 +71,15 @@ class FtpDownloader(object):
         f = open(filename, 'w')
         try:
             filesize = ftp.size(self.url.path)
+        except ftplib.all_errors:
+            filesize = 0
+        if filesize:
             self.log.info("downloading %s to %s (%.2f KiB)" % \
                           (self.url.geturl(), filename, filesize / 1024))
+        else:
+            self.log.info("downloading %s to %s" % \
+                          (self.url.geturl(), filename))
+        try:
             ftp.retrbinary("RETR " + self.url.path, f.write)
             ftp.quit()
         finally:
