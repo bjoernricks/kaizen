@@ -54,6 +54,7 @@ class Config(object):
                             at runtime)
     * system - String: path to an additional config file containing system
                        releated settings
+    * appdir - String path to the Mac OS X application bundle dir
     """
 
     def __init__(self, files=[], options={}):
