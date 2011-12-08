@@ -31,7 +31,7 @@ def read(fname):
                              fname)).read()
 
 setup(name="jam",
-      version=jam.__version__
+      version=jam.__version__,
       description="",
       author="Björn Ricks",
       author_email="bjoern.ricks@gmail.com",
