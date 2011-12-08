@@ -138,4 +138,5 @@ class PythonDevelopSession(PythonSession):
     def post_destroot(self):
         Delete(os.path.join(self.path, "site.py")).run()
         Delete(os.path.join(self.path, "site.pyc")).run()
+        Delete(os.path.join(self.path, "easy-install.pth")).run()
 
