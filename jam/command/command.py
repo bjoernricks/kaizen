@@ -291,15 +291,15 @@ class CreateCommand(Command):
         creator.create(options.stdout)
 
 
-class ListCommand(SessionNameCommand):
+class ShowCommand(SessionNameCommand):
 
     def __init__(self, config):
         description = ""
-        super(ListCommand, self).__init__("list", config, description)
+        super(ShowCommand, self).__init__("show", config, description)
         self.console = Console(self.config)
 
     def add_parser(self, parser):
-        subparser = super(ListCommand, self).add_parser(parser)
+        subparser = super(ShowCommand, self).add_parser(parser)
         group = subparser.add_mutually_exclusive_group(required=True)
         group.add_argument("--files", help="list installed files of a session",
                            action="store_true")
@@ -314,16 +314,16 @@ class ListCommand(SessionNameCommand):
             self.console.list_session_files(session_name)
 
 
-class ShowCommand(Command):
+class ListCommand(Command):
 
     def __init__(self, config):
         description = ""
-        super(ShowCommand, self).__init__("show", config, self.main, [],
+        super(ListCommand, self).__init__("list", config, self.main, [],
                                           description)
         self.console = Console(self.config)
 
     def add_parser(self, parser):
-        subparser = super(ShowCommand, self).add_parser(parser)
+        subparser = super(ListCommand, self).add_parser(parser)
         group = subparser.add_mutually_exclusive_group(required=True)
         group.add_argument("--installed", help="show installed sessions",
                            action="store_true")
