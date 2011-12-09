@@ -121,6 +121,9 @@ class PythonDevelopSession(PythonSession):
     def configure(self):
         pass
 
+    def build(self):
+        pass
+
     def destroot(self):
         dev_dir = self.dest_dir + self.prefix
         cmd = Command("python", ["setup.py", "develop",
