@@ -140,6 +140,9 @@ class Command(object):
         self.log.debug("Running command '%s' in '%s'" % (cmd, self.cwd_dir))
         jam.run.call(cmd, not self.verbose, cwd=self.cwd_dir, extra_env=self.env)
 
+    def set_args(self, args):
+        self.args = args
+
 
 class Patch(Command):
 
