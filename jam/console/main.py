@@ -65,8 +65,10 @@ class Main(object):
                             help="print jam settings")
         parser.add_argument("--version", action="version", version=version)
 
-        known_args = parser.parse_known_args()
-        options = known_args[0]
+        all_args = sys.argv
+        args = parser.parse_known_args(all_args)
+        unknown_args = args[1][1:]
+        options = args[0]
 
         if options.config:
             configfiles.append(options.config)
@@ -92,7 +94,7 @@ class Main(object):
                             help="show this help message and exit. To get help "\
                                  "for a command use 'command --help'")
 
-        options = parser.parse_args()
+        options = parser.parse_args(unknown_args)
         if not hasattr(options, "func"):
             parser.print_help()
             return
