@@ -61,7 +61,12 @@ class Session(object):
         self.session_dirs = self.config.get("sessions")
         self.dist_version = self.version + "-" + self.revision
         self.destroot_dir = self.config.get("destroot")
-        self.session_name = self.__module__.split(".")[0]
+        # session name must be in sync with wrapper session name for destroot
+        # installation. Currently it's not best to have different sources
+        # for session name. Changing the module layout for session installation
+        # could fail if a session uses self.destdir_path then.
+        # TODO: All parameters should be set by Wrapper
+        self.session_name = self.__module__.split(".")[-2]
         self.destroot_path = os.path.join(self.destroot_dir, self.session_name,
                                           self.dist_version)
         self.session_path = real_path(os.path.dirname(
