@@ -158,7 +158,8 @@ class Loader(object):
 class Template(object):
 
     def __init__(self, filename):
-        path = real_path(os.path.join(__name__, "..", "templates"))
+        path = real_path(os.path.join(os.path.dirname(__file__),
+                         os.path.pardir, "templates"))
         f = open(os.path.join(path, filename), "r")
         try:
             text = f.read()
