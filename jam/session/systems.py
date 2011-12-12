@@ -134,7 +134,8 @@ class PythonDevelopSession(PythonSession):
                         [str(value) for value in sys.version_info[:2]])
         self.path = os.path.join(dev_dir, "lib", "python" + python_version,
                             "site-packages")
-        os.makedirs(self.path)
+        if not os.path.exists(self.path):
+            os.makedirs(self.path)
         cmd.set_env("PYTHONPATH", self.path)
         cmd.run()
 
