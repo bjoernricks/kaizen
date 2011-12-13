@@ -27,4 +27,4 @@ from jam.command.command import BuildCommand, ActivateCommand, \
                                 InstallCommand, UninstallCommand, \
                                 CreateCommand, PatchCommand, \
                                 UnPatchCommand, ListCommand, \
-                                SystemProvidesCommand
+                                SystemProvidesCommand, QuiltCommand

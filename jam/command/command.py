@@ -368,3 +368,14 @@ class SystemProvidesCommand(Command):
             self.console.add_system_provides(name, version)
         elif options.remove:
             self.console.remove_system_provides(name)
+
+
+class QuiltCommand(SessionNameCommand):
+
+    def __init__(self, config):
+        description = "Manage patches for a session with quilt"
+        super(QuiltCommand, self).__init__("quilt", config, description)
+        self.console = Console(self.config)
+
+    def main(self, options):
+        session_name = options.sessionname[0]
