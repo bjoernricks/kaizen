@@ -59,7 +59,13 @@ class UnkownUrlScheme(DownloaderError):
                     self.filename)
 
 
-class FtpDownloader(object):
+class Downloader(object):
+
+    def copy(self, filename):
+        raise NotImplementedError()
+
+
+class FtpDownloader(Downloader):
 
     def __init__(self, url):
         self.url = url
@@ -86,7 +92,7 @@ class FtpDownloader(object):
             f.close()
 
 
-class HttpDownloader(object):
+class HttpDownloader(Downloader):
 
     def __init__(self, url):
         self.url = url
@@ -116,7 +122,7 @@ class HttpDownloader(object):
         f.close()
 
 
-class LocalFileDownloader(object):
+class LocalFileDownloader(Downloader):
 
     def __init__(self, url, root_dir=None):
         self.url = url
