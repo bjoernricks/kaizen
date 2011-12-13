@@ -73,6 +73,7 @@ class Session(object):
                                      inspect.getfile(self.__class__)))
         self.package_path = self.config.get("packagepath")
         self.apps_dir = self.config.get("appsdir")
+        self.dest_path = self.destroot_path + self.prefix
 
         self.__shadow = dict()
 
