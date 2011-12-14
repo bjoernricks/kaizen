@@ -137,7 +137,8 @@ class Command(object):
         for arg in self.args:
             new_arg = arg.split()
             cmd.extend(new_arg)
-        self.log.debug("Running command '%s' in '%s'" % (cmd, self.cwd_dir))
+        self.log.debug("Running command '%s' in '%s' with env %s" % (cmd,
+            self.cwd_dir, self.env))
         jam.run.call(cmd, not self.verbose, cwd=self.cwd_dir, extra_env=self.env)
 
     def set_args(self, args):
@@ -235,6 +236,7 @@ class Delete(object):
         # TODO: delete only content of dir
         #       delete also content of symlinks shutil.rmtree doesn't work for
         #       symlinks
+        #       add parameter fail_if_not_exists and raise an exception
         if os.path.isdir(self.dir):
             self.log.debug("deleting directory '%s' recursively" % self.dir)
             shutil.rmtree(self.dir)
