@@ -22,6 +22,8 @@
 import inspect
 import os.path
 
+import jam.log
+
 from jam.utils import real_path
 from jam.download import UrlDownloader
 
@@ -69,11 +71,14 @@ class Session(object):
         self.session_name = self.__module__.split(".")[-2]
         self.destroot_path = os.path.join(self.destroot_dir, self.session_name,
                                           self.dist_version)
+        # TODO check if destroot_path and dest_dir are equal
         self.session_path = real_path(os.path.dirname(
                                      inspect.getfile(self.__class__)))
         self.package_path = self.config.get("packagepath")
         self.apps_dir = self.config.get("appsdir")
         self.dest_path = self.destroot_path + self.prefix
+
+        self.log = jam.log.getLogger("session." + self.session_name)
 
         self.__shadow = dict()
 
