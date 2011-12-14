@@ -118,6 +118,15 @@ class PythonSession(Session):
 
 class PythonDevelopSession(PythonSession):
 
+    def init(self):
+        self.python_version = ".".join(
+                        [str(value) for value in sys.version_info[:2]])
+        self.python_package_path = os.path.join("lib",
+                                                "python" + self.python_version,
+                                                "site-packages")
+        self.python_path = os.path.join(self.dest_path,
+                                        self.python_package_path)
+
     def configure(self):
         pass
 
@@ -125,22 +134,58 @@ class PythonDevelopSession(PythonSession):
         pass
 
     def destroot(self):
-        dev_dir = self.dest_dir + self.prefix
         cmd = Command("python", ["setup.py", "develop",
-                      "--prefix=" + dev_dir],
+                      "--prefix=" + self.dest_path],
                       self.build_path,
                       self.debug)
-        python_version = ".".join(
-                        [str(value) for value in sys.version_info[:2]])
-        self.path = os.path.join(dev_dir, "lib", "python" + python_version,
-                            "site-packages")
-        if not os.path.exists(self.path):
-            os.makedirs(self.path)
-        cmd.set_env("PYTHONPATH", self.path)
+        if not os.path.exists(self.python_path):
+            os.makedirs(self.python_path)
+        cmd.set_env("PYTHONPATH", self.python_path)
         cmd.run()
 
     def post_destroot(self):
-        Delete(os.path.join(self.path, "site.py")).run()
-        Delete(os.path.join(self.path, "site.pyc")).run()
-        Delete(os.path.join(self.path, "easy-install.pth")).run()
+        Delete(os.path.join(self.python_path, "site.py")).run()
+        Delete(os.path.join(self.python_path, "site.pyc")).run()
+        Delete(os.path.join(self.python_path, "easy-install.pth")).run()
 
+    def post_activate(self):
+        self.read_jam_pth()
+        self.add_jam_pth_entry()
+        self.write_jam_pth()
+
+    def post_deactivate(self):
+        self.read_jam_pth()
+        self.delete_jam_pth()
+        self.write_jam_pth()
+
+    def read_jam_pth(self):
+        self.entries = []
+        pth_file = os.path.join(self.prefix, self.python_package_path,
+                                "jam-sessions.pth")
+        if not os.path.isfile(pth_file):
+            return
+        f = open(pth_file, "r")
+        try:
+            self.entries = f.readlines()
+        finally:
+            f.close()
+
+    def add_jam_pth_entry(self):
+        if self.build_path not in self.entries:
+            self.log.debug("adding jam-session.pth entry '%s'" % \
+                           self.build_path)
+            self.entries.append(self.build_path)
+
+    def delete_jam_pth(self):
+        if self.build_path in self.entries:
+            self.log.debug("removing jam-session.pth entry '%s'" % \
+                           self.build_path)
+            self.entries.remove(self.build_path)
+
+    def write_jam_pth(self):
+        f = open(os.path.join(self.prefix, self.python_package_path,
+                              "jam-sessions.pth"), "w")
+        try:
+            f.write("\n".join(self.entries))
+        finally:
+            f.close()
