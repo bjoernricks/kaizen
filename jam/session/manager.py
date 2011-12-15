@@ -25,11 +25,13 @@ import jam.log
 
 from jam.session.error import SessionError
 from jam.session.wrapper import SessionWrapper
-from jam.session.depend import DependencyAnalyser, Dependency
+from jam.session.depend import DependencyAnalyser, Dependency, \
+                               UnresolvedDependencies
 from jam.phase.phase import phases_list
 from jam.phase.sequence import Sequence, UnSequence
 from jam.db.db import Db
 from jam.db.objects import Installed, SessionPhase
+from jam.session.depend import DependencyAnalyser
 
 
 class SessionManager(object):
@@ -126,7 +128,11 @@ class SessionManager(object):
                                         self.delete_source_seq)
 
     def install_dependencies(self):
-        dependencies = self.session_wrapper.depends()
+        depanalyzer = DependencyAnalyser(self.config, self.session_wrapper)
+        dependencies = depanalyzer.analyse()
+        missing = depanalyzer.get_missing()
+        if missing:
+            raise UnresolvedDependencies(self.session_name, missing)
         for dependency in dependencies.itervalues():
             if not dependency.get_type() == Dependency.SESSION:
                 continue
