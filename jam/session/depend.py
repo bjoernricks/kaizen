@@ -28,6 +28,20 @@ from ConfigParser import RawConfigParser
 from jam.session.wrapper import SessionWrapper
 from jam.session.error import SessionError
 
+class UnresolvedDependencies(SessionError):
+
+    def __init__(self, session_name, missing):
+        self.missing = missing
+        value = "Couldn't not resolve all dependencies\n"
+        for dependency in self.missing.itervalues():
+            if dependency.version:
+                value += "'%s' version '%s' is missing\n" % (dependency.name,
+                                                            dependency.version)
+            else:
+                value += "'%s' is missing\n" % dependency.name
+        super(UnresolvedDependencies, self).__init__(session_name, value)
+
+
 class DependencyAnalyser(object):
 
     def __init__(self, config, session):
