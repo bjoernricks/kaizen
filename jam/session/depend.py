@@ -34,6 +34,7 @@ class DependencyAnalyser(object):
         self.config = config
         self.session = session
         self.dependencies = dict()
+        self.missing = dict()
         self.systemprovider = SystemProvider(config)
         self.log = jam.log.getLogger("jam.dependencies")
         self.systemprovider.load()
@@ -66,6 +67,7 @@ class DependencyAnalyser(object):
                     self.log.error("Error while loading dependency '%s': %s" % \
                                    (name, e))
                     dependency = Dependency(name)
+                    self.missing[name] = dependency
                     self.dependencies[name] = dependency
             dependencies.append(dependency)
         return dependencies
@@ -74,6 +76,8 @@ class DependencyAnalyser(object):
         self.analyse_session(self.session)
         return self.dependencies
 
+    def get_missing(self):
+        return self.missing
 
 class Dependency(object):
 
