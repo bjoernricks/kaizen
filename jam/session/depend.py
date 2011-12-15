@@ -115,7 +115,7 @@ class SystemProvider(object):
     def __init__(self, config):
         self.config = config
         self.log = jam.log.getLogger("jam.session.systemprovider")
-        self.configparser = None
+        self.configparser = RawConfigParser()
 
     def load(self, filename=None):
         if not filename:
