@@ -22,49 +22,36 @@
 
 import sys
 
-import jam.log
+import jam.logging
 import jam.command
 
 from jam.config import Config, JAM_CONFIG_FILES
-from jam.external.argparse import ArgumentParser
 from jam.utils import Loader
+from jam.command.parser import ArgumentParser
 
 class Main(object):
 
     def print_settings(self):
-        self.logger.out("Version: '%s'" % self.config.get("version"))
-        self.logger.out("Debug: '%s'" % self.config.get("debug"))
-        self.logger.out("Verbose: '%s'" % self.config.get("verbose"))
-        self.logger.out("Root: '%s'" % self.config.get("rootdir"))
-        self.logger.out("Sessions: '%s'" % self.config.get("sessions"))
-        self.logger.out("Destroot: '%s'" % self.config.get("destroot"))
-        self.logger.out("Buildroot: '%s'" % self.config.get("buildroot"))
-        self.logger.out("Downloadroot: '%s'" % self.config.get("downloadroot"))
+        jam.logging.out("Version: '%s'" % self.config.get("version"))
+        jam.logging.out("Debug: '%s'" % self.config.get("debug"))
+        jam.logging.out("Verbose: '%s'" % self.config.get("verbose"))
+        jam.logging.out("Root: '%s'" % self.config.get("rootdir"))
+        jam.logging.out("Sessions: '%s'" % self.config.get("sessions"))
+        jam.logging.out("Destroot: '%s'" % self.config.get("destroot"))
+        jam.logging.out("Buildroot: '%s'" % self.config.get("buildroot"))
+        jam.logging.out("Downloadroot: '%s'" % self.config.get("downloadroot"))
 
     def main(self):
         if sys.version_info < (2, 4):
             raise Exception("jam requires Python 2.4 or higher.")
-        usage = "%(prog)s [options] command {arguments}"
-        description = "jam - Orchestrate your software"
-        version = "%(prog)s " + jam.__version__
 
-        self.logger = jam.log.getRootLogger()
+        formatter = jam.logging.Formatter("%(levelname)s - %(name)s - %(message)s")
+        self.logger = jam.logging.getRootLogger()
+        handler = jam.logging.ColorStreamHandler()
+        handler.setFormatter(formatter)
+        self.logger.addHandler(handler)
 
-        parser = ArgumentParser(usage=usage, description=description,
-                                add_help=False)
-        parser.add_argument("--config", dest="config",
-                            help="path to the config file")
-        parser.add_argument("--sessions", help="path to sessions")
-        parser.add_argument("-d", "--debug", action="store_true", dest="debug",
-                          help="enable debug output")
-        parser.add_argument("-v", "--verbose", action="store_true", dest="verbose",
-                          help="enable verbose output")
-        parser.add_argument("-f", "--force", action="store_true", dest="force",
-                          help="force an action e.g. re-download sources")
-        parser.add_argument("--settings", action="store_true",
-                            help="print jam settings")
-        parser.add_argument("--version", action="version", version=version)
-
+        parser = ArgumentParser()
         all_args = sys.argv
         args = parser.parse_known_args(all_args)
         unknown_args = args[1][1:]
@@ -80,7 +67,7 @@ class Main(object):
             return
 
         if self.config.get("debug"):
-            self.logger.set_level(jam.log.Logger.DEBUG)
+            self.logger.setLevel(jam.logging.DEBUG)
             self.print_settings()
 
         subparsers = parser.add_subparsers(dest="command", title="commands",
