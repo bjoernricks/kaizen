@@ -171,7 +171,8 @@ class SessionWrapper(object):
             self.log.info("Copying source file from '%s'." % self.session.url)
             (archive_source, archive_dest) = self.get_download(self.session.url,
                                                 self.data_dir)
-            dl = self.session.downloader(archive_source)
+            dl = self.session.downloader(archive_source,
+                                         self.session.session_path)
             download_file = dl.copy(archive_dest, self.force)
             dl.verify(self.session.hash)
         if self.session.patches:
