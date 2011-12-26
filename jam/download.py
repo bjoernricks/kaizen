@@ -24,7 +24,7 @@ import os.path
 import shutil
 import ftplib
 
-import jam.log
+import jam.logging
 
 from urlparse import urlparse
 
@@ -69,7 +69,7 @@ class FtpDownloader(Downloader):
 
     def __init__(self, url):
         self.url = url
-        self.log = jam.log.getLogger("jam.ftpdownloader")
+        self.log = jam.logging.getLogger("jam.ftpdownloader")
 
     def copy(self, filename):
         ftp = ftplib.FTP(self.url.netloc)
@@ -96,7 +96,7 @@ class HttpDownloader(Downloader):
 
     def __init__(self, url):
         self.url = url
-        self.log = jam.log.getLogger("jam.httpdownloader")
+        self.log = jam.logging.getLogger("jam.httpdownloader")
 
     def copy(self, filename):
         u = urllib2.urlopen(self.url)
@@ -127,7 +127,7 @@ class LocalFileDownloader(Downloader):
     def __init__(self, url, root_dir=None):
         self.url = url
         self.root_dir = root_dir
-        self.log = jam.log.getLogger("jam.localfiledownloader")
+        self.log = jam.logging.getLogger("jam.localfiledownloader")
 
     def copy(self, filename):
         path = self.url.path
@@ -144,7 +144,7 @@ class UrlDownloader(object):
         self.url = urlstr
         self.root_dir = root_dir
         self.filename = os.path.basename(urlstr)
-        self.log = jam.log.getLogger("jam.downloader")
+        self.log = jam.logging.getLogger("jam.downloader")
 
         if url.scheme == 'http' or url.scheme == 'https':
             self.downloader = HttpDownloader(urlstr)

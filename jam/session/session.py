@@ -22,7 +22,7 @@
 import inspect
 import os.path
 
-import jam.log
+import jam.logging
 
 from jam.utils import real_path
 from jam.download import UrlDownloader
@@ -78,7 +78,7 @@ class Session(object):
         self.apps_dir = self.config.get("appsdir")
         self.dest_path = self.destroot_path + self.prefix
 
-        self.log = jam.log.getLogger("session." + self.session_name)
+        self.log = jam.logging.getLogger("session." + self.session_name)
 
         self.__shadow = dict()
 

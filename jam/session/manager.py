@@ -21,7 +21,7 @@
 
 import os.path
 
-import jam.log
+import jam.logging
 
 from jam.session.error import SessionError
 from jam.session.wrapper import SessionWrapper
@@ -43,7 +43,7 @@ class SessionManager(object):
         self.config = config
         self.force = force
         self.session_name = name
-        self.log = jam.log.getLogger("jam.sessionmanager")
+        self.log = jam.logging.getLogger("jam.sessionmanager")
         self.session_wrapper = SessionWrapper(name, config, force)
         self.db = Db(config)
         self.init_sequences()

@@ -25,7 +25,7 @@ import shutil
 import re
 
 import jam.run
-import jam.log
+import jam.logging
 
 from jam.utils import real_path
 
@@ -38,7 +38,7 @@ class BuildSystem(object):
         self.cwd_dir = real_path(build_dir)
         self.verbose = verbose
         self.env = dict()
-        self.log = jam.log.getLogger("jam.buildsystem")
+        self.log = jam.logging.getLogger("jam.buildsystem")
 
     def set_cc(self, cc):
         self.env["CC"] = cc
@@ -97,7 +97,7 @@ class Make(object):
         self.dir = dir
         self.cwd_dir = real_path(dir)
         self.verbose = verbose
-        self.log = jam.log.getLogger("jam.make")
+        self.log = jam.logging.getLogger("jam.make")
 
     def run(self, args=[]):
         cmd = ["make"]
@@ -126,7 +126,7 @@ class Command(object):
         self.args = args
         self.cwd_dir = real_path(cwd)
         self.verbose = verbose
-        self.log = jam.log.getLogger("jam.command")
+        self.log = jam.logging.getLogger("jam.command")
         self.env = dict()
 
     def set_env(self, key, value):
@@ -158,7 +158,7 @@ class Patch(Command):
 class Copy(object):
 
     def __init__(self, src, dest):
-        self.log = jam.log.getLogger(__name__ + ".copy")
+        self.log = jam.logging.getLogger(__name__ + ".copy")
         self.src = src
         self.dest = dest
 
@@ -188,7 +188,7 @@ class Copy(object):
 class Move(object):
 
     def __init__(self, src, dest):
-        self.log = jam.log.getLogger(__name__ + ".move")
+        self.log = jam.logging.getLogger(__name__ + ".move")
         self.src = src
         self.dest = dest
 
@@ -200,7 +200,7 @@ class Move(object):
 class Replace(object):
 
     def __init__(self, pattern, replace, source, dest=None):
-        self.log = jam.log.getLogger(__name__ + ".replace")
+        self.log = jam.logging.getLogger(__name__ + ".replace")
         self.pattern = pattern
         self.replace = replace
         self.source = source
@@ -230,7 +230,7 @@ class Delete(object):
 
     def __init__(self, dir):
         self.dir = dir
-        self.log = jam.log.getLogger(__name__ + ".delete")
+        self.log = jam.logging.getLogger(__name__ + ".delete")
 
     def run(self):
         # TODO: delete only content of dir

@@ -28,7 +28,7 @@ import sys
 import tarfile
 import zipfile
 
-import jam.log
+import jam.logging
 
 from jam.error import JamRuntimeError
 try:
@@ -38,7 +38,7 @@ except ImportError:
     from md5 import new as md5
     from sha import new as sha1
 
-log = jam.log.getLogger(__name__)
+log = jam.logging.getLogger(__name__)
 
 class Hash(object):
 
@@ -76,7 +76,7 @@ class Hash(object):
 class Loader(object):
 
     def __init__(self):
-        self.log = jam.log.getLogger("jam.loader")
+        self.log = jam.logging.getLogger("jam.loader")
         self.paths = []
 
     def add_path(self, path):

@@ -26,28 +26,35 @@ from jam.external.argparse import ArgumentParser as ArgParser
 
 class ArgumentParser(ArgParser):
 
-    def __init__(self, usage=None):
+    def __init__(self, usage=None, **kwargs):
         if not usage:
             usage = "%(prog)s [options] command {arguments}"
         description = "jam - Orchestrate your software"
         version = "%(prog)s " + jam.__version__
+        kwargs.pop("description", None)
+        kwargs.pop("usage", None)
+        add_help = kwargs.pop("add_help", False)
         super(ArgumentParser, self).__init__(usage=usage,
                                              description=description,
-                                             add_help=False)
-        self.add_argument("--config", dest="config",
-                            help="path to the config file")
-        self.add_argument("--sessions", help="path to sessions")
-        self.add_argument("-d", "--debug", action="store_true", dest="debug",
+                                             add_help=add_help, **kwargs)
+        self.group = self.add_argument_group("global options")
+        self.group.add_argument("--config", dest="config",
+                          help="path to the config file")
+        self.group.add_argument("--sessions", help="path to sessions")
+        self.group.add_argument("-d", "--debug", action="store_true",
+                          dest="debug",
                           help="enable debug output")
-        self.add_argument("-v", "--verbose", action="store_true", dest="verbose",
+        self.group.add_argument("-v", "--verbose", action="store_true",
+                          dest="verbose",
                           help="enable verbose output")
-        self.add_argument("-f", "--force", action="store_true", dest="force",
+        self.group.add_argument("-f", "--force", action="store_true",
+                          dest="force",
                           help="force an action e.g. re-download sources")
-        self.add_argument("--settings", action="store_true",
-                            help="print jam settings")
-        self.add_argument("--version", action="version", version=version)
+        self.group.add_argument("--settings", action="store_true",
+                          help="print jam settings")
+        self.group.add_argument("--version", action="version", version=version)
 
     def set_help(self):
-        self.add_argument("--help", "-h", action="help",
+        self.group.add_argument("--help", "-h", action="help",
                           help="show this help message and exit. To get help "\
                                "for a command use 'command --help'")

@@ -41,7 +41,7 @@ class Command(object):
         subparser = parser.add_parser(self.name, aliases=self.aliases,
                                       usage=self.usage,
                                       description=self.description,
-                                      help=self.description)
+                                      help=self.description, add_help=True)
         subparser.set_defaults(func=self.func)
         return subparser
 

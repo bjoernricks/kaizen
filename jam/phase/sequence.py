@@ -19,11 +19,11 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 
 # 02110-1301 USA
 
-import jam.log
+import jam.logging
 
 from jam.error import JamError
 
-log = jam.log.getLogger(__file__)
+log = jam.logging.getLogger(__file__)
 
 class SequenceError(JamError):
 

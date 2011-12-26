@@ -23,7 +23,7 @@ import os
 import os.path
 import shutil
 
-import jam.log
+import jam.logging
 
 from tempfile import mkdtemp
 
@@ -92,7 +92,7 @@ class SessionCreator(object):
         self.name = None
         self.version = None
         self.tmp_dir = None
-        self.log = jam.log.getLogger("jam.sessioncreator")
+        self.log = jam.logging.getLogger("jam.sessioncreator")
 
     def set_template(self, template):
         self.template = template
