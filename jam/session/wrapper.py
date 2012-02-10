@@ -118,11 +118,13 @@ class SessionWrapper(object):
 
     def patch(self):
         self.log.info("%s:phase:patch" % self.session_name)
+        self.session.pre_patch()
         for patch in self.session.patches:
             patch_name = self.get_download_file(patch)
             Patch(os.path.join(self.patch_dir, patch_name),
                 self.session.src_path,
                 self.config.get("verbose")).run()
+        self.session.post_patch()
 
     def unpatch(self):
         self.log.info("%s:phase:unpatch" % self.session_name)
