@@ -111,6 +111,13 @@ class Session(object):
         self.build_path = real_path(self.build_path)
         self.vars["build_path"] = self.build_path
 
+        # src_path may be differenct then the path to the sources where
+        # e.g. configure should be run. A session may copy the sources to
+        # a different dir to be able to do clean builds.
+        if not self.configure_path:
+            self.configure_path = self.src_path
+        self.vars["configure_path"] = self.configure_path
+
         self.init()
 
     def init(self):
