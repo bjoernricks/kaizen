@@ -209,3 +209,8 @@ class Session(object):
     def post_deactivate(self):
         pass
 
+    def pre_patch(self):
+        pass
+
+    def post_patch(self):
+        pass
