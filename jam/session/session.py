@@ -143,7 +143,10 @@ class Session(object):
         if not value:
             return value
         if name in ["src_path", "build_path", "configure_args", "url",
-                    "build_args", "patches"]:
+                    "build_args", "patches", "configure_path",
+                    "configure_cflags", "configure_ldflags", "configure_cc",
+                    "configure_cpp", "configure_cppflags", "configure_libs",
+                    "configure_cxx", "configure_cxxflags"]:
             if isinstance(value, list):
                 newlist = self.__shadow.get(name)
                 if not newlist:
