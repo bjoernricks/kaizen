@@ -76,8 +76,8 @@ class SessionWrapper(object):
         self.src_dir = os.path.join(self.cache_dir, "source")
         self.build_dir = os.path.join(self.cache_dir, "build")
         self.dest_dir = os.path.join(self.destroot_dir, version)
-        self.session = session(self.config, self.src_dir,
-                                   self.build_dir, self.dest_dir)
+        self.session = session(self.config, self.src_dir, self.build_dir,
+                               self.dest_dir, self.patch_dir)
         validator = SessionValidator()
         if not validator.validate(self.session):
             raise SessionError(self.session_name,

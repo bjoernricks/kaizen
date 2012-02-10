@@ -52,11 +52,12 @@ class Session(object):
 
     downloader = UrlDownloader
 
-    def __init__(self, config, src_dir, build_dir, dest_dir):
+    def __init__(self, config, src_dir, build_dir, dest_dir, patch_dir):
         self.config = config
         self.build_dir = build_dir
         self.src_dir = src_dir
         self.dest_dir = dest_dir
+        self.patch_dir = patch_dir
         self.verbose = self.config.get("verbose")
         self.debug = self.config.get("debug")
         self.prefix = self.config.get("prefix")
@@ -97,6 +98,7 @@ class Session(object):
         self.vars["dist_version"] = self.dist_version
         self.vars["package_path"] = self.package_path
         self.vars["apps_dir"] = self.apps_dir
+        self.vars["patch_dir"] = self.patch_dir
 
         if not self.src_path:
             self.src_path = os.path.join(src_dir, self.name
