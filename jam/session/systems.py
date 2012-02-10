@@ -49,8 +49,8 @@ class ConfigureSession(MakeSession):
     def configure(self):
         args = self.configure_args
         args.append("--prefix=" + self.prefix)
-        args.append("--srcdir=" + self.src_path)
-        configure = Configure(args, self.src_path, self.build_path,
+        args.append("--srcdir=" + self.configure_path)
+        configure = Configure(args, self.configure_path, self.build_path,
                              self.debug)
         if self.configure_cc:
             configure.set_cc(self.configure_cc)
@@ -81,7 +81,7 @@ class CMakeSession(MakeSession):
         args.append("-DCMAKE_COLOR_MAKEFILE=TRUE")
         if self.verbose:
             args.append("-DCMAKE_VERBOSE_MAKEFILE=TRUE")
-        CMake(args, self.src_path, self.build_path,
+        CMake(args, self.configure_path, self.build_path,
               self.debug).run()
 
     def distclean(self):
