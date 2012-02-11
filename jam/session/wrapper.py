@@ -111,10 +111,16 @@ class SessionWrapper(object):
             self.db.session.commit()
             self.load_phases()
 
-    def depends(self):
-        self.log.info("%s:running:depends" % self.session_name)
+    def build_depends(self):
         from jam.session.depend import DependencyAnalyser
         return DependencyAnalyser(self.config, self).analyse()
+
+    def runtime_depends(self):
+        from jam.session.depend import RuntimeDependencyAnalyser
+        return RuntimeDependencyAnalyser(self.config, self).analyse()
+
+    def depends(self):
+        return (self.build_depends(), self.runtime_depends())
 
     def patch(self):
         self.log.info("%s:phase:patch" % self.session_name)
