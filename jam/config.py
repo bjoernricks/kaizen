@@ -25,7 +25,7 @@ from ConfigParser import SafeConfigParser
 
 import jam
 
-from jam.utils import real_path
+from jam.utils import real_path, get_number_of_cpus
 from jam.error import JamRuntimeError
 
 JAM_CONFIG_FILES  = ["/etc/jamrc", real_path("~/.jam/jamrc")]
@@ -54,7 +54,10 @@ class Config(object):
                             at runtime)
     * system - String: path to an additional config file containing system
                        releated settings
-    * appdir - String path to the Mac OS X application bundle dir
+    * appdir - String: path to the Mac OS X application bundle dir
+    * buildjobs - Integer: number of jobs that should be used to build the
+                           source e.g. started via make -j.
+                           0 or empty for auto detection.
     """
 
     def __init__(self, files=[], options={}):
@@ -67,6 +70,7 @@ class Config(object):
         defaults["quiet"] = False
         defaults["verbose"] = False
         defaults["prefix"] = "/usr/local"
+        defaults["buildjobs"] = 0
         defaults.update(options)
 
         self.configparser = SafeConfigParser(defaults)
@@ -88,6 +92,7 @@ class Config(object):
         self.config["buildroot"] = self._get("buildroot")
         self.config["debugdb"] = self._getbool("debugdb")
         self.config["system"] = self._get("system")
+        self.config["buildjobs"] = self._getint("buildjobs")
 
         jam_package_path = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                                         os.path.pardir))
@@ -109,6 +114,8 @@ class Config(object):
             self.config["buildroot"] = os.path.join(jam_dir, "cache")
         if not self.config.get("appsdir", None):
             self.config["appsdir"] = os.path.join(prefix, "Applications")
+        if not self.config.get("buildjobs") > 0:
+            self.config["buildjobs"] = get_number_of_cpus() + 1
 
     def _get(self, value, default=None):
         if value in self.options and self.options[value]:
@@ -123,6 +130,14 @@ class Config(object):
             return self.options[value]
         try:
             return self.configparser.getboolean("jam", value)
+        except:
+            return default
+
+    def _getint(self, value, default=0):
+        if value in self.options and self.options[value]:
+            return self.options[value]
+        try:
+            return self.configparser.getint("jam", value)
         except:
             return default
 
