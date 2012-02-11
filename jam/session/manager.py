@@ -31,7 +31,7 @@ from jam.phase.phase import phases_list
 from jam.phase.sequence import Sequence, UnSequence
 from jam.db.db import Db
 from jam.db.objects import Installed, SessionPhase
-from jam.session.depend import DependencyAnalyser
+from jam.session.depend import DependencyAnalyser, RuntimeDependencyAnalyser
 
 
 class SessionManager(object):
@@ -127,8 +127,7 @@ class SessionManager(object):
                                         [""], False,
                                         self.delete_source_seq)
 
-    def install_dependencies(self):
-        depanalyzer = DependencyAnalyser(self.config, self.session_wrapper)
+    def _install_dependencies(self, depanalyzer):
         dependencies = depanalyzer.analyse()
         missing = depanalyzer.get_missing()
         if missing:
@@ -140,9 +139,18 @@ class SessionManager(object):
                 dependency.session.get_phases():
                 self.install_seq(dependency.session)
 
+    def install_dependencies(self):
+        depanalyzer = DependencyAnalyser(self.config, self.session_wrapper)
+        self._install_dependencies(depanalyzer)
+
+    def install_runtime_dependencies(self):
+        depanalyzer = RuntimeDependencyAnalyser(self.config,
+                                                self.session_wrapper)
+        self._install_dependencies(depanalyzer)
+
     def download(self, all=False, resume_on_error=True):
         if all:
-            dependencies = self.session_wrapper.depends()
+            dependencies = self.session_wrapper.build_depends()
             for dependency in dependencies.itervalues():
                 if not dependency.get_type() == Dependency.SESSION:
                     continue
