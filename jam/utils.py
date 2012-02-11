@@ -246,3 +246,15 @@ def extract_file(file_name, dest_dir):
                            "as a valid source archive." % file_name)
     file.extractall(dest_dir)
 
+def get_number_of_cpus():
+    try:
+        import multiprocessing
+        return multiprocessing.cpu_count()
+    except (ImportError, NotImplementedError):
+        pass
+    try:
+        res = int(os.sysconf('SC_NPROCESSORS_ONLN'))
+        if res > 0:
+            return res
+    except (AttributeError,ValueError):
+        pass
