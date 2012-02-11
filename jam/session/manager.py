@@ -209,6 +209,7 @@ class SessionManager(object):
             installed.version = self.session_wrapper.version
         self.db.session.add(installed)
         self.db.session.commit()
+        self.install_runtime_dependencies()
 
     def activate(self):
         self.install_dependencies()
