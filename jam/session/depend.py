@@ -44,6 +44,8 @@ class UnresolvedDependencies(SessionError):
 
 class DependencyAnalyser(object):
 
+    dependency_field = "depends"
+
     def __init__(self, config, session):
         self.config = config
         self.session = session
@@ -55,7 +57,10 @@ class DependencyAnalyser(object):
 
     def analyse_session(self, session):
         dependencies = []
-        for depend in session.session.depends:
+        depends = getattr(session.session, self.dependency_field)
+        if not depends:
+            return dependencies
+        for depend in depends:
             name = depend
             version = None
             if isinstance(depend, tuple):
@@ -92,6 +97,12 @@ class DependencyAnalyser(object):
 
     def get_missing(self):
         return self.missing
+
+
+class RuntimeDependencyAnalyser(DependencyAnalyser):
+
+    dependency_field = "runtime_depends"
+
 
 class Dependency(object):
 
