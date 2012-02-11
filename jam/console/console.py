@@ -45,14 +45,7 @@ class Console(object):
         else:
             print "'%s' has no phase" % sessionname
 
-    def list_session_dependencies(self, sessionname):
-        manager = SessionManager(self.config, sessionname)
-        dependencies = manager.depends()
-        if not dependencies:
-            print "%s has no dependencies" % sessionname
-            return
-        print "Session %s depends on:" % sessionname
-        max_length = max([len(name) for name in dependencies.keys()])
+    def _print_dependencies(self, dependencies, max_length):
         for name, dependency in dependencies.items():
             if dependency.get_type() == Dependency.NONE:
                 provided_by = "not available"
@@ -64,6 +57,22 @@ class Console(object):
                 provided_by = "unknown"
             print "--> %s%s(%s)" % (name, self._get_filler(name, max_length),
                                     provided_by)
+
+    def list_session_dependencies(self, sessionname):
+        manager = SessionManager(self.config, sessionname)
+        (build, runtime) = manager.depends()
+        if not build and not runtime:
+            print "%s has no dependencies" % sessionname
+            return
+        print "Session %s depends on:" % sessionname
+        max_length = max([len(name) for name in build.keys()] + \
+            [len(name) for name in runtime.keys()])
+        if runtime:
+            print "\nRuntime dependencies:"
+            self._print_dependencies(runtime, max_length)
+        if build:
+            print "\nBuild dependencies:"
+            self._print_dependencies(build, max_length)
 
     def list_installed_sessions(self):
         slist = SessionsList(self.config)
