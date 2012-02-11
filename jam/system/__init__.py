@@ -20,4 +20,4 @@
 # 02110-1301 USA
 
 from jam.system.command import Command, Configure, Make, CMake, Copy, Replace, \
-                               Delete, Move
+                               Delete, Move, Mkdirs

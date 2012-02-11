@@ -246,3 +246,18 @@ class Delete(object):
         else:
             self.log.error("Could not delete '%s'. It's not a file or directory"
                     % self.dir)
+
+class Mkdirs(object):
+
+    def __init__(self, path):
+        self.path = path
+        self.log = jam.logging.getLogger(__name__ + ".mkdirs")
+
+    def run(self):
+        if os.path.exists(self.path):
+            self.log.debug("directory '%s' already exists. Skipping" %
+                    self.path)
+            return
+        self.log.debug("creating directory '%s'." % self.path)
+        os.makedirs(self.path)
+
