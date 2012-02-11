@@ -53,6 +53,8 @@ class ArgumentParser(ArgParser):
         self.group.add_argument("--settings", action="store_true",
                           help="print jam settings")
         self.group.add_argument("--version", action="version", version=version)
+        self.group.add_argument("--buildjobs", type=int,
+                          help="set number of build jobs")
 
     def set_help(self):
         self.group.add_argument("--help", "-h", action="help",
