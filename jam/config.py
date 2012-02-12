@@ -55,6 +55,7 @@ class Config(object):
     * system - String: path to an additional config file containing system
                        releated settings
     * appdir - String: path to the Mac OS X application bundle dir
+                       Default path is prefix + /Application
     * buildjobs - Integer: number of jobs that should be used to build the
                            source e.g. started via make -j.
                            0 or empty for auto detection.
