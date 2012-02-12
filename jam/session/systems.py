@@ -29,8 +29,11 @@ from jam.system.command import Configure, CMake, Make, Command, Copy, Delete
 class MakeSession(Session):
 
     def build(self):
-        j = self.config.get("buildjobs")
-        build_args = ["-j" + str(j)] + self.build_args
+        if self.parallel:
+            j = self.config.get("buildjobs")
+            build_args = ["-j" + str(j)] + self.build_args
+        else:
+            build_args = self.build_args
         Make(self.build_path, self.debug).run(build_args)
 
     def destroot(self):
