@@ -3,10 +3,19 @@
 import sys
 import os.path
 
-pardir = os.path.join(os.path.dirname(__file__), os.path.pardir)
-# add parent dir to first python search path if running within the sources
-if os.path.isdir(os.path.join(pardir, "jam")):
-    sys.path.insert(0, pardir)
+pardir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir))
+if os.path.isfile(pardir + "/jam/console/main.py"):
+    # we are in jam's dir
+    # add parent dir to first python search path if running within the sources
+    if os.path.isdir(os.path.join(pardir, "jam")):
+        sys.path.insert(0, pardir)
+else:
+    # running from a bin dir
+    curdir = os.path.abspath(os.getcwd())
+    if not os.path.isfile("jam/console/main.py"):
+        # current dir is not jam's dir
+        # remove current path from module search path
+        sys.path.remove(curdir)
 
 from jam.console import main
 
