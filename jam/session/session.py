@@ -49,6 +49,7 @@ class Session(object):
     name = ""
     src_path = None
     build_path = None
+    parallel = True
 
     downloader = UrlDownloader
 
