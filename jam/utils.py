@@ -27,7 +27,6 @@ import string
 import sys
 import tarfile
 import zipfile
-import bz2file
 
 import jam.logging
 
@@ -229,6 +228,7 @@ def extract_file(file_name, dest_dir):
                            is not a file." % file_name)
     if file_name.endswith(".bz2") or file_name.endswith(".tbz2"):
         # bz2 doesn't support multiple streams therefore use bz2file module
+        import bz2file
         bz_file = bz2file.BZ2File(file_name)
         log.debug("Extracting tar.bz2 file '%s' to '%s'" %
                       (file_name, dest_dir))
