@@ -65,6 +65,7 @@ class Session(object):
         self.session_dirs = self.config.get("sessions")
         self.dist_version = self.version + "-" + self.revision
         self.destroot_dir = self.config.get("destroot")
+        self.buildjobs = self.config.get("buildjobs")
         # session name must be in sync with wrapper session name for destroot
         # installation. Currently it's not best to have different sources
         # for session name. Changing the module layout for session installation
