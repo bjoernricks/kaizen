@@ -34,6 +34,7 @@ class ArgumentParser(ArgParser):
         kwargs.pop("description", None)
         kwargs.pop("usage", None)
         add_help = kwargs.pop("add_help", False)
+        self.args_added = False
         super(ArgumentParser, self).__init__(usage=usage,
                                              description=description,
                                              add_help=add_help, **kwargs)
@@ -44,17 +45,27 @@ class ArgumentParser(ArgParser):
         self.group.add_argument("-d", "--debug", action="store_true",
                           dest="debug",
                           help="enable debug output")
+        self.group.add_argument("--settings", action="store_true",
+                          help="print jam settings")
+        self.group.add_argument("--version", action="version", version=version)
+
+    def _add_additional_arguments(self):
+        if self.args_added:
+            return
         self.group.add_argument("-v", "--verbose", action="store_true",
                           dest="verbose",
                           help="enable verbose output")
         self.group.add_argument("-f", "--force", action="store_true",
                           dest="force",
                           help="force an action e.g. re-download sources")
-        self.group.add_argument("--settings", action="store_true",
-                          help="print jam settings")
-        self.group.add_argument("--version", action="version", version=version)
         self.group.add_argument("--buildjobs", type=int,
                           help="set number of build jobs")
+        self.args_added = True
+
+    def parse_known_args(self, args=None, namespace=None):
+        args = super(ArgumentParser, self).parse_known_args(args, namespace)
+        self._add_additional_arguments()
+        return args
 
     def set_help(self):
         self.group.add_argument("--help", "-h", action="help",
