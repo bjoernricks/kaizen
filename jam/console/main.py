@@ -52,7 +52,7 @@ class Main(object):
         handler.setFormatter(formatter)
         self.logger.addHandler(handler)
 
-        parser = ArgumentParser()
+        parser = ArgumentParser(create_late=True)
         all_args = sys.argv
         args = parser.parse_known_args(all_args)
         unknown_args = args[1][1:]
@@ -61,15 +61,15 @@ class Main(object):
         if options.config:
             configfiles.append(options.config)
 
-        self.config = Config(JAM_CONFIG_FILES, vars(options))
-
         if options.settings:
             self.print_settings()
             return
 
-        if self.config.get("debug"):
+        #parse config for debug option
+        config = Config(JAM_CONFIG_FILES, vars(options))
+
+        if config.get("debug"):
             self.logger.setLevel(jam.logging.DEBUG)
-            self.print_settings()
 
         subparsers = parser.add_subparsers(dest="command", title="commands",
                                            description="valid commands",
@@ -78,14 +78,17 @@ class Main(object):
         for command in Loader().classes(jam.command, all=True):
             command().add_parser(subparsers)
 
-        parser.add_argument("--help", "-h", action="help",
-                            help="show this help message and exit. To get help "\
-                                 "for a command use 'command --help'")
-
         options = parser.parse_args(unknown_args)
+
+        self.config = Config(JAM_CONFIG_FILES, vars(options))
+
+        if self.config.get("debug"):
+            self.print_settings()
+
         if not hasattr(options, "func"):
             parser.print_help()
             return
+
         options.func(options, config)
 
 
