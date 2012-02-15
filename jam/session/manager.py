@@ -108,7 +108,7 @@ class SessionManager(object):
                                             phases_list.get("Downloaded"),
                                             phases_list.get("Extracted"),
                                             ["delete_source"], False,
-                                            self.unpatch_seq)
+                                            self.delete_build_seq)
         self.delete_download_seq = UnSequence("delete_download",
                                               phases_list.get("Downloaded"),
                                               phases_list.get("None"),
