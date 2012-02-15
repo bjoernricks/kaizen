@@ -96,7 +96,7 @@ class SessionManager(object):
                                            phases_list.get("Patched"),
                                            phases_list.get("Built"),
                                            ["delete_build"], False,
-                                           self.distclean_seq)
+                                           self.delete_destroot_seq)
         self.unpatch_seq = UnSequence("unpatch",
                                       phases_list.get("Patched"),
                                       phases_list.get("Extracted"),
