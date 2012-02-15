@@ -76,7 +76,7 @@ class Main(object):
                                            metavar="")
 
         for command in Loader().classes(jam.command, all=True):
-            command(self.config).add_parser(subparsers)
+            command().add_parser(subparsers)
 
         parser.add_argument("--help", "-h", action="help",
                             help="show this help message and exit. To get help "\
@@ -86,7 +86,7 @@ class Main(object):
         if not hasattr(options, "func"):
             parser.print_help()
             return
-        options.func(options)
+        options.func(options, config)
 
 
 def main():
