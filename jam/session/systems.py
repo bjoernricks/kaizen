@@ -29,7 +29,12 @@ from jam.system.command import Configure, CMake, Make, Command, Copy, Delete
 class MakeSession(Session):
 
     def build(self):
-        Make(self.build_path, self.debug).run(self.build_args)
+        if self.parallel:
+            j = self.config.get("buildjobs")
+            build_args = ["-j" + str(j)] + self.build_args
+        else:
+            build_args = self.build_args
+        Make(self.build_path, self.debug).run(build_args)
 
     def destroot(self):
         Make(self.build_path, self.debug).install(self.dest_dir)
@@ -49,8 +54,8 @@ class ConfigureSession(MakeSession):
     def configure(self):
         args = self.configure_args
         args.append("--prefix=" + self.prefix)
-        args.append("--srcdir=" + self.src_path)
-        configure = Configure(args, self.src_path, self.build_path,
+        args.append("--srcdir=" + self.configure_path)
+        configure = Configure(args, self.configure_path, self.build_path,
                              self.debug)
         if self.configure_cc:
             configure.set_cc(self.configure_cc)
@@ -81,7 +86,7 @@ class CMakeSession(MakeSession):
         args.append("-DCMAKE_COLOR_MAKEFILE=TRUE")
         if self.verbose:
             args.append("-DCMAKE_VERBOSE_MAKEFILE=TRUE")
-        CMake(args, self.src_path, self.build_path,
+        CMake(args, self.configure_path, self.build_path,
               self.debug).run()
 
     def distclean(self):

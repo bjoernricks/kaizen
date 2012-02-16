@@ -76,8 +76,8 @@ class SessionWrapper(object):
         self.src_dir = os.path.join(self.cache_dir, "source")
         self.build_dir = os.path.join(self.cache_dir, "build")
         self.dest_dir = os.path.join(self.destroot_dir, version)
-        self.session = session(self.config, self.src_dir,
-                                   self.build_dir, self.dest_dir)
+        self.session = session(self.config, self.src_dir, self.build_dir,
+                               self.dest_dir, self.patch_dir)
         validator = SessionValidator()
         if not validator.validate(self.session):
             raise SessionError(self.session_name,
@@ -111,18 +111,26 @@ class SessionWrapper(object):
             self.db.session.commit()
             self.load_phases()
 
-    def depends(self):
-        self.log.info("%s:running:depends" % self.session_name)
+    def build_depends(self):
         from jam.session.depend import DependencyAnalyser
         return DependencyAnalyser(self.config, self).analyse()
 
+    def runtime_depends(self):
+        from jam.session.depend import RuntimeDependencyAnalyser
+        return RuntimeDependencyAnalyser(self.config, self).analyse()
+
+    def depends(self):
+        return (self.build_depends(), self.runtime_depends())
+
     def patch(self):
         self.log.info("%s:phase:patch" % self.session_name)
+        self.session.pre_patch()
         for patch in self.session.patches:
             patch_name = self.get_download_file(patch)
             Patch(os.path.join(self.patch_dir, patch_name),
                 self.session.src_path,
                 self.config.get("verbose")).run()
+        self.session.post_patch()
 
     def unpatch(self):
         self.log.info("%s:phase:unpatch" % self.session_name)

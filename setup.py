@@ -41,7 +41,7 @@ setup(name="jam",
       packages=find_packages(),
       package_data = {"" : ["*.txt", "*.md"],
                      },
-      entry_points = { "console_scripts": ["jam=jam.console.main:main"] },
+      # entry_points = { "console_scripts": ["jam=jam.console.main:main"] },
       classifiers=[
           "Development Status :: 3 - Alpha",
           "Topic :: Utilities",

@@ -21,19 +21,19 @@
 
 import jam
 
-from jam.external.argparse import ArgumentParser as ArgParser
+from jam.external.argparse import ArgumentParser as ArgParser, ArgumentError
 
 
 class ArgumentParser(ArgParser):
 
-    def __init__(self, usage=None, **kwargs):
+    def __init__(self, usage=None, create_late=False, **kwargs):
         if not usage:
             usage = "%(prog)s [options] command {arguments}"
         description = "jam - Orchestrate your software"
-        version = "%(prog)s " + jam.__version__
         kwargs.pop("description", None)
         kwargs.pop("usage", None)
         add_help = kwargs.pop("add_help", False)
+        self.args_added = False
         super(ArgumentParser, self).__init__(usage=usage,
                                              description=description,
                                              add_help=add_help, **kwargs)
@@ -44,17 +44,33 @@ class ArgumentParser(ArgParser):
         self.group.add_argument("-d", "--debug", action="store_true",
                           dest="debug",
                           help="enable debug output")
+        self.group.add_argument("--settings", action="store_true",
+                          help="print jam settings")
+        if not create_late:
+            self._add_additional_arguments()
+
+    def _add_additional_arguments(self):
+        if self.args_added:
+            return
+        version = "%(prog)s " + jam.__version__
+        self.group.add_argument("--version", action="version", version=version)
         self.group.add_argument("-v", "--verbose", action="store_true",
                           dest="verbose",
                           help="enable verbose output")
         self.group.add_argument("-f", "--force", action="store_true",
                           dest="force",
                           help="force an action e.g. re-download sources")
-        self.group.add_argument("--settings", action="store_true",
-                          help="print jam settings")
-        self.group.add_argument("--version", action="version", version=version)
+        self.group.add_argument("--buildjobs", type=int,
+                          help="set number of build jobs")
+        self.set_help()
+        self.args_added = True
+
+    def parse_known_args(self, args=None, namespace=None):
+        args = super(ArgumentParser, self).parse_known_args(args, namespace)
+        self._add_additional_arguments()
+        return args
 
     def set_help(self):
         self.group.add_argument("--help", "-h", action="help",
-                          help="show this help message and exit. To get help "\
-                               "for a command use 'command --help'")
+                help="show this help message and exit. To get help "\
+                        "for a command use 'command --help'")

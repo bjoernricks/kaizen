@@ -25,11 +25,10 @@ from jam.console.console import Console
 
 class Command(object):
 
-    def __init__(self, name, config, func, aliases=[], description=""):
+    def __init__(self, name, func, aliases=[], description=""):
         self.name = name
         self.func = func
         self.aliases = aliases
-        self.config = config
         self.description = description
 
     def add_parser(self, parser, usage=None):
@@ -41,7 +40,7 @@ class Command(object):
         subparser = parser.add_parser(self.name, aliases=self.aliases,
                                       usage=self.usage,
                                       description=self.description,
-                                      help=self.description, add_help=True)
+                                      help=self.description)
         subparser.set_defaults(func=self.func)
         return subparser
 
@@ -51,8 +50,8 @@ class Command(object):
 
 class SessionNameCommand(Command):
 
-    def __init__(self, name, config, description=None, aliases=[]):
-        super(SessionNameCommand, self).__init__(name, config, self.main,
+    def __init__(self, name, description=None, aliases=[]):
+        super(SessionNameCommand, self).__init__(name, self.main,
                                                  aliases, description)
 
     def add_parser(self, parser):
@@ -62,76 +61,76 @@ class SessionNameCommand(Command):
         subparser.add_argument("sessionname", nargs=1)
         return subparser
 
-    def main(self, options):
+    def main(self, options, config):
         pass
 
 
 class BuildCommand(SessionNameCommand):
 
-    def __init__(self, config):
+    def __init__(self):
         description = "run build process"
-        super(BuildCommand, self).__init__("build", config, description)
+        super(BuildCommand, self).__init__("build", description)
 
-    def main(self, options):
-        Console(self.config).build_session(options.sessionname[0],
-                                           options.force)
+    def main(self, options, config):
+        Console(config).build_session(options.sessionname[0],
+                                      options.force)
 
 
 class PatchCommand(SessionNameCommand):
 
-    def __init__(self, config):
+    def __init__(self):
         description = "apply patches to sources"
-        super(PatchCommand, self).__init__("patch", config, description)
+        super(PatchCommand, self).__init__("patch", description)
 
-    def main(self, options):
-        Console(self.config).patch_session(options.sessionname[0],
-                                           options.force)
+    def main(self, options, config):
+        Console(config).patch_session(options.sessionname[0],
+                                      options.force)
 
 
 class UnPatchCommand(SessionNameCommand):
 
-    def __init__(self, config):
+    def __init__(self):
         description = "revert patches applied sources"
-        super(UnPatchCommand, self).__init__("unpatch", config, description)
+        super(UnPatchCommand, self).__init__("unpatch", description)
 
-    def main(self, options):
-        Console(self.config).unpatch_session(options.sessionname[0],
-                                             options.force)
+    def main(self, options, config):
+        Console(config).unpatch_session(options.sessionname[0],
+                                        options.force)
 
 
 class ConfigureCommand(SessionNameCommand):
 
-    def __init__(self, config):
+    def __init__(self):
         description = ""
-        super(ConfigureCommand, self).__init__("configure", config, description,
+        super(ConfigureCommand, self).__init__("configure", description,
                                                ["conf"])
 
-    def main(self, options):
-        Console(self.config).configure_session(options.sessionname[0],
-                                               options.force)
+    def main(self, options, config):
+        Console(config).configure_session(options.sessionname[0],
+                                          options.force)
 
 
 class ExtractCommand(SessionNameCommand):
 
-    def __init__(self, config):
+    def __init__(self):
         description = ""
-        super(ExtractCommand, self).__init__("extract", config, description, ["ex"])
+        super(ExtractCommand, self).__init__("extract", description, ["ex"])
 
-    def main(self, options):
-        Console(self.config).extract_session(options.sessionname[0],
-                                             options.force)
+    def main(self, options, config):
+        Console(config).extract_session(options.sessionname[0],
+                                        options.force)
 
 
 class DownloadCommand(SessionNameCommand):
 
-    def __init__(self, config):
+    def __init__(self):
         description = ""
-        super(DownloadCommand, self).__init__("download", config, description,
+        super(DownloadCommand, self).__init__("download", description,
                                               ["down", "fetch"])
 
-    def main(self, options):
-        Console(self.config).download_session(options.sessionname[0],
-                                              options.all, options.force)
+    def main(self, options, config):
+        Console(config).download_session(options.sessionname[0],
+                                         options.all, options.force)
 
     def add_parser(self, parser):
         subparser = super(DownloadCommand, self).add_parser(parser)
@@ -141,67 +140,67 @@ class DownloadCommand(SessionNameCommand):
 
 class DestrootCommand(SessionNameCommand):
 
-    def __init__(self, config):
+    def __init__(self):
         description = ""
-        super(DestrootCommand, self).__init__("destroot", config, description,
+        super(DestrootCommand, self).__init__("destroot", description,
                                               ["dest"])
 
-    def main(self, options):
-        Console(self.config).destroot_session(options.sessionname[0],
-                                              options.force)
+    def main(self, options, config):
+        Console(config).destroot_session(options.sessionname[0],
+                                         options.force)
 
 
 class InstallCommand(SessionNameCommand):
 
-    def __init__(self, config):
+    def __init__(self):
         description = ""
-        super(InstallCommand, self).__init__("install", config, description,
+        super(InstallCommand, self).__init__("install", description,
                                              ["inst"])
 
-    def main(self, options):
-        Console(self.config).install_session(options.sessionname[0],
-                                             options.force)
+    def main(self, options, config):
+        Console(config).install_session(options.sessionname[0],
+                                        options.force)
 
 
 class UninstallCommand(SessionNameCommand):
 
-    def __init__(self, config):
+    def __init__(self):
         description = ""
-        super(UninstallCommand, self).__init__("uninstall", config, description,
+        super(UninstallCommand, self).__init__("uninstall", description,
                                                ["uninst", "remove"])
 
-    def main(self, options):
-        Console(self.config).uninstall_session(options.sessionname[0],
-                                               options.force)
+    def main(self, options, config):
+        Console(config).uninstall_session(options.sessionname[0],
+                                          options.force)
 
 
 class ActivateCommand(SessionNameCommand):
 
-    def __init__(self, config):
+    def __init__(self):
         description = ""
-        super(ActivateCommand, self).__init__("activate", config, description)
+        super(ActivateCommand, self).__init__("activate", description)
 
-    def main(self, options):
-        Console(self.config).activate_session(options.sessionname[0],
-                                              options.force)
+    def main(self, options, config):
+        Console(config).activate_session(options.sessionname[0],
+                                         options.force)
 
 
 class DeactivateCommand(SessionNameCommand):
 
-    def __init__(self, config):
+    def __init__(self):
         description = ""
-        super(DeactivateCommand, self).__init__("deactivate", config, description)
+        super(DeactivateCommand, self).__init__("deactivate", description)
 
-    def main(self, options):
-        Console(self.config).deactivate_session(options.sessionname[0],
+    def main(self, options, config):
+        Console(config).deactivate_session(options.sessionname[0],
                                                 options.force)
 
 
 class DeleteCommand(SessionNameCommand):
 
-    def __init__(self, config):
+    def __init__(self):
         description = "clean a session"
-        super(DeleteCommand, self).__init__("delete", config, description,
+        super(DeleteCommand, self).__init__("delete", description,
                                            ["del", "clean", "drop"])
 
     def add_parser(self, parser):
@@ -221,8 +220,8 @@ class DeleteCommand(SessionNameCommand):
                            help="delete the destroot directory")
         return subparser
 
-    def main(self, options):
-        console = Console(self.config)
+    def main(self, options, config):
+        console = Console(config)
         sessionname = options.sessionname[0]
         force = options.force
         if options.distclean:
@@ -241,20 +240,20 @@ class DeleteCommand(SessionNameCommand):
 
 class DependsCommand(SessionNameCommand):
 
-    def __init__(self, config):
+    def __init__(self):
         description = ""
-        super(DependsCommand, self).__init__("depends", config, description,
+        super(DependsCommand, self).__init__("depends", description,
                                              ["deps"])
 
-    def main(self, options):
-        Console(self.config).list_session_dependencies(options.sessionname[0])
+    def main(self, options, config):
+        Console(config).list_session_dependencies(options.sessionname[0])
 
 
 class CreateCommand(Command):
 
-    def __init__(self, config):
+    def __init__(self):
         description = "Create a new Session"
-        super(CreateCommand, self).__init__("create", config, self.main, [],
+        super(CreateCommand, self).__init__("create", self.main, [],
                                             description)
 
     def add_parser(self, parser):
@@ -277,8 +276,8 @@ class CreateCommand(Command):
                                help="print to stdout instead of creating a "\
                                "new session")
 
-    def main(self, options):
-        creator = SessionCreator(self.config, options.url[0], options.keep)
+    def main(self, options, config):
+        creator = SessionCreator(config, options.url[0], options.keep)
         if options.name:
             creator.set_name(options.name)
 
@@ -293,10 +292,9 @@ class CreateCommand(Command):
 
 class ShowCommand(SessionNameCommand):
 
-    def __init__(self, config):
+    def __init__(self):
         description = ""
-        super(ShowCommand, self).__init__("show", config, description)
-        self.console = Console(self.config)
+        super(ShowCommand, self).__init__("show", description)
 
     def add_parser(self, parser):
         subparser = super(ShowCommand, self).add_parser(parser)
@@ -306,21 +304,21 @@ class ShowCommand(SessionNameCommand):
         group.add_argument("--phases", help="list the current phases of a " \
                            "session", action="store_true")
 
-    def main(self, options):
+    def main(self, options, config):
+        console = Console(config)
         session_name = options.sessionname[0]
         if options.phases:
-            self.console.list_session_phases(session_name)
+            console.list_session_phases(session_name)
         elif options.files:
-            self.console.list_session_files(session_name)
+            console.list_session_files(session_name)
 
 
 class ListCommand(Command):
 
-    def __init__(self, config):
+    def __init__(self):
         description = ""
-        super(ListCommand, self).__init__("list", config, self.main, [],
+        super(ListCommand, self).__init__("list", self.main, [],
                                           description)
-        self.console = Console(self.config)
 
     def add_parser(self, parser):
         subparser = super(ListCommand, self).add_parser(parser)
@@ -330,20 +328,20 @@ class ListCommand(Command):
         group.add_argument("--activated", help="show installed sessions",
                            action="store_true")
 
-    def main(self, options):
+    def main(self, options, config):
+        console = Console(config)
         if options.installed:
-            self.console.list_installed_sessions()
+            console.list_installed_sessions()
         elif options.activated:
-            self.console.list_activated_sessions()
+            console.list_activated_sessions()
 
 
 class SystemProvidesCommand(Command):
 
-    def __init__(self, config):
+    def __init__(self):
         description = "add or remove software provided by the system"
-        super(SystemProvidesCommand, self).__init__("systemprovide", config,
+        super(SystemProvidesCommand, self).__init__("systemprovide",
                                           self.main, [], description)
-        self.console = Console(self.config)
 
     def add_parser(self, parser):
         usage = "%(prog)s [global options] " + self.name + \
@@ -359,23 +357,24 @@ class SystemProvidesCommand(Command):
         subparser.add_argument("version", nargs="?", help="version of the" \
                                " software provided by the system")
 
-    def main(self, options):
+    def main(self, options, config):
+        console = Console(config)
         name = options.name[0]
         version = None
         if options.version:
             version = options.version[0]
         if options.add:
-            self.console.add_system_provides(name, version)
+            console.add_system_provides(name, version)
         elif options.remove:
-            self.console.remove_system_provides(name)
+            console.remove_system_provides(name)
 
 
 class QuiltCommand(SessionNameCommand):
 
-    def __init__(self, config):
+    def __init__(self):
         description = "Manage patches for a session with quilt"
-        super(QuiltCommand, self).__init__("quilt", config, description)
-        self.console = Console(self.config)
+        super(QuiltCommand, self).__init__("quilt", description)
 
-    def main(self, options):
+    def main(self, options, config):
+        console = Console(config)
         session_name = options.sessionname[0]

@@ -49,20 +49,23 @@ class Session(object):
     name = ""
     src_path = None
     build_path = None
+    parallel = True
 
     downloader = UrlDownloader
 
-    def __init__(self, config, src_dir, build_dir, dest_dir):
+    def __init__(self, config, src_dir, build_dir, dest_dir, patch_dir):
         self.config = config
         self.build_dir = build_dir
         self.src_dir = src_dir
         self.dest_dir = dest_dir
+        self.patch_dir = patch_dir
         self.verbose = self.config.get("verbose")
         self.debug = self.config.get("debug")
         self.prefix = self.config.get("prefix")
         self.session_dirs = self.config.get("sessions")
         self.dist_version = self.version + "-" + self.revision
         self.destroot_dir = self.config.get("destroot")
+        self.buildjobs = self.config.get("buildjobs")
         # session name must be in sync with wrapper session name for destroot
         # installation. Currently it's not best to have different sources
         # for session name. Changing the module layout for session installation
@@ -97,6 +100,7 @@ class Session(object):
         self.vars["dist_version"] = self.dist_version
         self.vars["package_path"] = self.package_path
         self.vars["apps_dir"] = self.apps_dir
+        self.vars["patch_dir"] = self.patch_dir
 
         if not self.src_path:
             self.src_path = os.path.join(src_dir, self.name
@@ -108,6 +112,13 @@ class Session(object):
             self.build_path = build_dir
         self.build_path = real_path(self.build_path)
         self.vars["build_path"] = self.build_path
+
+        # src_path may be differenct then the path to the sources where
+        # e.g. configure should be run. A session may copy the sources to
+        # a different dir to be able to do clean builds.
+        if not self.configure_path:
+            self.configure_path = self.src_path
+        self.vars["configure_path"] = self.configure_path
 
         self.init()
 
@@ -134,7 +145,10 @@ class Session(object):
         if not value:
             return value
         if name in ["src_path", "build_path", "configure_args", "url",
-                    "build_args", "patches"]:
+                    "build_args", "patches", "configure_path",
+                    "configure_cflags", "configure_ldflags", "configure_cc",
+                    "configure_cpp", "configure_cppflags", "configure_libs",
+                    "configure_cxx", "configure_cxxflags"]:
             if isinstance(value, list):
                 newlist = self.__shadow.get(name)
                 if not newlist:
@@ -209,3 +223,8 @@ class Session(object):
     def post_deactivate(self):
         pass
 
+    def pre_patch(self):
+        pass
+
+    def post_patch(self):
+        pass
