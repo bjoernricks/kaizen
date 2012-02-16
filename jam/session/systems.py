@@ -140,7 +140,8 @@ class PythonDevelopSession(PythonSession):
 
     def destroot(self):
         cmd = Command("python", ["setup.py", "develop",
-                      "--prefix=" + self.dest_path],
+                      "--prefix=" + self.dest_path,
+                      "--no-deps"],
                       self.build_path,
                       self.debug)
         if not os.path.exists(self.python_path):
