@@ -49,16 +49,16 @@ class Session(object):
     name = ""
     src_path = None
     build_path = None
+    patch_path = None
     parallel = True
 
     downloader = UrlDownloader
 
-    def __init__(self, config, src_dir, build_dir, dest_dir, patch_dir):
+    def __init__(self, config, src_dir, build_dir, dest_dir):
         self.config = config
         self.build_dir = build_dir
         self.src_dir = src_dir
         self.dest_dir = dest_dir
-        self.patch_dir = patch_dir
         self.verbose = self.config.get("verbose")
         self.debug = self.config.get("debug")
         self.prefix = self.config.get("prefix")
@@ -100,7 +100,6 @@ class Session(object):
         self.vars["dist_version"] = self.dist_version
         self.vars["package_path"] = self.package_path
         self.vars["apps_dir"] = self.apps_dir
-        self.vars["patch_dir"] = self.patch_dir
 
         if not self.src_path:
             self.src_path = os.path.join(src_dir, self.name
@@ -112,6 +111,11 @@ class Session(object):
             self.build_path = build_dir
         self.build_path = real_path(self.build_path)
         self.vars["build_path"] = self.build_path
+
+        if not self.patch_path:
+            self.patch_path = os.path.join(self.session_path, "patches")
+        self.patch_path = real_path(self.patch_path)
+        self.vars["patch_path"] = self.patch_path
 
         # src_path may be differenct then the path to the sources where
         # e.g. configure should be run. A session may copy the sources to
@@ -145,7 +149,7 @@ class Session(object):
         if not value:
             return value
         if name in ["src_path", "build_path", "configure_args", "url",
-                    "build_args", "patches", "configure_path",
+                    "build_args", "patches", "configure_path", "patch_path",
                     "configure_cflags", "configure_ldflags", "configure_cc",
                     "configure_cpp", "configure_cppflags", "configure_libs",
                     "configure_cxx", "configure_cxxflags"]:
