@@ -183,15 +183,6 @@ class SessionWrapper(object):
                                          self.session.session_path)
             download_file = dl.copy(archive_dest, self.force)
             dl.verify(self.session.hash)
-        if self.session.patches:
-            if not os.path.exists(self.patch_dir):
-                self.log.debug("Creating patch dir '%s'" % self.patch_dir)
-                os.makedirs(self.patch_dir)
-            for patch in self.session.patches:
-                (patch_source, patch_dest) = self.get_download(patch,
-                                                 self.patch_dir)
-                dl = UrlDownloader(patch_source, self.session.session_path)
-                dl.copy(patch_dest, self.force)
 
     def deactivate(self):
         self.log.info("%s:phase:deactivate" % self.session_name)
