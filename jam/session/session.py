@@ -26,6 +26,7 @@ import jam.logging
 
 from jam.utils import real_path
 from jam.download import UrlDownloader
+from jam.system.patch import Simple
 
 class Session(object):
     """
@@ -53,6 +54,7 @@ class Session(object):
     parallel = True
 
     downloader = UrlDownloader
+    patchsystem = Simple
 
     def __init__(self, config, src_dir, build_dir, dest_dir):
         self.config = config
