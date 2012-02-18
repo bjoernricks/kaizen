@@ -91,24 +91,38 @@ class SessionManager(object):
                                         phases_list.get("Configured"),
                                         ["distclean"], False,
                                         self.delete_destroot_seq)
+        # distclean_db_seq: just remove phase from db
+        self.distclean_db_seq = UnSequence("distclean",
+                                           phases_list.get("Configured"),
+                                           phases_list.get("Built"),
+                                           phases_list.get("Configured"),
+                                           [], False,
+                                           self.delete_destroot_seq)
         self.delete_build_seq = UnSequence("delete_build",
                                            phases_list.get("Built"),
                                            phases_list.get("Patched"),
                                            phases_list.get("Built"),
                                            ["delete_build"], False,
-                                           self.delete_destroot_seq)
+                                           self.distclean_db_seq)
         self.unpatch_seq = UnSequence("unpatch",
                                       phases_list.get("Patched"),
                                       phases_list.get("Extracted"),
                                       phases_list.get("Patched"),
                                       ["unpatch"], False,
                                       self.delete_build_seq)
+        # unpatch_db_seq: just remove phase from db
+        self.unpatch_db_seq = UnSequence("unpatch",
+                                         phases_list.get("Patched"),
+                                         phases_list.get("Extracted"),
+                                         phases_list.get("Patched"),
+                                         [], False,
+                                         self.delete_build_seq)
         self.delete_source_seq = UnSequence("delete_source",
                                             phases_list.get("Extracted"),
                                             phases_list.get("Downloaded"),
                                             phases_list.get("Extracted"),
                                             ["delete_source"], False,
-                                            self.delete_build_seq)
+                                            self.unpatch_db_seq)
         self.delete_download_seq = UnSequence("delete_download",
                                               phases_list.get("Downloaded"),
                                               phases_list.get("None"),
