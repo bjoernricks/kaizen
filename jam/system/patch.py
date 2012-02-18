@@ -19,6 +19,10 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 
 # 02110-1301 USA
 
+import os.path
+
+import jam.logging
+
 from jam.system.command import Patch, Command
 
 
@@ -36,6 +40,9 @@ class PatchSystem(object):
         self.patches = patches
         self.patch_dir = patch_dir
         self.verbose = verbose
+        cls = self.__class__
+        self.log = jam.logging.getLogger("%s.%s" % (cls.__module__,
+                                                    cls.__name__))
 
     def push(self):
         """ Apply next patch """
