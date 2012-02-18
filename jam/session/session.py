@@ -167,7 +167,7 @@ class Session(object):
             else:
                 return self.var_replace(value)
         elif name == "depends":
-            deps = value[:]
+            deps = value[:] + self.patchsystem.depends
             for base in type(self).__bases__:
                 superdeps = base.depends
                 if superdeps:
