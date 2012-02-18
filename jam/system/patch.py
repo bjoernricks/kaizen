@@ -67,42 +67,44 @@ class Simple(PatchSystem):
         super(Simple, self).__init__(work_dir, patch_dir, patches, verbose)
         if self.patches:
             self.next_patch = 0
+            self.num_patches = len(self.patches)
+        else:
+            self.num_patches = 0
 
     def push(self):
         if not self.patches:
             return
-        if self.next_patch >= len(self.patches):
+        if self.next_patch >= self.num_patches:
             # all patches are applied
-            # TODO add log
+            self.log.debug("All patches are applied")
             return
-        Patch(self.patches[self.current_patch], self.work_dir,
-                self.verbose).run()
+        patch_name = self.patches[self.next_patch]
+        patch = os.path.join(self.patch_dir, patch_name)
+        self.log.info("Applying patch '%s' from '%s'" % (patch_name, patch))
+        Patch(patch, self.work_dir, self.verbose).run()
         self.next_patch += 1
 
     def pop(self):
         if not self.patches:
             return
-        current_patch = self.next_patch - 1
+        current_patch = self.num_patches - self.next_patch - 1
         if current_patch < 0:
             # all patches are reverted
-            # TODO add log
+            self.log.debug("All patches are unappied")
             return
-        Patch(self.patches[self.current_patch], self.work_dir,
+        patch_name = self.patches[current_patch]
+        patch = os.path.join(self.patch_dir, patch_name)
+        self.log.info("Unapplying patch '%s' from '%s'" % (patch_name, patch))
+        Patch(patch, self.work_dir,
                 self.verbose, reverse=True).run()
-        self.next_patch -= 1
+        self.next_patch += 1
 
     def apply(self):
-        if not self.patches:
-            return
-        num = len(self.patches) - self.next_patch
-        for i in range(num):
+        for i in range(self.num_patches):
             self.push()
 
     def unapply(self):
-        if not self.patches:
-            return
-        num = self.next_patch
-        for i in range(num):
+        for i in range(self.num_patches):
             self.pop()
 
 
