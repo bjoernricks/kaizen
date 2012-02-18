@@ -24,6 +24,8 @@ from jam.system.command import Patch, Command
 
 class PatchSystem(object):
 
+    depends = []
+
     def __init__(self, work_dir, patch_dir, patches=None, verbose=False):
         """ work_dir  - path to the directory where the patches should
                         be apllied 
@@ -98,6 +100,8 @@ class Simple(PatchSystem):
 
 
 class Quilt(PatchSystem):
+
+    depends = ["quilt"]
 
     def __init__(self, work_dir, patch_dir, patches, verbose=False):
         super(PatchSystem, self).__init__(work_dir, patch_dir, patches, verbose)
