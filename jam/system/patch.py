@@ -143,7 +143,7 @@ class Quilt(PatchSystem):
         self.quilt.set_args(["delete"])
         self.quilt.run()
 
-    def import(self, patches):
+    def import_patches(self, patches):
         """ Import list of patches """
         args = ["import"]
         args.extend(patches)
