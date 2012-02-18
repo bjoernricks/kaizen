@@ -57,7 +57,7 @@ class PatchSystem(object):
 class Simple(PatchSystem):
 
     def __init__(self, work_dir, patch_dir, patches, verbose=False):
-        super(PatchSystem, self).__init__(work_dir, patch_dir, patches, verbose)
+        super(Simple, self).__init__(work_dir, patch_dir, patches, verbose)
         if self.patches:
             self.next_patch = 0
 
@@ -104,7 +104,7 @@ class Quilt(PatchSystem):
     depends = ["quilt"]
 
     def __init__(self, work_dir, patch_dir, patches, verbose=False):
-        super(PatchSystem, self).__init__(work_dir, patch_dir, patches, verbose)
+        super(Quilt, self).__init__(work_dir, patch_dir, patches, verbose)
         self.quilt = Command("quilt", [], self.work_dir, self.verbose)
         self.quilt.set_env("QUILT_PATCHES", self.patch_dir)
 
