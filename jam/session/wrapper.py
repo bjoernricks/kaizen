@@ -124,20 +124,18 @@ class SessionWrapper(object):
     def patch(self):
         self.log.info("%s:phase:patch" % self.session_name)
         self.session.pre_patch()
-        for patch in self.session.patches:
-            patch_name = self.get_download_file(patch)
-            Patch(os.path.join(self.patch_dir, patch_name),
-                self.session.src_path,
-                self.config.get("verbose")).run()
+        patchsys = self.session.patchsystem(self.session.src_path,
+                self.session.patch_path, self.session.patches,
+                self.config.get("verbose"))
+        patchsys.apply()
         self.session.post_patch()
 
     def unpatch(self):
         self.log.info("%s:phase:unpatch" % self.session_name)
-        for patch in self.session.patches:
-            patch_name = os.path.basename(patch)
-            Patch(os.path.join(self.patch_dir, patch_name),
-                self.session.src_path,
-                self.config.get("verbose"), reverse=True).run()
+        patchsys = self.session.patchsystem(self.session.src_path,
+                self.session.patch_path, self.session.patches,
+                self.config.get("verbose"))
+        patchsys.unapply()
 
     def extract(self):
         self.log.info("%s:phase:extract" % self.session_name)
