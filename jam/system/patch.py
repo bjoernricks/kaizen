@@ -110,7 +110,7 @@ class Quilt(PatchSystem):
 
     def push(self):
         """ Apply next patch """
-        self.quilt.set_args(["push"]
+        self.quilt.set_args(["push"])
         self.quilt.run()
 
     def pop(self):
