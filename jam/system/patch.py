@@ -159,3 +159,9 @@ class Quilt(PatchSystem):
         self.quilt.set_args(args)
         self.quilt.run()
 
+    def edit(self, file_names):
+        """ Edit file(s) to create patch """
+        args = ["edit"]
+        args.extend(file_names)
+        self.quilt.set_args(args)
+        self.quilt.run()
