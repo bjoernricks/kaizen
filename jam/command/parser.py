@@ -60,7 +60,7 @@ class ArgumentParser(ArgParser):
         self.group.add_argument("-f", "--force", action="store_true",
                           dest="force",
                           help="force an action e.g. re-download sources")
-        self.group.add_argument("--buildjobs", type=int,
+        self.group.add_argument("--buildjobs", type=int, metavar="JOBS",
                           help="set number of build jobs")
         self.set_help()
         self.args_added = True
