@@ -21,3 +21,5 @@
 
 from jam.system.command import Command, Configure, Make, CMake, Copy, Replace, \
                                Delete, Move, Mkdirs
+
+from jam.system.patch import Patch, Quilt, Simple
