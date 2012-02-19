@@ -178,5 +178,13 @@ class Console(object):
             else:
                 print "'%s' couldn't be removed" % name
 
+    def list_system_provides(self):
+        provider = SystemProvider(self.config)
+        provider.load()
+        max_length = max([len(session) for session, version in provider.list()])
+        for session, version in sorted(provider.list()):
+            print "%s%s%s" % (session, self._get_filler(session,
+                              max_length), version)
+
     def _get_filler(self, text, max_length):
         return " " * (max_length - len(text) + 1)
