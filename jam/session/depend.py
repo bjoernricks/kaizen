@@ -188,3 +188,8 @@ class SystemProvider(object):
         f = open(filename, "w")
         self.configparser.write(f)
         f.close()
+
+    def list(self):
+        if not self.configparser:
+            return []
+        return self.configparser.items("provides")
