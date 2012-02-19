@@ -317,80 +317,87 @@ class CreateCommand(Command):
         creator.create(options.stdout)
 
 
-class ShowCommand(SessionNameCommand):
+class ShowCommand(CommandWithSubCommands):
 
     def __init__(self):
-        description = ""
-        super(ShowCommand, self).__init__("show", description)
+        name = "show"
+        description = "Show information about a session"
+        usage = "%(prog)s [global options] " + name + \
+                " <files|phases> sessionname"
+        super(ShowCommand, self).__init__(name, usage, description)
 
-    def add_parser(self, parser):
-        subparser = super(ShowCommand, self).add_parser(parser)
-        group = subparser.add_mutually_exclusive_group(required=True)
-        group.add_argument("--files", help="list installed files of a session",
-                           action="store_true")
-        group.add_argument("--phases", help="list the current phases of a " \
-                           "session", action="store_true")
+    def add_cmds(self, subparser):
+        usage = "%(prog)s [global options] " + self.name + \
+                " files sessionname"
+        cmd = subparser.add_parser("files", help="list installed files of a " \
+                                   "session", usage=usage)
+        self._add_args(cmd)
+        usage = "%(prog)s [global options] " + self.name + \
+                " phases sessionname"
+        cmd = subparser.add_parser("phases", help="list the current phases " \
+                                   "a session", usage=usage)
+        self._add_args(cmd)
 
     def main(self, options, config):
         console = Console(config)
         session_name = options.sessionname[0]
-        if options.phases:
+        if options.subcommand == "phases":
             console.list_session_phases(session_name)
-        elif options.files:
+        elif options.subcommand == "files":
             console.list_session_files(session_name)
 
+    def _add_args(self, cmd):
+        cmd.add_argument("sessionname", nargs=1)
 
-class ListCommand(Command):
+
+class ListCommand(CommandWithSubCommands):
 
     def __init__(self):
         description = ""
-        super(ListCommand, self).__init__("list", self.main, [],
-                                          description)
-
-    def add_parser(self, parser):
-        usage = "%(prog)s [global options] " + self.name + \
+        name = "list"
+        usage = "%(prog)s [global options] " + name + \
                 " <installed|activated>"
-        list_cmd = super(ListCommand, self).add_parser(parser)
-        subparser = list_cmd.add_subparsers(dest="subcommand",
-            title="subcommands", description="valid subcommands", metavar="")
+        super(ListCommand, self).__init__(name, usage, description)
+
+    def add_cmds(self, subparser):
+        usage = "%(prog)s [global options] " + self.name + "installed"
         cmd = subparser.add_parser("installed", help="show installed sessions",
-                                   usage="usage")
-        cmd = subparser.add_parser("activated", help="show installed sessions",
+                                   usage=usage)
+        usage = "%(prog)s [global options] " + self.name +  "activated"
+        cmd = subparser.add_parser("activated", help="show activated sessions",
                                    usage=usage)
 
     def main(self, options, config):
         console = Console(config)
-        if options.installed:
+        if options.subcommand == "installed":
             console.list_installed_sessions()
-        elif options.activated:
+        elif options.subcommand == "activated":
             console.list_activated_sessions()
 
 
-class SystemProvidesCommand(Command):
+class SystemProvidesCommand(CommandWithSubCommands):
 
     def __init__(self):
+        name = "systemprovide"
         description = "add or remove software provided by the system"
-        super(SystemProvidesCommand, self).__init__("systemprovide",
-                                          self.main, [], description)
-
-    def add_parser(self, parser):
-        usage = "%(prog)s [global options] " + self.name + \
+        usage = "%(prog)s [global options] " + name + \
                 " <add|remove> name [version]"
-        self.cmd = super(SystemProvidesCommand, self).add_parser(parser,
-                                                                 usage)
-        subparser = self.cmd.add_subparsers(dest="subcommand",
-            title="subcommands", description="valid subcommands", metavar="")
+        super(SystemProvidesCommand, self).__init__(name, usage,  description)
+
+    def add_cmds(self, subparser):
+        usage = "%(prog)s [global options] " + self.name + \
+                " add name [version]"
         cmd = subparser.add_parser("add", help="add software provided by " \
                                    "the system", usage=usage)
         self._add_args(cmd)
+        usage = "%(prog)s [global options] " + self.name + \
+                " remove name [version]"
         cmd = subparser.add_parser("remove", help="remove software provided " \
-                                   "the system", usage=usage)
+                                   "the system", usage=self.usage)
         self._add_args(cmd)
 
     def main(self, options, config):
         console = Console(config)
-        if not options.subcommand:
-            self.cmd.print_help()
             return
         name = options.name[0]
         version = None
