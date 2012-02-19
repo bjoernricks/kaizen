@@ -348,28 +348,37 @@ class SystemProvidesCommand(Command):
 
     def add_parser(self, parser):
         usage = "%(prog)s [global options] " + self.name + \
-                " <--add|--remove> name [version]"
-        subparser = super(SystemProvidesCommand, self).add_parser(parser, usage)
-        group = subparser.add_mutually_exclusive_group(required=True)
-        group.add_argument("--add", help="add software provided by the system",
-                           action="store_true")
-        group.add_argument("--remove", help="remove software provided by the " \
-                           "system", action="store_true")
-        subparser.add_argument("name", nargs=1, help="name of the " \
-                               "software provided by the system")
-        subparser.add_argument("version", nargs="?", help="version of the" \
-                               " software provided by the system")
+                " <add|remove> name [version]"
+        self.cmd = super(SystemProvidesCommand, self).add_parser(parser,
+                                                                 usage)
+        subparser = self.cmd.add_subparsers(dest="subcommand",
+            title="subcommands", description="valid subcommands", metavar="")
+        cmd = subparser.add_parser("add", help="add software provided by " \
+                                   "the system", usage=usage)
+        self._add_args(cmd)
+        cmd = subparser.add_parser("remove", help="remove software provided " \
+                                   "the system", usage=usage)
+        self._add_args(cmd)
 
     def main(self, options, config):
         console = Console(config)
+        if not options.subcommand:
+            self.cmd.print_help()
+            return
         name = options.name[0]
         version = None
         if options.version:
             version = options.version[0]
-        if options.add:
+        if options.subcommand == "add":
             console.add_system_provides(name, version)
-        elif options.remove:
+        elif options.subcommand == "remove":
             console.remove_system_provides(name)
+
+    def _add_args(self, cmd):
+        cmd.add_argument("name", nargs=1, help="name of the " \
+                                "software provided by the system")
+        cmd.add_argument("version", nargs="?", help="version of the" \
+                                " software provided by the system")
 
 
 class QuiltCommand(SessionNameCommand):
