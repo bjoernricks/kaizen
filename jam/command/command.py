@@ -321,12 +321,15 @@ class ListCommand(Command):
                                           description)
 
     def add_parser(self, parser):
-        subparser = super(ListCommand, self).add_parser(parser)
-        group = subparser.add_mutually_exclusive_group(required=True)
-        group.add_argument("--installed", help="show installed sessions",
-                           action="store_true")
-        group.add_argument("--activated", help="show installed sessions",
-                           action="store_true")
+        usage = "%(prog)s [global options] " + self.name + \
+                " <installed|activated>"
+        list_cmd = super(ListCommand, self).add_parser(parser)
+        subparser = list_cmd.add_subparsers(dest="subcommand",
+            title="subcommands", description="valid subcommands", metavar="")
+        cmd = subparser.add_parser("installed", help="show installed sessions",
+                                   usage="usage")
+        cmd = subparser.add_parser("activated", help="show installed sessions",
+                                   usage=usage)
 
     def main(self, options, config):
         console = Console(config)
