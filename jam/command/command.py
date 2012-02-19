@@ -395,9 +395,15 @@ class SystemProvidesCommand(CommandWithSubCommands):
         cmd = subparser.add_parser("remove", help="remove software provided " \
                                    "the system", usage=self.usage)
         self._add_args(cmd)
+        usage = "%(prog)s [global options] " + self.name + \
+                " list name [version]"
+        cmd = subparser.add_parser("list", help="list software provided " \
+                                   "the system", usage=self.usage)
 
     def main(self, options, config):
         console = Console(config)
+        if options.subcommand == "list":
+            console.list_system_provides()
             return
         name = options.name[0]
         version = None
