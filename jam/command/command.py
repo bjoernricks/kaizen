@@ -48,6 +48,33 @@ class Command(object):
         return func
 
 
+class CommandWithSubCommands(Command):
+
+    def __init__(self, name, usage, description):
+        self.usage = usage
+        super(CommandWithSubCommands, self).__init__(name, self.pre_main, [],
+                                                     description)
+
+    def add_parser(self, parser):
+        self.cmd = super(CommandWithSubCommands, self).add_parser(parser,
+                                                                  self.usage)
+        subparser = self.cmd.add_subparsers(dest="subcommand",
+            title="subcommands", description="valid subcommands", metavar="")
+        self.add_cmds(subparser)
+
+    def pre_main(self, options, config):
+        if not options.subcommand:
+            self.cmd.print_help()
+            return
+        self.main(options, config)
+
+    def add_cmds(self, subparser):
+        pass
+
+    def main(self, options, config):
+        pass
+
+
 class SessionNameCommand(Command):
 
     def __init__(self, name, description=None, aliases=[]):
