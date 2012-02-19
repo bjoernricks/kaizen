@@ -21,6 +21,7 @@
 
 from jam.session.manager import SessionManager, SessionsList
 from jam.session.depend import Dependency, SystemProvider
+from jam.system.patch import Quilt
 
 
 class Console(object):
@@ -185,6 +186,48 @@ class Console(object):
         for session, version in sorted(provider.list()):
             print "%s%s%s" % (session, self._get_filler(session,
                               max_length), version)
+
+    def quilt_pop(self, sessionname, all=False):
+        quilt = self._quilt(sessionname)
+        if all:
+            quilt.unapply()
+        else:
+            quilt.pop()
+
+    def quilt_push(self, sessionname, all=False):
+        quilt = self._quilt(sessionname)
+        if all:
+            quilt.apply()
+        else:
+            quilt.push()
+
+    def quilt_refresh(self, sessionname):
+        quilt = self._quilt(sessionname)
+        quilt.refresh()
+
+    def quilt_delete(self, sessionname):
+        quilt = self._quilt(sessionname)
+        quilt.delete()
+
+    def quilt_new(self, sessionname, patchname):
+        quilt = self._quilt(sessionname)
+        quilt.new(patchname)
+
+    def quilt_import(self, sessionname, patches):
+        quilt = self._quilt(sessionname)
+        quilt.import_patches(patches)
+
+    def quilt_edit(self, sessionname, filenames):
+        quilt = self._quilt(sessionname)
+        quilt.edit(filenames)
+
+    def _quilt(self, sessionname):
+        manager = SessionManager(self.config, sessionname)
+        # session must be at least in phase extract
+        manager.extract()
+        session = manager.session_wrapper.session
+        return Quilt(session.src_path, session.patch_path, session.patches,
+                     self.config.get("verbose"))
 
     def _get_filler(self, text, max_length):
         return " " * (max_length - len(text) + 1)
