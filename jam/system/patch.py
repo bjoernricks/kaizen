@@ -144,7 +144,7 @@ class Quilt(PatchSystem):
 
     def new(self, patch_name):
         """ Create a new patch """
-        self.quilt.set_args(["new"], patch_name)
+        self.quilt.set_args(["new", patch_name])
         self.quilt.run()
 
     def delete(self):
