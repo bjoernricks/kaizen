@@ -421,12 +421,109 @@ class SystemProvidesCommand(CommandWithSubCommands):
                                 " software provided by the system")
 
 
-class QuiltCommand(SessionNameCommand):
+class QuiltCommand(CommandWithSubCommands):
 
     def __init__(self):
+        name = "quilt"
         description = "Manage patches for a session with quilt"
-        super(QuiltCommand, self).__init__("quilt", description)
+        usage = "%(prog)s [global options] " + name + \
+                " <pop|push> [-a] sessionname\n" + \
+                "                            " + name + " refresh " + \
+                "sessionname\n" + \
+                "                            " + name + " new " + \
+                "patchname sessionname\n" + \
+                "                            " + name + " delete " + \
+                "sessionname\n" + \
+                "                            " + name + " edit " + \
+                "<file1, file2, ...> sessionname\n" + \
+                "                            " + name + " import " + \
+                "<patch1, patch2, ...> sessionname\n"
+        super(QuiltCommand, self).__init__(name, usage, description)
 
     def main(self, options, config):
         console = Console(config)
         session_name = options.sessionname[0]
+
+    def _get_usage(self, cmd, extra=None):
+        usage = "%(prog)s [global options] " + self.name + " " + cmd + " "
+        if extra:
+            usage = usage + extra + " "
+        usage = usage + "sessionname"
+        return usage
+
+
+    def add_cmds(self, subparser):
+        cmd_str = "pop"
+        cmd = subparser.add_parser(cmd_str, help="remove patch(es) from the " \
+                                   "stack of applied patches.",
+                                   usage=self._get_usage(cmd_str, "[-a]"))
+        cmd.add_argument("-a", dest="all", help="remove all applied patches",
+                action="store_true")
+        self._add_args(cmd)
+
+        cmd_str = "push"
+        cmd = subparser.add_parser(cmd_str, help="apply patch(es) from the " \
+                                   "series file", usage=self._get_usage(cmd_str,
+                                   "[-a]"))
+        cmd.add_argument("-a", dest="all", help="apply all patches",
+                         action="store_true")
+        self._add_args(cmd)
+
+        cmd_str = "refresh"
+        cmd = subparser.add_parser(cmd_str, help="refreshes the topmost patch",
+                                   usage=self._get_usage(cmd_str))
+        self._add_args(cmd)
+
+        cmd_str = "new"
+        cmd = subparser.add_parser(cmd_str, help="create a new patch with the" \
+                                   "specified patch name, and insert it after" \
+                                   "the topmost patch",
+                                   usage=self._get_usage(cmd_str, "patchname"))
+        cmd.add_argument("patchname", nargs=1, help="name of the new patch")
+        self._add_args(cmd)
+
+        cmd_str = "delete"
+        cmd = subparser.add_parser(cmd_str, help="remove the topmost patch " \
+                                   "from the series file",
+                                   usage=self._get_usage(cmd_str))
+        self._add_args(cmd)
+
+        cmd_str = "import"
+        cmd = subparser.add_parser(cmd_str, help="Import external patches. " \
+                                   "The patches will be inserted following " \
+                                   "the current top patch, and must be pushed" \
+                                   " after import to apply them",
+                                   usage=self._get_usage(cmd_str, "patchname"))
+        cmd.add_argument("patches", nargs="+", help="list of patches")
+        self._add_args(cmd)
+
+        cmd_str = "edit"
+        cmd = subparser.add_parser(cmd_str, help="Edit the specified file(s)" \
+                                   " in $EDITOR after adding it (them) to " \
+                                   "the topmost patch",
+                                   usage=self._get_usage(cmd_str))
+        cmd.add_argument("files", nargs="+", help="file to edit")
+        self._add_args(cmd)
+
+    def _add_args(self, cmd):
+        cmd.add_argument("sessionname", nargs=1, help="name of the session " \
+                "to patch")
+
+    def main(self, options, config):
+        console = Console(config)
+        subcmd = options.subcommand
+        sessionname = options.sessionname[0]
+        if subcmd == "push":
+            console.quilt_push(sessionname, options.all)
+        elif subcmd == "pop":
+            console.quilt_pop(sessionname, options.all)
+        elif subcmd == "refresh":
+            console.quilt_refresh(sessionname)
+        elif subcmd == "new":
+            console.quilt_new(sessionname, options.patchname[0])
+        elif subcmd == "delete":
+            console.quilt_delete(sessionname)
+        elif subcmd == "import":
+            console.quilt_import(sessionname, options.patches)
+        elif subcmd == "edit":
+            console.quilt_edit(sessionname, options.files)
