@@ -89,7 +89,7 @@ class Main(object):
             parser.print_help()
             return
 
-        options.func(options, config)
+        options.func(options, self.config)
 
 
 def main():
