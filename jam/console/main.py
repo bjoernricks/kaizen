@@ -55,7 +55,6 @@ class Main(object):
         parser = ArgumentParser(create_late=True)
         all_args = sys.argv[1:]
         args = parser.parse_known_args(all_args)
-        unknown_args = args[1]
         options = args[0]
 
         if options.config:
@@ -78,7 +77,7 @@ class Main(object):
         for command in Loader().classes(jam.command, all=True):
             command().add_parser(subparsers)
 
-        options = parser.parse_args(unknown_args)
+        options = parser.parse_args(all_args)
 
         self.config = Config(JAM_CONFIG_FILES, vars(options))
 
