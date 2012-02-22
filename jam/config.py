@@ -94,7 +94,7 @@ class Config(object):
         self.config["destroot"] = self._get("destroot")
         self.config["downloadroot"] = self._get("downloadroot")
         self.config["buildroot"] = self._get("buildroot")
-        self.config["debugdb"] = self._getbool("debugdb")
+        self.config["debugdb"] = self._getbool("debugdb", False)
         self.config["system"] = self._get("system")
         self.config["buildjobs"] = self._getint("buildjobs")
 
