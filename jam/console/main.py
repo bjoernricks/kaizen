@@ -53,9 +53,9 @@ class Main(object):
         self.logger.addHandler(handler)
 
         parser = ArgumentParser(create_late=True)
-        all_args = sys.argv
+        all_args = sys.argv[1:]
         args = parser.parse_known_args(all_args)
-        unknown_args = args[1][1:]
+        unknown_args = args[1]
         options = args[0]
 
         if options.config:
