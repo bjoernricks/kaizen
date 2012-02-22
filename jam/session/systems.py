@@ -109,7 +109,8 @@ class PythonSession(Session):
     def destroot(self):
         Command("python", ["setup.py", "install", 
                 "--prefix="+ self.prefix,
-                "--root=" + self.dest_dir],
+                "--root=" + self.dest_dir,
+                "--single-version-externally-managed"],
                 self.build_path,
                 self.debug).run()
 
