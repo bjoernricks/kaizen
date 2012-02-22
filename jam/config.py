@@ -62,7 +62,7 @@ class Config(object):
     """
 
     def __init__(self, files=[], options={}):
-        self.options = options
+        self.options = {}
         self.config = {}
         defaults = {}
 
@@ -73,9 +73,11 @@ class Config(object):
         defaults["prefix"] = "/usr/local"
         defaults["buildjobs"] = 0
 
+        # overwrite defaults with values from options
         for key in defaults.keys():
             if key in options:
-                defaults[key] = options[key]
+                # configparser only handles string values
+                defaults[key] = str(options[key])
 
         self.configparser = SafeConfigParser(defaults)
         self.configparser.read(files) 
