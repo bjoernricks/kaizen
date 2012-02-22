@@ -72,7 +72,10 @@ class Config(object):
         defaults["verbose"] = False
         defaults["prefix"] = "/usr/local"
         defaults["buildjobs"] = 0
-        defaults.update(options)
+
+        for key in defaults.keys():
+            if key in options:
+                defaults[key] = options[key]
 
         self.configparser = SafeConfigParser(defaults)
         self.configparser.read(files) 
