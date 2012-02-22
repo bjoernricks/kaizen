@@ -151,3 +151,12 @@ class Config(object):
             raise JamRuntimeError("Value for '%s' not found in config." % value)
         return self.config[value]
 
+    def __str__(self):
+        retval = "{"
+        for key, value in sorted(self.config.items()):
+            retval += "%r: %r, " % (key, value)
+        retval += "}"
+        return retval
+
+    def __repr__(self):
+        return "Config(0x%x, %s" % (id(self), str(self))
