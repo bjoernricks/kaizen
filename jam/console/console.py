@@ -19,6 +19,8 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 
 # 02110-1301 USA
 
+import os
+
 from jam.session.manager import SessionManager, SessionsList
 from jam.session.depend import Dependency, SystemProvider
 from jam.system.patch import Quilt
@@ -214,19 +216,21 @@ class Console(object):
         quilt.new(patchname)
 
     def quilt_import(self, sessionname, patches):
-        quilt = self._quilt(sessionname)
+        quilt = self._quilt(sessionname, os.getcwd())
         quilt.import_patches(patches)
 
     def quilt_edit(self, sessionname, filenames):
         quilt = self._quilt(sessionname)
         quilt.edit(filenames)
 
-    def _quilt(self, sessionname):
+    def _quilt(self, sessionname, src_path=None):
         manager = SessionManager(self.config, sessionname)
         # session must be at least in phase extract
         manager.extract()
         session = manager.session_wrapper.session
-        return Quilt(session.src_path, session.patch_path, session.patches,
+        if not src_path:
+            src_path = session.src_path
+        return Quilt(src_path, session.patch_path, session.patches,
                      self.config.get("verbose"))
 
     def _get_filler(self, text, max_length):
