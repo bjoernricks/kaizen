@@ -225,8 +225,9 @@ class Move(BaseCommand):
         self.dest = dest
 
     def run(self):
-        self.log.debug("Moving '%s' to '%s'" % (self.src, self.dest))
-        shutil.move(self.src, self.dest)
+        for src in glob.glob(self.src):
+            self.log.debug("Moving '%s' to '%s'" % (src, self.dest))
+            shutil.move(src, self.dest)
 
 
 class Replace(BaseCommand):
