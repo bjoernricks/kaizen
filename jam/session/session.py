@@ -53,6 +53,28 @@ class Session(object):
     patch_path = None
     parallel = True
 
+    configure_cflags = None
+    configure_ldflags = None
+    configure_cc = None
+    configure_cpp = None
+    configure_cppflags = None
+    configure_cxx = None
+    configure_cxxflags = None
+    configure_libs = None
+    configure_cpath = None
+    configure_library_path = None
+
+    build_cflags = None
+    build_ldflags = None
+    build_cc = None
+    build_cpp = None
+    build_cppflags = None
+    build_cxx = None
+    build_cxxflags = None
+    build_libs = None
+    build_cpath = None
+    build_library_path = None
+
     downloader = UrlDownloader
     patchsystem = Simple
 
@@ -154,7 +176,12 @@ class Session(object):
                     "build_args", "patches", "configure_path", "patch_path",
                     "configure_cflags", "configure_ldflags", "configure_cc",
                     "configure_cpp", "configure_cppflags", "configure_libs",
-                    "configure_cxx", "configure_cxxflags"]:
+                    "configure_cxx", "configure_cxxflags", "configure_cpath",
+                    "configure_library_path", "build_cflags", "build_ldflags",
+                    "build_cc", "build_cpp", "build_cppflags", "build_libs",
+                    "build_cxx", "build_cxxflags", "build_cpath",
+                    "build_library_path",
+                    ]:
             if isinstance(value, list):
                 newlist = self.__shadow.get(name)
                 if not newlist:
