@@ -111,8 +111,7 @@ class CMakeSession(MakeSession):
         args.append("-DCMAKE_COLOR_MAKEFILE=TRUE")
         if self.verbose:
             args.append("-DCMAKE_VERBOSE_MAKEFILE=TRUE")
-        CMake(args, self.configure_path, self.build_path,
-              self.debug).run()
+        CMake(args, self.configure_path, self.build_path, self.debug).run()
 
     def distclean(self):
         Delete(self.build_dir).run()
