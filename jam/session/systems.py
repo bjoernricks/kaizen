@@ -73,6 +73,10 @@ class ConfigureSession(MakeSession):
             configure.set_cxx(self.configure_cxx)
         if self.configure_cxxflags:
             configure.set_cxxflags(self.configure_cxxflags)
+        if self.configure_cpath:
+            configure.set_cpath(self.configure_cpath)
+        if self.configure_library_path:
+            configure.set_library_path(self.configure_library_path)
         configure.run()
 
 
