@@ -187,26 +187,34 @@ class Copy(BaseCommand):
         self.dest = dest
 
     def run(self):
-        if os.path.isdir(self.src):
-            if os.path.exists(self.dest):
-                if os.listdir(self.dest):
-                    self.log.debug("Skipping copy. Destination '%s'"
-                                   " already exists" % self.dest)
-                    return
-                else:
-                    os.rmdir(self.dest)
-            self.log.debug("Copy directory '%s' to '%s'" % (self.src,
-                                                            self.dest))
-            shutil.copytree(self.src, self.dest)
-        else:
-            if os.path.isdir(self.dest):
-                dest_dir = self.dest
+        for src in glob.glob(self.src):
+            dest = self.dest
+            if os.path.isdir(src):
+                src_basename = os.path.basename(src)
+                dst_basename = os.path.basename(dest)
+                # shutil.copytree uses src as root directory
+                # Copy("/path/to/mydir", "/path/to/dest) should copy
+                # mydir under /path/to/dest and not only the content of mydir
+                dest = os.path.join(dest, src_basename)
+                if os.path.exists(dest):
+                    # only copy to an emtpy dir
+                    if os.listdir(dest):
+                        self.log.debug("Skipping copy. Destination '%s'"
+                                       " already exists" % dest)
+                        return
+                    else:
+                        os.rmdir(dest)
+                self.log.debug("Copy directory '%s' to '%s'" % (src, dest))
+                shutil.copytree(src, dest)
             else:
-                dest_dir = os.path.dirname(self.dest)
-            if not os.path.exists(dest_dir):
-                os.makedirs(dest_dir)
-            self.log.debug("Copy file '%s' to '%s'" % (self.src, self.dest))
-            shutil.copy(self.src, self.dest)
+                if os.path.isdir(self.dest):
+                    dest_dir = self.dest
+                else:
+                    dest_dir = os.path.dirname(self.dest)
+                if not os.path.exists(dest_dir):
+                    os.makedirs(dest_dir)
+                self.log.debug("Copy file '%s' to '%s'" % (src, self.dest))
+                shutil.copy(src, self.dest)
 
 
 class Move(BaseCommand):
