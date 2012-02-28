@@ -110,7 +110,9 @@ class PythonSession(Session):
         Command("python", ["setup.py", "install", 
                 "--prefix="+ self.prefix,
                 "--root=" + self.dest_dir,
-                "--single-version-externally-managed"],
+                # root implies single-version-externally-managed
+                # "--single-version-externally-managed"
+                ],
                 self.build_path,
                 self.debug).run()
 
