@@ -91,19 +91,12 @@ class SessionManager(object):
                                         phases_list.get("Configured"),
                                         ["distclean"], False,
                                         self.delete_destroot_seq)
-        # distclean_db_seq: just remove phase from db
-        self.distclean_db_seq = UnSequence("distclean",
-                                           phases_list.get("Configured"),
-                                           phases_list.get("Built"),
-                                           phases_list.get("Configured"),
-                                           [], False,
-                                           self.delete_destroot_seq)
         self.delete_build_seq = UnSequence("delete_build",
                                            phases_list.get("Built"),
                                            phases_list.get("Patched"),
                                            phases_list.get("Built"),
                                            ["delete_build"], False,
-                                           self.distclean_db_seq)
+                                           self.distclean_seq)
         self.unpatch_seq = UnSequence("unpatch",
                                       phases_list.get("Patched"),
                                       phases_list.get("Extracted"),
