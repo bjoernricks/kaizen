@@ -128,8 +128,9 @@ class Make(BuildCommand):
     def run(self, args=[]):
         cmd = ["make"]
         cmd.extend(args)
-        self.log.debug("Make run '%s' in '%s'" % (cmd, self.cwd_dir))
-        jam.run.call(cmd, not self.verbose, cwd=self.cwd_dir)
+        self.log.debug("Make run '%s' in '%s' with env '%s'" % (cmd,
+                       self.cwd_dir, self.env))
+        jam.run.call(cmd, not self.verbose, extra_env=self.env, cwd=self.cwd_dir)
 
     def install(self, dest_dir=None):
         args = []
