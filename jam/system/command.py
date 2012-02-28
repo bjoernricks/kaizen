@@ -23,22 +23,29 @@ import os.path
 import logging
 import shutil
 import re
+import glob
 
 import jam.run
 import jam.logging
 
 from jam.utils import real_path
 
-class BuildSystem(object):
+class BaseCommand(object):
 
-    def __init__(self, args, src_dir, build_dir, verbose=False):
-        self.args = args
-        self.src_dir = src_dir
-        self.build_dir = build_dir
-        self.cwd_dir = real_path(build_dir)
-        self.verbose = verbose
-        self.env = dict()
-        self.log = jam.logging.getLogger("jam.buildsystem")
+    def __init__(self, env=None):
+        if env:
+            self.env = env.copy()
+        else:
+            self.env = dict()
+
+    def set_env(self, key, value):
+        self.env[key] = value
+
+    def run(self):
+        raise NotImplementedError()
+
+
+class BuildCommand(BaseCommand):
 
     def set_cc(self, cc):
         self.env["CC"] = cc
@@ -64,8 +71,26 @@ class BuildSystem(object):
     def set_cxxflags(self, cxxflags=[]):
         self.env["CXXFLAGS"] = " ".join(cxxflags)
 
+    def set_cpath(self, cpath=[]):
+        self.env["CPATH"] = ":".join(cpath)
+
+    def set_library_path(self, library_path=[]):
+        self.env["LIBRARY_PATH"] =  ":".join(library_path)
+
     def run(self):
         pass
+
+
+class BuildSystem(BuildCommand):
+
+    def __init__(self, args, src_dir, build_dir, verbose=False, env=None):
+        super(BuildSystem, self).__init__(env)
+        self.args = args
+        self.src_dir = src_dir
+        self.build_dir = build_dir
+        self.cwd_dir = real_path(build_dir)
+        self.verbose = verbose
+        self.log = jam.logging.getLogger("jam.buildsystem")
 
 
 class Configure(BuildSystem):
@@ -91,9 +116,10 @@ class CMake(BuildSystem):
                      cwd=self.cwd_dir)
 
 
-class Make(object):
+class Make(BuildCommand):
 
-    def __init__(self, dir, verbose=False):
+    def __init__(self, dir, verbose=False, env=None):
+        super(Make, self).__init__(env)
         self.dir = dir
         self.cwd_dir = real_path(dir)
         self.verbose = verbose
@@ -119,18 +145,15 @@ class Make(object):
         self.run(["distclean"])
 
 
-class Command(object):
+class Command(BaseCommand):
 
-    def __init__(self, cmd, args, cwd, verbose):
+    def __init__(self, cmd, args, cwd, verbose, env=None):
+        super(Command, self).__init__(env)
         self.cmd = cmd
         self.args = args
         self.cwd_dir = real_path(cwd)
         self.verbose = verbose
         self.log = jam.logging.getLogger("jam.command")
-        self.env = dict()
-
-    def set_env(self, key, value):
-        self.env[key] = value
 
     def run(self):
         cmd = [self.cmd]
@@ -155,7 +178,7 @@ class Patch(Command):
         super(Patch, self).__init__("patch", args, cwd, verbose)
 
 
-class Copy(object):
+class Copy(BaseCommand):
 
     def __init__(self, src, dest):
         self.log = jam.logging.getLogger(__name__ + ".copy")
@@ -185,7 +208,7 @@ class Copy(object):
             shutil.copy(self.src, self.dest)
 
 
-class Move(object):
+class Move(BaseCommand):
 
     def __init__(self, src, dest):
         self.log = jam.logging.getLogger(__name__ + ".move")
@@ -197,7 +220,7 @@ class Move(object):
         shutil.move(self.src, self.dest)
 
 
-class Replace(object):
+class Replace(BaseCommand):
 
     def __init__(self, pattern, replace, source, dest=None):
         self.log = jam.logging.getLogger(__name__ + ".replace")
@@ -226,7 +249,7 @@ class Replace(object):
         f.close()
 
 
-class Delete(object):
+class Delete(BaseCommand):
 
     def __init__(self, dir):
         self.dir = dir
@@ -247,7 +270,7 @@ class Delete(object):
             self.log.error("Could not delete '%s'. It's not a file or directory"
                     % self.dir)
 
-class Mkdirs(object):
+class Mkdirs(BaseCommand):
 
     def __init__(self, path):
         self.path = path
