@@ -29,12 +29,33 @@ from jam.system.command import Configure, CMake, Make, Command, Copy, Delete
 class MakeSession(Session):
 
     def build(self):
-        if self.parallel:
-            j = self.config.get("buildjobs")
+        j = self.config.get("buildjobs")
+        if self.parallel and j > 1:
             build_args = ["-j" + str(j)] + self.build_args
         else:
             build_args = self.build_args
-        Make(self.build_path, self.debug).run(build_args)
+        make = Make(self.build_path, self.debug)
+        if self.build_cc:
+            make.set_cc(self.build_cc)
+        if self.build_cpp:
+            make.set_cpp(self.build_cpp)
+        if self.build_cflags:
+            make.set_cflags(self.build_cflags)
+        if self.build_cppflags:
+            make.set_cppflags(self.build_cppflags)
+        if self.build_ldflags:
+            make.set_ldflags(self.build_ldflags)
+        if self.build_libs:
+            make.set_libs(self.build_libs)
+        if self.build_cxx:
+            make.set_cxx(self.build_cxx)
+        if self.build_cxxflags:
+            make.set_cxxflags(self.build_cxxflags)
+        if self.build_cpath:
+            make.set_cpath(self.build_cpath)
+        if self.build_library_path:
+            make.set_library_path(self.build_library_path)
+        make.run(build_args)
 
     def destroot(self):
         Make(self.build_path, self.debug).install(self.dest_dir)
