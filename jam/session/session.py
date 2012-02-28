@@ -124,6 +124,7 @@ class Session(object):
         self.vars["dist_version"] = self.dist_version
         self.vars["package_path"] = self.package_path
         self.vars["apps_dir"] = self.apps_dir
+        self.vars["dest_path"] = self.dest_path
 
         if not self.src_path:
             self.src_path = os.path.join(src_dir, self.name
