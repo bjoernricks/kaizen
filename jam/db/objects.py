@@ -64,6 +64,7 @@ class SessionPhase(object):
         return "<SessionPhase id='0x%x' session='%s' version='%s' phase='%s'>" % (
                id(self), self.session, self.version, self.phase.name)
 
+
 class Version(object):
 
     def __init__(self, version):
@@ -71,3 +72,14 @@ class Version(object):
 
     def __repr__(self):
         return "<Version id='0x%x' version='%s'>" & (id(self), self.version)
+
+
+class InstallDirectories(object):
+
+    def __init__(self, session, version, download, source, build, destroot):
+        self.session = session
+        self.version = version
+        self.download = download
+        self.source = source
+        self.build = build
+        self.destroot = destroot
