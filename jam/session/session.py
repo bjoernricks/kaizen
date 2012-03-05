@@ -265,3 +265,6 @@ class Session(object):
 
     def get_version(self):
         return self.version
+
+    def get_dist_version(self):
+        return self.get_version() + "-" + self.revision
