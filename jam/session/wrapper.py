@@ -62,7 +62,9 @@ class SessionWrapper(object):
 
     def init_session(self):
         session = self.load_session()
-        self.version = session.dist_version
+        # calculate version for directries
+        version = session.version + "-" + session.revision
+        self.version = version
         name = self.session_name
         build_cache = self.config.get("buildroot")
         download_cache = self.config.get("downloadroot")
