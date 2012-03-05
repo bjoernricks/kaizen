@@ -64,7 +64,6 @@ class SessionWrapper(object):
         session = self.load_session()
         # calculate version for directries
         version = session.version + "-" + session.revision
-        self.version = version
         name = self.session_name
         build_cache = self.config.get("buildroot")
         download_cache = self.config.get("downloadroot")
@@ -89,7 +88,8 @@ class SessionWrapper(object):
         phases = self.db.session.query(SessionPhase).filter(
                                             and_(SessionPhase.session ==
                                                  self.session_name,
-                                            SessionPhase.version == self.version)
+                                            SessionPhase.version ==
+                                            self.session.get_dist_version())
                                             ).all()
         self.phases = [phase.phase for phase in phases]
 
@@ -97,7 +97,8 @@ class SessionWrapper(object):
         return self.phases
 
     def set_phase(self, phase):
-        sessionphase = SessionPhase(self.session_name, self.version, phase)
+        sessionphase = SessionPhase(self.session_name,
+                                    self.session.get_dist_version(), phase)
         sessionphase = self.db.session.merge(sessionphase)
         self.db.session.commit()
         self.load_phases()
@@ -106,7 +107,7 @@ class SessionWrapper(object):
         if phase in self.phases:
             self.db.session.query(SessionPhase).filter(
                     and_(SessionPhase.session == self.session_name,
-                    SessionPhase.version == self.version,
+                    SessionPhase.version == self.session.get_dist_version(),
                     SessionPhase.phase == phase)).delete()
             self.db.session.commit()
             self.load_phases()
