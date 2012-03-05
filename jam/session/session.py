@@ -262,3 +262,6 @@ class Session(object):
 
     def post_patch(self):
         pass
+
+    def get_version(self):
+        return self.version
