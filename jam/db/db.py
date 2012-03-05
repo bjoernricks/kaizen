@@ -23,7 +23,7 @@ import os.path
 
 from jam.db.tables import Tables
 from jam.db.objects import Info, Installed, File, Directory, SessionPhase, \
-        Version
+        Version, InstallDirectories
 from jam.external.sqlalchemy import String, create_engine
 from jam.external.sqlalchemy.orm import mapper, sessionmaker
 
@@ -53,6 +53,7 @@ class Db(object):
             mapper(Directory, self.tables.dirs_table)
             mapper(SessionPhase, self.tables.phases_table)
             mapper(Version, self.tables.dbversion_table)
+            mapper(InstallDirectories, self.tables.install_directories_table)
             self._already_init = True
 
     def get_engine(self):
