@@ -62,7 +62,7 @@ class Config(object):
     """
 
     def __init__(self, files=[], options={}):
-        self.options = {}
+        self.preferred = {}
         self.config = {}
         defaults = {}
 
@@ -71,26 +71,25 @@ class Config(object):
         defaults["quiet"] = False
         defaults["verbose"] = False
         defaults["prefix"] = "/usr/local"
-        defaults["buildjobs"] = 0
+        defaults["buildjobs"] = 1
 
-        # overwrite defaults with values from options
-        for key in defaults.keys():
-            if key in options:
-                # configparser only handles string values
-                defaults[key] = str(options[key])
+        # use preferred values from options
+        for key in defaults.keys() + ["sessions"]:
+            if key in options and options[key]:
+                self.preferred[key] = options[key]
 
-        self.configparser = SafeConfigParser(defaults)
+        self.configparser = SafeConfigParser()
         self.configparser.read(files) 
 
         if not self.configparser.has_section("jam"):
             self.configparser.add_section("jam")
-        prefix = real_path(self._get("prefix"))
+        prefix = real_path(self._get("prefix", defaults["prefix"]))
 
         self.config["version"] = jam.__version__
         self.config["prefix"] = prefix
-        self.config["verbose"] = self._getbool("verbose", False)
-        self.config["quiet"] = self._getbool("quiet", False)
-        self.config["debug"] = self._getbool("debug", False)
+        self.config["verbose"] = self._getbool("verbose", defaults["verbose"])
+        self.config["quiet"] = self._getbool("quiet", defaults["quiet"])
+        self.config["debug"] = self._getbool("debug", defaults["debug"])
         self.config["rootdir"] = self._get("rootdir")
         self.config["sessions"] = self._getlist("sessions")
         self.config["destroot"] = self._get("destroot")
@@ -98,7 +97,8 @@ class Config(object):
         self.config["buildroot"] = self._get("buildroot")
         self.config["debugdb"] = self._getbool("debugdb", False)
         self.config["system"] = self._get("system")
-        self.config["buildjobs"] = self._getint("buildjobs")
+        self.config["buildjobs"] = self._getint("buildjobs",
+                                                defaults["buildjobs"])
 
         jam_package_path = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                                         os.path.pardir))
@@ -124,18 +124,24 @@ class Config(object):
             self.config["buildjobs"] = get_number_of_cpus() + 1
 
     def _get(self, value, default=None):
+        if value in self.preferred:
+            return self.preferred[value]
         try:
             return self.configparser.get("jam", value)
         except:
             return default
 
     def _getbool(self, value, default=None):
+        if value in self.preferred:
+            return self.preferred[value]
         try:
             return self.configparser.getboolean("jam", value)
         except:
             return default
 
     def _getint(self, value, default=0):
+        if value in self.preferred:
+            return self.preferred[value]
         try:
             return self.configparser.getint("jam", value)
         except:
