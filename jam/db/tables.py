@@ -91,6 +91,16 @@ class Tables(object):
         self.dbversion_table = Table("schema", self.metadata,
                         Column("version", String, primary_key=True))
 
+        self.install_directories_table = Table("install_directories",
+                self.metadata,
+                Column("session", String, ForeignKey(self.info_table.c.session),
+                    primary_key=True),
+                Column("version", String, primary_key=True),
+                Column("download", String),
+                Column("source", String),
+                Column("build", String),
+                Column("destroot", String),)
+
     def create(self):
         self.metadata.create_all()
 
