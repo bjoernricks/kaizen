@@ -381,6 +381,9 @@ class SessionWrapper(object):
                                                     self.session_name)
         return query.all()
 
+    def get_version(self):
+        return self.session.get_dist_version()
+
 
 class SessionLoader(Loader):
 
