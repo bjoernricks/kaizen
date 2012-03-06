@@ -211,9 +211,9 @@ class SessionManager(object):
         installed = self.db.session.query(Installed).get(self.session_name)
         if not installed:
             installed = Installed(self.session_name,
-                    self.session_wrapper.version)
+                    self.session_wrapper.get_version())
         else:
-            installed.version = self.session_wrapper.version
+            installed.version = self.session_wrapper.get_version()
         self.db.session.add(installed)
         self.db.session.commit()
         self.install_runtime_dependencies()
