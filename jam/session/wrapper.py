@@ -33,7 +33,7 @@ from jam.utils import Loader, real_path, list_dir, list_subdir, extract_file
 from jam.download import UrlDownloader
 from jam.phase.phase import phases_list
 from jam.db.db import Db
-from jam.db.objects import File, Directory, SessionPhase
+from jam.db.objects import File, Directory, SessionPhase, InstallDirectories
 from jam.session.session import Session
 from jam.session.error import SessionError
 from jam.system.command import Patch
@@ -49,6 +49,7 @@ class SessionWrapper(object):
         self.init_session()
         self.db = Db(config)
         self.load_phases()
+        self.load_install_directories()
         self.session.init()
 
     def load_session(self):
@@ -111,6 +112,13 @@ class SessionWrapper(object):
                     SessionPhase.phase == phase)).delete()
             self.db.session.commit()
             self.load_phases()
+
+    def load_install_directories(self):
+        install_directories = InstallDirectories(self.session_name,
+                self.session.get_dist_version())
+        install_directories = self.db.session.merge(install_directories)
+        self.db.session.commit()
+        self.install_directories = install_directories
 
     def build_depends(self):
         from jam.session.depend import DependencyAnalyser
