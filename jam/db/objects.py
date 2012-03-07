@@ -76,7 +76,8 @@ class Version(object):
 
 class InstallDirectories(object):
 
-    def __init__(self, session, version, download, source, build, destroot):
+    def __init__(self, session, version, download=None, source=None, build=None,
+                 destroot=None):
         self.session = session
         self.version = version
         self.download = download
