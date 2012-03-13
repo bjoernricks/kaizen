@@ -133,11 +133,13 @@ class SessionWrapper(object):
 
     def patch(self):
         self.log.info("%s:phase:patch" % self.session_name)
+        self.groups_call("pre_patch")
         self.session.pre_patch()
         patchsys = self.session.patchsystem(self.session.src_path,
                 self.session.patch_path, self.session.patches,
                 self.config.get("verbose"))
         patchsys.apply()
+        self.groups_call("post_patch")
         self.session.post_patch()
 
     def unpatch(self):
@@ -204,6 +206,7 @@ class SessionWrapper(object):
                           " deactivated. Either deactivation was forced or"\
                           " the database may be currupted" % self.session_name)
 
+        self.groups_call("pre_deactivate")
         self.session.pre_deactivate()
 
         # delete activated files
@@ -231,6 +234,7 @@ class SessionWrapper(object):
         self.db.session.commit()
 
         self.session.post_deactivate()
+        self.groups_call("post_deactivate")
 
     def check_files_installed(self, files):
         query = self.db.session.query(File).filter(and_(File.filename.in_(
@@ -262,6 +266,8 @@ class SessionWrapper(object):
             if not os.path.exists(dir):
                 os.makedirs(dir)
                 self.log.debug("Creating directory '%s'" % dir)
+
+        self.groups_call("pre_activate")
         self.session.pre_activate()
 
         (dirs, files) = list_subdir(self.dest_dir)
@@ -315,6 +321,7 @@ class SessionWrapper(object):
             self.db.session.add(dbfile)
         self.db.session.commit()
         self.session.post_activate()
+        self.groups_call("post_activate")
 
     def configure(self):
         self.log.info("%s:phase:configure" % self.session_name)
@@ -322,30 +329,38 @@ class SessionWrapper(object):
         if not os.path.exists(build_path):
             self.log.debug("Creating build dir '%s'" % build_path)
             os.makedirs(build_path)
+        self.groups_call("pre_configure")
         self.session.pre_configure()
         self.session.configure()
         self.session.post_configure()
+        self.groups_call("post_configure")
 
     def build(self):
         self.log.info("%s:phase:build" % self.session_name)
+        self.groups_call("pre_build")
         self.session.pre_build()
         self.session.build()
         self.session.post_build()
+        self.groups_call("post_build")
 
     def destroot(self):
         self.log.info("%s:phase:destroot" % self.session_name)
         if not os.path.exists(self.dest_dir):
             self.log.debug("Creating destroot dir '%s'" % self.dest_dir)
             os.makedirs(self.dest_dir)
+        self.groups_call("pre_destroot")
         self.session.pre_destroot()
         self.session.destroot()
         self.session.post_destroot()
+        self.groups_call("post_destroot")
 
     def clean(self):
         self.log.info("%s:phase:clean" % self.session_name)
+        self.groups_call("pre_clean")
         self.session.pre_clean()
         self.session.clean()
         self.session.post_clean()
+        self.groups_call("post_clean")
 
     def distclean(self):
         self.log.info("%s:phase:distclean" % self.session_name)
@@ -391,6 +406,11 @@ class SessionWrapper(object):
 
     def get_version(self):
         return self.session.get_dist_version()
+
+    def groups_call(self, methodname):
+        for group in self.session._groups:
+            method = getattr(group, methodname)
+            method()
 
 
 class SessionLoader(Loader):
