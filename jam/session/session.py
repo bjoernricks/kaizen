@@ -53,27 +53,27 @@ class Session(object):
     patch_path = None
     parallel = True
 
-    configure_cflags = None
-    configure_ldflags = None
+    configure_cflags = []
+    configure_ldflags = []
     configure_cc = None
     configure_cpp = None
-    configure_cppflags = None
+    configure_cppflags = []
     configure_cxx = None
-    configure_cxxflags = None
-    configure_libs = None
-    configure_cpath = None
-    configure_library_path = None
+    configure_cxxflags = []
+    configure_libs = []
+    configure_cpath = []
+    configure_library_path = []
 
-    build_cflags = None
-    build_ldflags = None
+    build_cflags = []
+    build_ldflags = []
     build_cc = None
     build_cpp = None
-    build_cppflags = None
+    build_cppflags = []
     build_cxx = None
-    build_cxxflags = None
-    build_libs = None
-    build_cpath = None
-    build_library_path = None
+    build_cxxflags = []
+    build_libs = []
+    build_cpath = []
+    build_library_path = []
 
     downloader = UrlDownloader
     patchsystem = Simple
