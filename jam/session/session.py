@@ -78,6 +78,8 @@ class Session(object):
     downloader = UrlDownloader
     patchsystem = Simple
 
+    groups = []
+
     def __init__(self, config, src_dir, build_dir, dest_dir):
         self.config = config
         self.build_dir = build_dir
@@ -148,6 +150,12 @@ class Session(object):
             self.configure_path = self.src_path
         self.vars["configure_path"] = self.configure_path
 
+        groups = self.groups
+        self._groups = []
+        for group in groups:
+            self._groups.append(group(self, config))
+
+
         self.init()
 
     def init(self):
@@ -168,8 +176,12 @@ class Session(object):
         try:
             value = object.__getattribute__(self, name)
         except AttributeError:
-            self.__dict__[name] = None
-            return None
+            value = None
+            for group in self.groups:
+                if hasattr(group, name):
+                    value = getattr(group, name)
+            self.__dict__[name] = value
+            return value
         if not value:
             return value
         if name in ["src_path", "build_path", "configure_args", "url",
