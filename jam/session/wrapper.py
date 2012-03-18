@@ -114,9 +114,14 @@ class SessionWrapper(object):
             self.load_phases()
 
     def load_install_directories(self):
+        session = self.session
         install_directories = InstallDirectories(self.session_name,
-                self.session.get_dist_version())
+                                                 session.get_dist_version())
         install_directories = self.db.session.merge(install_directories)
+        install_directories.build = real_path(session.build_path)
+        install_directories.source = real_path(session.src_path)
+        install_directories.destroot = real_path(session.destroot_path)
+        self.db.session.add(self.install_directories)
         self.db.session.commit()
         self.install_directories = install_directories
 
@@ -192,6 +197,9 @@ class SessionWrapper(object):
                                          self.session.session_path)
             download_file = dl.copy(archive_dest, self.force)
             dl.verify(self.session.hash)
+            self.install_directories.download = real_path(download_file)
+            self.db.session.add(self.install_directories)
+            self.db.commit()
 
     def deactivate(self):
         self.log.info("%s:phase:deactivate" % self.session_name)
