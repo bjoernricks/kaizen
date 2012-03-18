@@ -22,7 +22,7 @@
 from jam.phase.phase import Phases, Phase
 
 from jam.external.sqlalchemy import MetaData, Table, Column, String, \
-                                    ForeignKey, TypeDecorator
+                                    ForeignKey, TypeDecorator, DateTime
 
 
 class PhaseType(TypeDecorator):
@@ -87,9 +87,11 @@ class Tables(object):
                               primary_key = True),
                        Column('version', String, primary_key = True),
                        Column('phase', PhaseType, primary_key=True))
-
         self.dbversion_table = Table("schema", self.metadata,
                         Column("version", String, primary_key=True))
+        self.updates_table = Table("updates", self.metadata,
+                        Column("update", String, primary_key=True),
+                        Column("date", DateTime))
 
         self.install_directories_table = Table("install_directories",
                 self.metadata,
