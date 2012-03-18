@@ -65,13 +65,25 @@ class SessionPhase(object):
                id(self), self.session, self.version, self.phase.name)
 
 
-class Version(object):
+class SchemaVersion(object):
 
     def __init__(self, version):
-        self.version = version
+        self.version
 
     def __repr__(self):
-        return "<Version id='0x%x' version='%s'>" & (id(self), self.version)
+        return "<SchmemaVersion id='0x%x' version=%r>" % (id(self),
+                self.version)
+
+
+class UpdateVersion(object):
+
+    def __init__(self, update, datetime):
+        self.update = update
+        self.datetime = datetime
+
+    def __repr__(self):
+        return "<UpdateVersion id='0x%x' update=%r datetime=%r>" % (id(self),
+                self.update, self.datetime)
 
 
 class InstallDirectories(object):
