@@ -527,3 +527,20 @@ class QuiltCommand(CommandWithSubCommands):
             console.quilt_import(sessionname, options.patches)
         elif subcmd == "edit":
             console.quilt_edit(sessionname, options.files)
+
+
+class UpgradeCommand(Command):
+
+    def __init__(self):
+        description = "upgrade the current jam installation"
+        super(UpgradeCommand, self).__init__("upgrade", self.main, [],
+                                             description)
+
+    def add_parser(self, parser):
+        usage = "%(prog)s [global options] " + self.name + "{arguments}"
+        subparser = super(UpgradeCommand, self).add_parser(parser, usage)
+        return subparser
+
+    def main(self, options, config):
+        console = Console(config)
+        console.upgrade()
