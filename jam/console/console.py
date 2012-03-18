@@ -24,6 +24,7 @@ import os
 from jam.session.manager import SessionManager, SessionsList
 from jam.session.depend import Dependency, SystemProvider
 from jam.system.patch import Quilt
+from jam.db.update.upgrade import Upgrade
 
 
 class Console(object):
@@ -235,3 +236,7 @@ class Console(object):
 
     def _get_filler(self, text, max_length):
         return " " * (max_length - len(text) + 1)
+
+    def upgrade(self):
+        upgrade = Upgrade(self.config)
+        upgrade.run()
