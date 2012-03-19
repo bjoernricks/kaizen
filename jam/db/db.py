@@ -29,6 +29,8 @@ from jam.db.objects import Info, Installed, File, Directory, SessionPhase, \
 from jam.external.sqlalchemy import String, create_engine
 from jam.external.sqlalchemy.orm import mapper, sessionmaker
 
+CURRENT_DB_SCHEMA = 0
+
 class Db(object):
 
     def __new__(type, *args):
@@ -60,9 +62,17 @@ class Db(object):
             mapper(SchemaVersion, self.tables.dbversion_table)
             mapper(UpdateVersion, self.tables.updates_table)
             mapper(InstallDirectories, self.tables.install_directories_table)
+            self._init_schema()
             self._already_init = True
 
     def get_engine(self):
         return self.engine
 
-
+    def _init_schema(self):
+        self.schema = self.session.query(SchemaVersion).first()
+        if not self.schema:
+            self.schema = SchemaVersion(CURRENT_DB_SCHEMA)
+            self.session.add(self.schema)
+            self.session.commit()
+        self.log.debug("Current database schema version is %s" % \
+                       self.schema.version)
