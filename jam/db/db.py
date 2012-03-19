@@ -21,6 +21,8 @@
 
 import os.path
 
+import jam.logging
+
 from jam.db.tables import Tables
 from jam.db.objects import Info, Installed, File, Directory, SessionPhase, \
         UpdateVersion, InstallDirectories, SchemaVersion
@@ -36,6 +38,9 @@ class Db(object):
 
     def __init__(self, config):
         if not "_already_init" in dir(self):
+            cls = self.__class__
+            self.log = jam.logging.getLogger("%s.%s" % (cls.__module__,
+                                                        cls.__name__))
             rootdir = config.get("rootdir")
             debug_db = config.get("debugdb")
             db_path = os.path.join(rootdir, "jam.db")
