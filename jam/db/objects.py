@@ -68,7 +68,7 @@ class SessionPhase(object):
 class SchemaVersion(object):
 
     def __init__(self, version):
-        self.version
+        self.version = version
 
     def __repr__(self):
         return "<SchmemaVersion id='0x%x' version=%r>" % (id(self),
