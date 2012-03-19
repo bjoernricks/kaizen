@@ -26,7 +26,7 @@ import jam.log
 import jam.db.update.update_0 as update_0
 
 from jam.db.db import Db
-from jam.db.objects import UpdateVersion, SchemaVersion
+from jam.db.objects import UpdateVersion
 
 
 updates = {
@@ -42,11 +42,7 @@ class Upgrade(object):
         self.log = jam.logging.getLogger("%s.%s" % (cls.__module__,
                                                     cls.__name__))
     def run(self):
-        schema = self.db.session.query(SchemaVersion).first()
-        if not schema:
-            version = 0
-        else:
-            version = schema.version
+        version = self.db.schema.version
         cur_updates = updates.get(version)
         if not cur_updates:
             self.log.debug("No updates for database scheme version"
