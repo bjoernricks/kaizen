@@ -121,7 +121,7 @@ class SessionWrapper(object):
         install_directories.build = real_path(session.build_path)
         install_directories.source = real_path(session.src_path)
         install_directories.destroot = real_path(session.destroot_path)
-        self.db.session.add(self.install_directories)
+        self.db.session.add(install_directories)
         self.db.session.commit()
         self.install_directories = install_directories
 
