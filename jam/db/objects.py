@@ -77,13 +77,14 @@ class SchemaVersion(object):
 
 class UpdateVersion(object):
 
-    def __init__(self, update, datetime):
+    def __init__(self, update, version, datetime):
         self.update = update
+        self.version = version
         self.datetime = datetime
 
     def __repr__(self):
-        return "<UpdateVersion id='0x%x' update=%r datetime=%r>" % (id(self),
-                self.update, self.datetime)
+        return "<UpdateVersion id='0x%x' update=%r version=%r datetime=%r>" % (
+                id(self), self.update, self.version, self.datetime)
 
 
 class InstallDirectories(object):

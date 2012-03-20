@@ -93,6 +93,7 @@ class Tables(object):
 
         self.updates_table = Table("updates", self.metadata,
                         Column("update", String, primary_key=True),
+                        Column("version", Integer, primary_key=True),
                         Column("date", DateTime))
 
         self.install_directories_table = Table("install_directories",
