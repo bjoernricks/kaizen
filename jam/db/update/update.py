@@ -30,6 +30,7 @@ from jam.error import JamError
 class Update(object):
 
     name = None
+    version = None
 
     def __init__(self, config, db):
         self.config = config
@@ -42,7 +43,7 @@ class Update(object):
         return self.name
 
     def finish(self):
-        updatever = UpdateVersion(self.name, datetime.now())
+        updatever = UpdateVersion(self.name, self.version, datetime.now())
         self.db.session.add(updatever)
         self.db.session.commit()
 
