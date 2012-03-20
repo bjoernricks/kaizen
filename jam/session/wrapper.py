@@ -376,9 +376,10 @@ class SessionWrapper(object):
 
     def delete_destroot(self):
         self.log.info("%s:phase:delete-destroot" % self.session_name)
-        if os.path.exists(self.dest_dir):
-            self.log.debug("Deleting destroot directory '%s'" % self.dest_dir)
-            shutil.rmtree(self.dest_dir)
+        dest_dir = self.install_directories.destroot
+        if os.path.exists(dest_dir):
+            self.log.debug("Deleting destroot directory '%s'" % dest_dir)
+            shutil.rmtree(dest_dir)
 
         current_dir = os.path.join(self.destroot_dir, "current")
         if not os.path.exists(current_dir) and os.path.islink(current_dir):
@@ -390,22 +391,24 @@ class SessionWrapper(object):
 
     def delete_build(self):
         self.log.info("%s:phase:delete-build" % self.session_name)
-        if os.path.exists(self.build_dir):
-            self.log.debug("Deleting build directory '%s'" % self.build_dir)
-            shutil.rmtree(self.build_dir)
+        build_dir = self.install_directories.build
+        if os.path.exists(build_dir):
+            self.log.debug("Deleting build directory '%s'" % build_dir)
+            shutil.rmtree(build_dir)
 
     def delete_source(self):
         self.log.info("%s:phase:delete-source" % self.session_name)
-        if os.path.exists(self.src_dir):
-            self.log.debug("Deleting source directory '%s'" % self.src_dir)
-            shutil.rmtree(self.src_dir)
+        src_dir = self.install_directories.source
+        if os.path.exists(src_dir):
+            self.log.debug("Deleting source directory '%s'" % src_dir)
+            shutil.rmtree(src_dir)
 
     def delete_download(self):
         self.log.info("%s:phase:delete-download" % self.session_name)
-        if os.path.exists(self.download_cache_dir):
-            self.log.debug("Deleting download cache directory '%s'" % \
-                           self.download_cache_dir)
-            shutil.rmtree(self.download_cache_dir)
+        download = self.install_directories.download
+        if os.path.exists(download):
+            self.log.debug("Deleting download file '%s'" % download)
+            os.remove(download)
 
     def get_installed_files(self):
         query = self.db.session.query(File).filter(File.session ==
