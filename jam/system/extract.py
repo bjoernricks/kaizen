@@ -32,8 +32,8 @@ class FileExtractError(JamError):
 
 class FileExtract(object):
 
-    def __init__(self, session):
-        self.session = session
+    def __init__(self, url):
+        self.url = url
         self.log = jam.logging.getLogger(self)
 
     def extract(self, src_dir, dest_dir):
@@ -57,7 +57,7 @@ class ArchiveFile(FileExtract):
                                      "not exist." % (archive_file, dest_dir))
 
     def _get_filename(self):
-        file = self.session.url
+        file = self.url
         if isinstance(file, list):
             return file[1]
         else:
