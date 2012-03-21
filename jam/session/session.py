@@ -75,7 +75,7 @@ class Session(object):
     build_cpath = []
     build_library_path = []
 
-    downloader = UrlDownloader
+    download = UrlDownloader
     patchsystem = Simple
 
     groups = []
