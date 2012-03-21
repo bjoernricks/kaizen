@@ -45,7 +45,7 @@ class SessionWrapper(object):
         self.session_name = name
         self.force = force
         self.session = None
-        self.log = jam.logging.getLogger("jam.sessionwrapper")
+        self.log = jam.logging.getLogger(self)
         self.init_session()
         self.db = Db(config)
         self.load_phases()
@@ -429,7 +429,7 @@ class SessionLoader(Loader):
     def __init__(self, config):
         super(SessionLoader, self).__init__()
         self.config = config
-        self.log = jam.logging.getLogger("jam.sessionloader")
+        self.log = jam.logging.getLogger(self)
         paths = self.config.get("sessions")
         self.add_paths([real_path(path.strip()) for path in paths])
 
