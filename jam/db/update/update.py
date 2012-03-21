@@ -21,8 +21,6 @@
 
 import datetime
 
-import jam.log
-
 from jam.db.db import Db
 from jam.error import JamError
 

@@ -21,7 +21,7 @@
 
 import datetime
 
-import jam.log
+import jam.logging
 
 import jam.db.update.update_0 as update_0
 
@@ -39,8 +39,8 @@ class Upgrade(object):
         self.config = config
         self.db = Db(config)
         cls = self.__class__
-        self.log = jam.logging.getLogger("%s.%s" % (cls.__module__,
-                                                    cls.__name__))
+        self.log = jam.logging.getLogger(self)
+
     def run(self):
         version = self.db.schema.version
         cur_updates = updates.get(version)
