@@ -29,7 +29,7 @@ import jam.logging
 
 from jam.external.sqlalchemy import and_
 
-from jam.utils import real_path, list_dir, list_subdir, extract_file
+from jam.utils import real_path, list_dir, list_subdir
 from jam.download import UrlDownloader
 from jam.phase.phase import phases_list
 from jam.db.db import Db
@@ -157,18 +157,8 @@ class SessionWrapper(object):
 
     def extract(self):
         self.log.info("%s:phase:extract" % self.session_name)
-        if not os.path.exists(self.src_dir):
-            self.log.debug("Creating source dir '%s'" % self.src_dir)
-            os.makedirs(self.src_dir)
-        filename = self.get_download_file(self.session.url)
-        archive_file = os.path.join(self.data_dir, filename)
-        if os.path.isfile(archive_file):
-            self.log.info("Extract '%s' to '%s'" % (archive_file, self.src_dir))
-            extract_file(archive_file, self.src_dir)
-        else:
-            # TODO raise error
-            self.log.error("Nothing to extract. Could not find file '%s'" %
-                           archive_file)
+        extractor = self.session.extract(self.session.url)
+        extractor.extract(self.data_dir, self.src_dir)
 
     def get_download_file(self, file):
         if isinstance(file, list):

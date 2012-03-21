@@ -27,6 +27,8 @@ import jam.logging
 from jam.utils import real_path
 from jam.download import UrlDownloader
 from jam.system.patch import Simple
+from jam.system.extract import ArchiveFile
+
 
 class Session(object):
     """
@@ -76,6 +78,7 @@ class Session(object):
     build_library_path = []
 
     download = UrlDownloader
+    extract = ArchiveFile
     patchsystem = Simple
 
     groups = []
