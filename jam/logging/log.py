@@ -2,7 +2,14 @@ import logging
 import os
 
 def getLogger(name):
-    return logging.getLogger(name)
+    if isinstance(name, basestring):
+        logger_name = name
+    elif isinstance(name, type):
+        logger_name = "%s.%s" % (name.__module__, name.__name__)
+    elif isinstance(name, object):
+        cls = name.__class__
+        logger_name = "%s.%s" % (cls.__module__, cls.__name__)
+    return logging.getLogger(logger_name)
 
 def getRootLogger():
     return logging.getLogger("jam")
