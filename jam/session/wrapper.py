@@ -200,7 +200,7 @@ class SessionWrapper(object):
             dl.verify(self.session.hash)
             self.install_directories.download = real_path(download_file)
             self.db.session.add(self.install_directories)
-            self.db.commit()
+            self.db.session.commit()
 
     def deactivate(self):
         self.log.info("%s:phase:deactivate" % self.session_name)
