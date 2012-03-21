@@ -29,12 +29,13 @@ import jam.logging
 
 from jam.external.sqlalchemy import and_
 
-from jam.utils import Loader, real_path, list_dir, list_subdir, extract_file
+from jam.utils import real_path, list_dir, list_subdir, extract_file
 from jam.download import UrlDownloader
 from jam.phase.phase import phases_list
 from jam.db.db import Db
 from jam.db.objects import File, Directory, SessionPhase, InstallDirectories
 from jam.session.session import Session
+from jam.session.loader import SessionLoader
 from jam.session.error import SessionError
 from jam.system.command import Patch
 
@@ -422,34 +423,6 @@ class SessionWrapper(object):
         for group in self.session._groups:
             method = getattr(group, methodname)
             method()
-
-
-class SessionLoader(Loader):
-
-    def __init__(self, config):
-        super(SessionLoader, self).__init__()
-        self.config = config
-        self.log = jam.logging.getLogger(self)
-        paths = self.config.get("sessions")
-        self.add_paths([real_path(path.strip()) for path in paths])
-
-    def sessions(self, modulename):
-        as_module = "jam.session._modules." + modulename
-        module = self.module(modulename, as_module)
-        if not module:
-            return None 
-        return self.classes(module, Session)
-
-    def load(self, sessionname):
-        sessionstring = sessionname + ".rules"
-        sessions = self.sessions(sessionstring)
-        if not sessions:
-            self.log.warn("Could not load any session with name '%s'" %
-                          sessionname)
-            return None
-        session = sessions[0]
-        self.log.debug("Loaded session class '%s'" % session.__name__)
-        return session
 
 
 class SessionValidator(object):
