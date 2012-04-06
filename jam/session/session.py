@@ -277,8 +277,10 @@ class Session(object):
     def post_patch(self):
         pass
 
-    def get_version(self):
-        return self.version
+    @classmethod
+    def get_version(cls):
+        return cls.version
 
-    def get_dist_version(self):
-        return self.get_version() + "-" + self.revision
+    @classmethod
+    def get_dist_version(cls):
+        return cls.get_version() + "-" + cls.revision
