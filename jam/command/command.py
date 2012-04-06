@@ -95,7 +95,7 @@ class SessionNameCommand(Command):
 class BuildCommand(SessionNameCommand):
 
     def __init__(self):
-        description = "run build process"
+        description = "Run build process"
         super(BuildCommand, self).__init__("build", description)
 
     def main(self, options, config):
@@ -106,7 +106,7 @@ class BuildCommand(SessionNameCommand):
 class PatchCommand(SessionNameCommand):
 
     def __init__(self):
-        description = "apply patches to sources"
+        description = "Apply patches to sources"
         super(PatchCommand, self).__init__("patch", description)
 
     def main(self, options, config):
@@ -117,7 +117,7 @@ class PatchCommand(SessionNameCommand):
 class UnPatchCommand(SessionNameCommand):
 
     def __init__(self):
-        description = "revert patches applied sources"
+        description = "Revert patches applied sources"
         super(UnPatchCommand, self).__init__("unpatch", description)
 
     def main(self, options, config):
@@ -128,7 +128,7 @@ class UnPatchCommand(SessionNameCommand):
 class ConfigureCommand(SessionNameCommand):
 
     def __init__(self):
-        description = ""
+        description = "Configure a session"
         super(ConfigureCommand, self).__init__("configure", description,
                                                ["conf"])
 
@@ -140,8 +140,8 @@ class ConfigureCommand(SessionNameCommand):
 class ExtractCommand(SessionNameCommand):
 
     def __init__(self):
-        description = ""
-        super(ExtractCommand, self).__init__("extract", description, ["ex"])
+        description = "Extract downloaded sources"
+        super(ExtractCommand, self).__init__("extract", description, [])
 
     def main(self, options, config):
         Console(config).extract_session(options.sessionname[0],
@@ -151,9 +151,9 @@ class ExtractCommand(SessionNameCommand):
 class DownloadCommand(SessionNameCommand):
 
     def __init__(self):
-        description = ""
+        description = "Download sources of a session"
         super(DownloadCommand, self).__init__("download", description,
-                                              ["down", "fetch"])
+                                              ["fetch"])
 
     def main(self, options, config):
         Console(config).download_session(options.sessionname[0],
@@ -168,7 +168,7 @@ class DownloadCommand(SessionNameCommand):
 class DestrootCommand(SessionNameCommand):
 
     def __init__(self):
-        description = ""
+        description = "Install session into the destroot directory"
         super(DestrootCommand, self).__init__("destroot", description,
                                               ["dest"])
 
@@ -180,7 +180,7 @@ class DestrootCommand(SessionNameCommand):
 class InstallCommand(SessionNameCommand):
 
     def __init__(self):
-        description = ""
+        description = "Install a session"
         super(InstallCommand, self).__init__("install", description,
                                              ["inst"])
 
@@ -192,19 +192,24 @@ class InstallCommand(SessionNameCommand):
 class UninstallCommand(SessionNameCommand):
 
     def __init__(self):
-        description = ""
+        description = "Uninstall a session"
         super(UninstallCommand, self).__init__("uninstall", description,
-                                               ["uninst", "remove"])
+                                               ["uninst"])
+    def add_parser(self, parser):
+        parser = super(UninstallCommand, self).add_parser(parser)
+        parser.add_argument("version", nargs='?', default=None)
+        return parser
 
     def main(self, options, config):
         Console(config).uninstall_session(options.sessionname[0],
+                                          options.version,
                                           options.force)
 
 
 class ActivateCommand(SessionNameCommand):
 
     def __init__(self):
-        description = ""
+        description = "Activate a session"
         super(ActivateCommand, self).__init__("activate", description)
 
     def main(self, options, config):
@@ -215,7 +220,7 @@ class ActivateCommand(SessionNameCommand):
 class DeactivateCommand(SessionNameCommand):
 
     def __init__(self):
-        description = ""
+        description = "Deactivate a session"
         super(DeactivateCommand, self).__init__("deactivate", description)
 
     def main(self, options, config):
@@ -226,9 +231,8 @@ class DeactivateCommand(SessionNameCommand):
 class DeleteCommand(SessionNameCommand):
 
     def __init__(self):
-        description = "clean a session"
-        super(DeleteCommand, self).__init__("delete", description,
-                                           ["del", "clean", "drop"])
+        description = "Delete (parts of) a session"
+        super(DeleteCommand, self).__init__("delete", description, [])
 
     def add_parser(self, parser):
         subparser = super(DeleteCommand, self).add_parser(parser)
@@ -268,7 +272,7 @@ class DeleteCommand(SessionNameCommand):
 class DependsCommand(SessionNameCommand):
 
     def __init__(self):
-        description = ""
+        description = "List dependencies of a session"
         super(DependsCommand, self).__init__("depends", description,
                                              ["deps"])
 
@@ -379,7 +383,7 @@ class SystemProvidesCommand(CommandWithSubCommands):
 
     def __init__(self):
         name = "systemprovide"
-        description = "add or remove software provided by the system"
+        description = "Add or remove software provided by the system"
         usage = "%(prog)s [global options] " + name + \
                 " <add|remove> name [version]"
         super(SystemProvidesCommand, self).__init__(name, usage,  description)
@@ -532,7 +536,7 @@ class QuiltCommand(CommandWithSubCommands):
 class UpgradeCommand(Command):
 
     def __init__(self):
-        description = "upgrade the current jam installation"
+        description = "Upgrade the current jam installation"
         super(UpgradeCommand, self).__init__("upgrade", self.main, [],
                                              description)
 
