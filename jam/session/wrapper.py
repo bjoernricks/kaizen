@@ -36,6 +36,7 @@ from jam.db.db import Db
 from jam.db.objects import File, Directory, SessionPhase, InstallDirectories
 from jam.session.session import Session
 from jam.session.loader import SessionLoader
+from jam.session.validator import SessionValidator
 from jam.session.error import SessionError
 from jam.system.command import Patch
 
@@ -413,29 +414,3 @@ class SessionWrapper(object):
         for group in self.session._groups:
             method = getattr(group, methodname)
             method()
-
-
-class SessionValidator(object):
-
-    errors = []
-
-    def validate(self, session):
-        valid = True
-        try:
-            if not session.version:
-                valid = False
-                self.errors.append("Session '%s' version not set." %
-                                   session.__name__)
-        except AttributeError, error:
-            self.errors.append("Session '%s' has no attribute version." %
-                               session.__name__)
-        try:
-            if not session.name:
-                valid = False
-                self.errors.append("Session '%s' name not set." %
-                                   session.__name__)
-        except AttributeError, error:
-            self.errors.append("Session '%s' has not attribute name." %
-                               session.__name__)
-
-        return valid
