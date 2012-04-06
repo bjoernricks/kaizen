@@ -25,6 +25,7 @@ import jam.logging
 
 from jam.session.error import SessionError
 from jam.session.wrapper import SessionWrapper
+from jam.session.handler import SessionHandler
 from jam.session.depend import DependencyAnalyser, Dependency, \
                                UnresolvedDependencies
 from jam.phase.phase import phases_list
@@ -39,12 +40,12 @@ class SessionManager(object):
     url = []
     patches = []
 
-    def __init__(self, config, name, force=False):
+    def __init__(self, config, name, version=None, force=False):
         self.config = config
         self.force = force
         self.session_name = name
         self.log = jam.logging.getLogger("jam.sessionmanager")
-        self.session_wrapper = SessionWrapper(name, config, force)
+        self.session_wrapper = SessionHandler(config, name, version, force)
         self.db = Db(config)
         self.init_sequences()
 

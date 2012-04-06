@@ -25,7 +25,7 @@ import jam.logging
 
 from ConfigParser import RawConfigParser
 
-from jam.session.wrapper import SessionWrapper
+from jam.session.handler import SessionHandler
 from jam.session.error import SessionError
 
 class UnresolvedDependencies(SessionError):
@@ -77,7 +77,7 @@ class DependencyAnalyser(object):
                 self.dependencies[name] = dependency
             else:
                 try:
-                    depend_session = SessionWrapper(name, self.config)
+                    depend_session = SessionHandler(self.config, name)
                     dependency = SessionDependency(depend_session, name, version)
                     self.dependencies[name] = dependency
                     cur_deps = self.analyse_session(depend_session)
