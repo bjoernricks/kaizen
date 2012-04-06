@@ -126,8 +126,8 @@ class Console(object):
         manager = SessionManager(self.config, sessionname, force)
         manager.install()
 
-    def uninstall_session(self, sessionname, force=False):
-        manager = SessionManager(self.config, sessionname, force)
+    def uninstall_session(self, sessionname, version=None, force=False):
+        manager = SessionManager(self.config, sessionname, version, force)
         manager.uninstall()
 
     def activate_session(self, sessionname, force=False):
