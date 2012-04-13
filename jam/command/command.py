@@ -21,6 +21,7 @@
 
 from jam.session.create import SessionCreator
 from jam.console.console import Console
+from jam.command.parser import NameVersionParser
 
 
 class Command(object):
@@ -385,22 +386,25 @@ class SystemProvidesCommand(CommandWithSubCommands):
         name = "systemprovide"
         description = "Add or remove software provided by the system"
         usage = "%(prog)s [global options] " + name + \
-                " <add|remove> name [version]"
+                " add name1 [@version] [name2 [@version] ...]\n" + \
+                "       %(prog)s [global options] " + name + \
+                " remove name1 [name2 ...]\n" + \
+                "       %(prog)s [global options] " + name + " list"
         super(SystemProvidesCommand, self).__init__(name, usage,  description)
 
     def add_cmds(self, subparser):
         usage = "%(prog)s [global options] " + self.name + \
-                " add name [version]"
+                " add name1 [@version] [name2 [@version] ...]"
         cmd = subparser.add_parser("add", help="add software provided by " \
                                    "the system", usage=usage)
         self._add_args(cmd)
         usage = "%(prog)s [global options] " + self.name + \
-                " remove name [version]"
+                " remove name1 [name2 ...]"
         cmd = subparser.add_parser("remove", help="remove software provided " \
                                    "the system", usage=self.usage)
         self._add_args(cmd)
         usage = "%(prog)s [global options] " + self.name + \
-                " list name [version]"
+                " list"
         cmd = subparser.add_parser("list", help="list software provided " \
                                    "the system", usage=self.usage)
 
@@ -409,20 +413,17 @@ class SystemProvidesCommand(CommandWithSubCommands):
         if options.subcommand == "list":
             console.list_system_provides()
             return
-        name = options.name[0]
-        version = None
-        if options.version:
-            version = options.version[0]
         if options.subcommand == "add":
-            console.add_system_provides(name, version)
+            names = NameVersionParser().parse(options.name)
+            console.add_system_provides(names)
         elif options.subcommand == "remove":
-            console.remove_system_provides(name)
+            names = options.name
+            console.remove_system_provides(names)
 
     def _add_args(self, cmd):
-        cmd.add_argument("name", nargs=1, help="name of the " \
-                                "software provided by the system")
-        cmd.add_argument("version", nargs="?", help="version of the" \
-                                " software provided by the system")
+        cmd.add_argument("name", nargs="+", help="name of the " \
+                                "software provided by the system and optional "
+                                "version")
 
 
 class QuiltCommand(CommandWithSubCommands):
