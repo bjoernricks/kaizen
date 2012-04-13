@@ -162,25 +162,27 @@ class Console(object):
         manager = SessionManager(self.config, sessionname, force)
         manager.delete_build()
 
-    def add_system_provides(self, name, version):
+    def add_system_provides(self, names):
         provider = SystemProvider(self.config)
         provider.load()
-        provider.add(name, version)
+        for name in names:
+            provider.add(name[0], name[1])
         provider.save()
         if not self.quiet:
-            print "added software '%s' provided by the system successfully" % \
-                    name
+            print "Added software '%s' provided by the system successfully" % \
+                   ", ".join([name[0] for name in names])
 
-    def remove_system_provides(self, name):
+    def remove_system_provides(self, names):
         provider = SystemProvider(self.config)
         provider.load()
-        success = provider.remove(name)
-        provider.save()
-        if not self.quiet:
-            if success:
-                print "removed '%s' sucessfully" % name
-            else:
-                print "'%s' couldn't be removed" % name
+        for name in names:
+            success = provider.remove(name)
+            provider.save()
+            if not self.quiet:
+                if success:
+                    print "removed '%s' sucessfully" % name
+                else:
+                    print "'%s' couldn't be removed" % name
 
     def list_system_provides(self):
         provider = SystemProvider(self.config)
