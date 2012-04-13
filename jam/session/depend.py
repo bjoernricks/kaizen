@@ -52,7 +52,7 @@ class DependencyAnalyser(object):
         self.dependencies = dict()
         self.missing = dict()
         self.systemprovider = SystemProvider(config)
-        self.log = jam.logging.getLogger("jam.dependencies")
+        self.log = jam.logging.getLogger(self)
         self.systemprovider.load()
 
     def analyse_session(self, session):
@@ -143,7 +143,7 @@ class SystemProvider(object):
 
     def __init__(self, config):
         self.config = config
-        self.log = jam.logging.getLogger("jam.session.systemprovider")
+        self.log = jam.logging.getLogger(self)
         self.configparser = RawConfigParser()
 
     def load(self, filename=None):
