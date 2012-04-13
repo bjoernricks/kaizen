@@ -20,3 +20,4 @@
 # 02110-1301 USA
 
 def out(message, fg=0, bg=0):
+    pass
