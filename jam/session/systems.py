@@ -122,7 +122,7 @@ class PythonSession(Session):
     depends = ["python"]
 
     def configure(self):
-        Copy(self.src_path, self.build_path).run()
+        Copy(self.src_path + "/*", self.build_path).run()
 
     def build(self):
         args = ["setup.py", "build"]
