@@ -19,7 +19,11 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 
 # 02110-1301 USA
 
-from jam.utils.template import Tempalte
+from jam.utils.template import Template
 
 from jam.utils.helpers import real_path, list_contents, list_dir, list_subdir, \
                               extract_file, get_number_of_cpus
+
+from jam.utils.hash import Hash
+
+from jam.utils.loader import Loader
