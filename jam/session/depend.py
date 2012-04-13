@@ -147,14 +147,15 @@ class SystemProvider(object):
         self.configparser = RawConfigParser()
 
     def load(self, filename=None):
+        self.configparser = RawConfigParser()
         if not filename:
             filename = self.config.get("system")
         if not filename or not os.path.isfile(filename):
             self.log.debug("no config file found for system povided "\
-                           "dependencies")
-            return
-        self.configparser = RawConfigParser()
-        self.configparser.read(filename)
+                           "dependencies. Config file %r will be created" % \
+                           filename)
+        else:
+            self.configparser.read(filename)
         if not self.configparser.has_section("provides"):
             self.log.debug("system config file '%s' has to provides section. "\
                            "Section will be created." % filename)
