@@ -138,11 +138,6 @@ class SessionHandler(object):
             file_dest = dir
         return file_source, file_dest
 
-    def _get_installed_files(self):
-        query = self.db.session.query(File).filter(File.session ==
-                                                   self.session_name)
-        return query.all()
-
     def _check_installed_files(self, files):
         query = self.db.session.query(File).filter(and_(File.filename.in_(
                                       [x for (x, y) in files]),
@@ -182,6 +177,11 @@ class SessionHandler(object):
                     SessionPhase.phase == phase)).delete()
             self.db.session.commit()
             self._load_phases()
+
+    def get_installed_files(self):
+        query = self.db.session.query(File).filter(File.session ==
+                                                   self.session_name)
+        return query.all()
 
     def build_depends(self):
         from jam.session.depend import DependencyAnalyser
@@ -356,7 +356,7 @@ class SessionHandler(object):
         self.session.pre_deactivate()
 
         # delete activated files
-        for file in self._get_installed_files():
+        for file in self.get_installed_files():
             file_path = file.filename
             if os.path.lexists(file_path):
                 self.log.debug("Deactivating '%s'" % file_path)
