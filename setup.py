@@ -39,7 +39,7 @@ setup(name="jam",
       license = "LGPLv2+, GPLv2+",
       long_description=read("README"),
       packages=find_packages(),
-      package_data = {"" : ["*.txt", "*.md"],
+      package_data = {"" : ["*.txt", "*.rst"],
                      },
       # entry_points = { "console_scripts": ["jam=jam.console.main:main"] },
       classifiers=[
