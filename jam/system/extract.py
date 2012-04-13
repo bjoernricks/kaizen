@@ -53,7 +53,7 @@ class ArchiveFile(FileExtract):
             extract_file(archive_file, dest_dir)
 
         else:
-            raise FileExtractorError("Could not extract '%s' to '%s'. File is "
+            raise FileExtractError("Could not extract '%s' to '%s'. File does "
                                      "not exist." % (archive_file, dest_dir))
 
     def _get_filename(self):
