@@ -64,7 +64,7 @@ class ArchiveFile(FileExtract):
             return os.path.basename(file)
 
 
-class NullFile(FileExtract):
+class NoneFile(FileExtract):
 
     def extract(self, src_dir, dest_dir):
         pass
