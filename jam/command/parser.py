@@ -74,3 +74,28 @@ class ArgumentParser(ArgParser):
         self.group.add_argument("--help", "-h", action="help",
                 help="show this help message and exit. To get help "\
                         "for a command use 'command --help'")
+
+
+class NameVersionParser(object):
+
+    def __init__(self):
+        self.names = []
+
+    def parse(self, names):
+        cur_name = None
+        for name in names:
+            if name.startswith("@"):
+                if cur_name is None:
+                    raise ArgumentError(None, "Version parameter %r must be "
+                                        "passed after the session name" % name)
+                self.names.append((cur_name, name[1:]))
+                cur_name = None
+            else:
+                if not cur_name is None:
+                    self.names.append((cur_name, ""))
+                cur_name = name
+
+        if not cur_name is None:
+            self.names.append((cur_name, ""))
+
+        return self.names
