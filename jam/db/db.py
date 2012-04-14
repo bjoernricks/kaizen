@@ -74,5 +74,5 @@ class Db(object):
             self.schema = SchemaVersion(CURRENT_DB_SCHEMA)
             self.session.add(self.schema)
             self.session.commit()
-        self.log.debug("Current database schema version is %s" % \
+        self.log.debug("Current database schema version is %r" % \
                        self.schema.version)
