@@ -27,6 +27,7 @@ import jam.db.update.update_0 as update_0
 
 from jam.db.db import Db
 from jam.db.objects import UpdateVersion
+from jam.db.update.error import UpdateError
 
 
 updates = {
@@ -47,9 +48,9 @@ class Upgrade(object):
         if not cur_updates:
             self.log.debug("No updates for database scheme version"
                            " %r available" % version)
+            return
 
         for update in cur_updates:
-            update = update
             if self.db.session.query(
                     UpdateVersion).filter(UpdateVersion.update ==
                             update.name).first():
