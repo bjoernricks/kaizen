@@ -19,9 +19,12 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 
 # 02110-1301 USA
 
-import datetime
+import jam.logging
+
+from datetime import datetime
 
 from jam.db.db import Db
+from jam.db.objects import UpdateVersion
 from jam.error import JamError
 
 
@@ -33,9 +36,13 @@ class Update(object):
     def __init__(self, config, db):
         self.config = config
         self.db = db
+        self.log = jam.logging.getLogger(self)
 
     def run(self):
-        pass
+        """ Runs the actual update process
+            If this method returns true the finish method is called by Upgrade.
+        """
+        return False
 
     def get_name(self):
         return self.name
