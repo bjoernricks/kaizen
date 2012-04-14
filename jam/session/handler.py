@@ -92,22 +92,15 @@ class SessionHandler(object):
     def _load_install_directories(self):
         if self.install_directories:
             return
-        install_directories = InstallDirectories(self.session_name,
-                                                 self.session_dist_version)
-        install_directories = self.db.session.merge(install_directories)
-        self.db.session.add(install_directories)
-        self.db.session.commit()
-        self.install_directories = install_directories
-
-    def _updade_install_directories(self):
-        install_directories = InstallDirectories(self.session_name,
-                                                 self.session_dist_version)
-        install_directories = self.db.session.merge(install_directories)
-        install_directories.build = real_path(session.build_path)
-        install_directories.source = real_path(session.src_path)
-        install_directories.destroot = real_path(session.destroot_path)
-        self.db.session.add(install_directories)
-        self.db.session.commit()
+        query = self.db.session.query(InstallDirectories).filter(and_( \
+                InstallDirectories.session == self.session_name,
+                InstallDirectories.version == self.session_dist_version))
+        install_directories = query.first()
+        if not install_directories:
+            install_directories = InstallDirectories(self.session_name,
+                                                     self.session_dist_version)
+            self.db.session.add(install_directories)
+            self.db.session.commit()
         self.install_directories = install_directories
 
     def _init_directories(self):
