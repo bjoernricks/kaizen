@@ -59,8 +59,9 @@ class Upgrade(object):
             update = update(self.config, self.db)
             try:
                 self.log.debug("Running update %r" % update.name)
-                update.run()
-                update.finish()
+                success = update.run()
+                if success:
+                    update.finish()
             except UpdateError, e:
                 self.log.error("Error while running update %r. %s" % update.name,
                                e)
