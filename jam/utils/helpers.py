@@ -92,13 +92,15 @@ def extract_file(file_name, dest_dir):
         log.debug("Extracting tar.bz2 file '%s' to '%s'" %
                       (file_name, dest_dir))
         file = tarfile.TarFile(file_name, "r", bz_file)
+    elif file_name.endswith(".xz"):
+        from jam.utils.xz import XZFile
+        log.debug("Extracting xz file '%s' to '%s'" % (file_name, dest_dir))
+        file = XZFile(file_name)
     elif tarfile.is_tarfile(file_name):
-        log.debug("Extracting tar file '%s' to '%s'" %
-                      (file_name, dest_dir))
+        log.debug("Extracting tar file '%s' to '%s'" % (file_name, dest_dir))
         file = tarfile.open(file_name)
     elif zipfile.is_zipfile(file_name):
-        log.debug("Extracting zip file '%s' to '%s'" %
-                      (file_name, dest_dir))
+        log.debug("Extracting zip file '%s' to '%s'" % (file_name, dest_dir))
         file = zipfile.ZipFile(file_name)
     else:
         raise JamRuntimeError("Unable to extract file. '%s' can not be recognized " \
