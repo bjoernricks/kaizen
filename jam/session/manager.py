@@ -44,7 +44,7 @@ class SessionManager(object):
         self.config = config
         self.force = force
         self.session_name = name
-        self.log = jam.logging.getLogger("jam.sessionmanager")
+        self.log = jam.logging.getLogger(self)
         self.session_wrapper = SessionHandler(config, name, version, force)
         self.db = Db(config)
         self.init_sequences()
