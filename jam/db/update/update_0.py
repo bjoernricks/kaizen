@@ -19,9 +19,41 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 
 # 02110-1301 USA
 
-from jam.db.update.update import Update
+from jam.db.update.update import Update as RootUpdate
+from jam.db.objects import SessionPhase, InstallDirectories
+from jam.session.handler import SessionHandler
+from jam.utils.helpers import real_path
 
-updates = []
+
+class Update(RootUpdate):
+
+    version = 0
+
 
 class UpdateForInstallDirs(Update):
-    pass
+
+    name = "installdirs"
+
+    def run(self):
+        self.log.info("Running update %r %r" % (self.version, self.name))
+        db = self.db.session
+
+        query = db.query(SessionPhase.session, SessionPhase.version).distinct( \
+                SessionPhase.session, SessionPhase.version)
+        for sessionphase in query:
+            session_name = sessionphase[0]
+            session_version = sessionphase[1]
+            handler = SessionHandler(self.config, session_name, session_version)
+            session = handler.session
+            install_directories = InstallDirectories(session_name,
+                                                     session_version)
+            install_directories.build = real_path(session.build_path)
+            install_directories.source = real_path(session.src_path)
+            install_directories.destroot = real_path(session.destroot_path)
+            self.log.debug("Update install_directories %r" % install_directories)
+            db.merge(install_directories)
+
+        db.commit()
+        return True
+
+updates = [UpdateForInstallDirs]
