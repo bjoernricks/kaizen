@@ -97,3 +97,9 @@ class InstallDirectories(object):
         self.source = source
         self.build = build
         self.destroot = destroot
+
+    def __repr__(self):
+        return "<InstallDirectories id='0x%x' session=%r version=%r " \
+               "download=%r source=%r build=%r destroot=%r>" % (id(self),
+                       self.session, self.version, self.download, self.source,
+                       self.build, self.destroot)
