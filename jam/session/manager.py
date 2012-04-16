@@ -275,3 +275,14 @@ class SessionsList(object):
                                      SessionPhase.phase ==
                                      phases_list.get("Activated")).order_by(
                                              SessionPhase.session).all()
+    def get_destrooted_sessions(self):
+        return self.db.session.query(SessionPhase).filter(
+                                     SessionPhase.phase ==
+                                     phases_list.get("Destrooted")).order_by(
+                                             SessionPhase.session).all()
+
+    def get_downloaded_sessions(self):
+        return self.db.session.query(SessionPhase).filter(
+                                     SessionPhase.phase ==
+                                     phases_list.get("Downloaded")).order_by(
+                                             SessionPhase.session).all()
