@@ -103,6 +103,10 @@ class SessionHandler(object):
             self.db.session.commit()
         self.install_directories = install_directories
 
+    def _update_install_directories(self):
+        self.db.session.add(self.install_directories)
+        self.db.session.commit()
+
     def _init_directories(self):
         version = self.session_dist_version
         name = self.session_name
@@ -410,6 +414,8 @@ class SessionHandler(object):
         self.session.pre_build()
         self.session.build()
         self.session.post_build()
+        self.install_directories.build = real_path(self.session.build_path)
+        self._update_install_directories()
         self._groups_call("post_build")
 
     def destroot(self):
@@ -417,6 +423,8 @@ class SessionHandler(object):
         if not os.path.exists(self.dest_dir):
             self.log.debug("Creating destroot dir '%s'" % self.dest_dir)
             os.makedirs(self.dest_dir)
+        self.install_directories.destroot = self.dest_dir
+        self._update_install_directories()
         self._groups_call("pre_destroot")
         self.session.pre_destroot()
         self.session.destroot()
@@ -439,6 +447,8 @@ class SessionHandler(object):
         self.log.info("Extracting session %r" % self.session_name)
         extractor = self.session.extract(self.session.url)
         extractor.extract(self.data_dir, self.src_dir)
+        self.install_directories.source = real_path(self.session.src_path)
+        self._update_install_directories()
 
     def get_version(self):
         return self.session_dist_version
