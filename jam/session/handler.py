@@ -269,7 +269,7 @@ class SessionHandler(object):
 
         # deactivate same session if already installed
         #TODO maybe this case should be handled by the manager
-        if self.is_installed():
+        if self.is_activated():
             self.log.info("Deactivating already installed version of "
                           "session %r" % self.session_name)
             self.deactivate()
@@ -379,7 +379,7 @@ class SessionHandler(object):
         self.session.post_deactivate()
         self._groups_call("post_deactivate")
 
-    def is_installed(self, exact=False):
+    def is_activated(self, exact=False):
         db = self.db.session
         if exact:
             query = db.query(SessionPhase).filter(and_(
