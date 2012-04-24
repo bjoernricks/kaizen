@@ -32,6 +32,7 @@ from jam.session.loader import SessionLoader
 from jam.session.error import SessionError
 from jam.session.validator import SessionValidator
 from jam.utils import real_path, list_dir, list_subdir
+from jam.utils.signals import Signal
 
 
 class SessionHandler(object):
@@ -53,6 +54,7 @@ class SessionHandler(object):
         else:
             self.session_dist_version = dist_version
         self._init_directories()
+        self._init_signals()
         self._load_install_directories()
         self._load_phases()
 
@@ -120,6 +122,9 @@ class SessionHandler(object):
         self.src_dir = os.path.join(self.cache_dir, "source")
         self.build_dir = os.path.join(self.cache_dir, "build")
         self.dest_dir = os.path.join(self.destroot_dir, version)
+
+    def _init_signals(self):
+        self.already_activated = Signal()
 
     def _groups_call(self, methodname):
         for group in self.session._groups:
