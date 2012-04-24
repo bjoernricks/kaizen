@@ -25,6 +25,7 @@ from jam.session.manager import SessionManager, SessionsList
 from jam.session.depend import Dependency, SystemProvider
 from jam.system.patch import Quilt
 from jam.db.update.upgrade import Upgrade
+from jam.logging.out import out
 
 
 class Console(object):
@@ -124,6 +125,7 @@ class Console(object):
 
     def install_session(self, sessionname, force=False):
         manager = SessionManager(self.config, sessionname, force)
+        manager.already_activated.connect(self.on_session_already_activated)
         manager.install()
 
     def uninstall_session(self, sessionname, version=None, force=False):
@@ -132,6 +134,7 @@ class Console(object):
 
     def activate_session(self, sessionname, force=False):
         manager = SessionManager(self.config, sessionname, force)
+        manager.already_activated.connect(self.on_session_already_activated)
         manager.activate()
 
     def deactivate_session(self, sessionname, force=False):
@@ -242,3 +245,6 @@ class Console(object):
     def upgrade(self):
         upgrade = Upgrade(self.config)
         upgrade.run()
+
+    def on_session_already_activated(self):
+        out("Session is already activated.")
