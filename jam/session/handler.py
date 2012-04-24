@@ -343,13 +343,7 @@ class SessionHandler(object):
 
     def deactivate(self):
         self.log.info("Deactivation of session %r" % self.session_name)
-        installed = self.db.session.query(SessionPhase).filter(
-                                     and_(
-                                     SessionPhase.session == self.session_name,
-                                     SessionPhase.phase ==
-                                     phases_list.get("Activated"))
-                                     ).first()
-        if not installed:
+        if not is_activated():
             self.log.warn("'%s' is not recognized as active but should be" \
                           " deactivated. Either deactivation was forced or"\
                           " the database may be currupted" % self.session_name)
