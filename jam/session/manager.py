@@ -31,6 +31,7 @@ from jam.phase.phase import phases_list
 from jam.phase.sequence import Sequence, UnSequence
 from jam.db.db import Db
 from jam.db.objects import Installed, SessionPhase
+from jam.utils.signals import ForwardSignal
 
 
 class SessionManager(object):
@@ -45,6 +46,7 @@ class SessionManager(object):
         self.log = jam.logging.getLogger(self)
         self.session_wrapper = SessionHandler(config, name, version, force)
         self.db = Db(config)
+        self._init_signals()
         self.init_sequences()
 
     def init_sequences(self):
@@ -132,6 +134,10 @@ class SessionManager(object):
                                         phases_list.get("Extracted"),
                                         [""], False,
                                         self.delete_source_seq)
+
+    def _init_signals(self):
+        self.already_activated = \
+            ForwardSignal(self.session_wrapper.already_activated)
 
     def _install_dependencies(self, depanalyzer):
         dependencies = depanalyzer.analyse()
