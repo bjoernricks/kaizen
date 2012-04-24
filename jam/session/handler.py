@@ -272,12 +272,10 @@ class SessionHandler(object):
     def activate(self):
         self.log.info("Activation of session %r" % self.session_name)
 
-        # deactivate same session if already installed
-        #TODO maybe this case should be handled by the manager
         if self.is_activated():
-            self.log.info("Deactivating already installed version of "
-                          "session %r" % self.session_name)
-            self.deactivate()
+            self.log.debug("Session %r is already activated" % \
+                           self.session_name)
+            return self.already_activated()
 
         current_dir = os.path.join(self.destroot_dir, "current")
 
