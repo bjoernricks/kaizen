@@ -99,3 +99,17 @@ class Signal(object):
             if slot.dead():
                 del self.slots[i]
 
+
+class ForwardSignal(object):
+
+    def __init__(self, signal):
+        self.signal = signal
+
+    def connect(self, slot):
+        self.signal.connect(slot)
+
+    def disconnect(self, slot):
+        self.signal.disconnect(slot)
+
+    def __len__(self):
+        return len(self.signal)
