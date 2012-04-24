@@ -22,25 +22,25 @@
 
 import sys
 
-import jam.logging
 import jam.command
 
 from jam.config import Config, JAM_CONFIG_FILES
 from jam.utils import Loader
 from jam.command.parser import ArgumentParser
+from jam.logging.out import out
 
 class Main(object):
 
     def print_settings(self):
-        jam.logging.out("Version:      %r" % self.config.get("version"))
-        jam.logging.out("Debug:        %r" % self.config.get("debug"))
-        jam.logging.out("Verbose:      %r" % self.config.get("verbose"))
-        jam.logging.out("Sessions:     %r" % self.config.get("sessions"))
-        jam.logging.out("Root:         %r" % self.config.get("rootdir"))
-        jam.logging.out("Destroot:     %r" % self.config.get("destroot"))
-        jam.logging.out("Buildroot:    %r" % self.config.get("buildroot"))
-        jam.logging.out("Downloadroot: %r" % self.config.get("downloadroot"))
-        jam.logging.out("Buildjobs:    %r\n" % self.config.get("buildjobs"))
+        out("Version:      %r" % self.config.get("version"))
+        out("Debug:        %r" % self.config.get("debug"))
+        out("Verbose:      %r" % self.config.get("verbose"))
+        out("Sessions:     %r" % self.config.get("sessions"))
+        out("Root:         %r" % self.config.get("rootdir"))
+        out("Destroot:     %r" % self.config.get("destroot"))
+        out("Buildroot:    %r" % self.config.get("buildroot"))
+        out("Downloadroot: %r" % self.config.get("downloadroot"))
+        out("Buildjobs:    %r\n" % self.config.get("buildjobs"))
 
     def main(self):
         if sys.version_info < (2, 4):
