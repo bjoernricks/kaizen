@@ -19,5 +19,5 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 
 # 02110-1301 USA
 
-def out(message, fg=0, bg=0):
-    pass
+def out(*args):
+    print " ".join(args)
