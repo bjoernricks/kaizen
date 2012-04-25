@@ -182,7 +182,7 @@ class Patch(Command):
 class Copy(BaseCommand):
 
     def __init__(self, src, dest):
-        self.log = jam.logging.getLogger(__name__ + ".copy")
+        self.log = jam.logging.getLogger(self)
         self.src = src
         self.dest = dest
 
@@ -220,7 +220,7 @@ class Copy(BaseCommand):
 class Move(BaseCommand):
 
     def __init__(self, src, dest):
-        self.log = jam.logging.getLogger(__name__ + ".move")
+        self.log = jam.logging.getLogger(self)
         self.src = src
         self.dest = dest
 
@@ -233,7 +233,7 @@ class Move(BaseCommand):
 class Replace(BaseCommand):
 
     def __init__(self, pattern, replace, source, dest=None):
-        self.log = jam.logging.getLogger(__name__ + ".replace")
+        self.log = jam.logging.getLogger(self)
         self.pattern = pattern
         self.replace = replace
         self.source = source
@@ -263,7 +263,7 @@ class Delete(BaseCommand):
 
     def __init__(self, dir):
         self.dir = dir
-        self.log = jam.logging.getLogger(__name__ + ".delete")
+        self.log = jam.logging.getLogger(self)
 
     def run(self):
         # TODO: delete only content of dir
@@ -284,7 +284,7 @@ class Mkdirs(BaseCommand):
 
     def __init__(self, path):
         self.path = path
-        self.log = jam.logging.getLogger(__name__ + ".mkdirs")
+        self.log = jam.logging.getLogger(self)
 
     def run(self):
         if os.path.exists(self.path):
