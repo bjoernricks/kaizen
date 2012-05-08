@@ -442,8 +442,9 @@ class SessionHandler(object):
 
     def extract(self):
         self.log.info("Extracting session %r" % self.session_name)
-        extractor = self.session.extract(self.session.url)
-        extractor.extract(self.data_dir, self.src_dir)
+        if self.session.extract:
+            extractor = self.session.extract(self.session.url)
+            extractor.extract(self.data_dir, self.src_dir)
         self.install_directories.source = real_path(self.session.src_path)
         self._update_install_directories()
 
