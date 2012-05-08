@@ -264,3 +264,14 @@ class PythonDevelopSession(PythonSession):
             f.write("\n".join(self.entries))
         finally:
             f.close()
+
+
+class GitSession(Session):
+
+    depends = ["python-dulwich"]
+
+    @classmethod
+    def get_version(cls):
+        from dulwich.repo import Repo
+        repo = Repo(cls.src_path)
+        return cls.version + "git" + repo.head()
