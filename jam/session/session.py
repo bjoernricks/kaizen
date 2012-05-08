@@ -42,6 +42,7 @@ class Session(object):
     """
 
     depends = []
+    runtime_depends = []
     url = ""
     patches = []
     version = ""
@@ -55,6 +56,7 @@ class Session(object):
     patch_path = None
     parallel = True
 
+    configure_path = None
     configure_cflags = []
     configure_ldflags = []
     configure_cc = None
