@@ -180,9 +180,13 @@ class Session(object):
             value = object.__getattribute__(self, name)
         except AttributeError:
             value = None
+            found = False
             for group in self.groups:
                 if hasattr(group, name):
                     value = getattr(group, name)
+                    found = True
+            if not found:
+                raise
             self.__dict__[name] = value
             return value
         if not value:
