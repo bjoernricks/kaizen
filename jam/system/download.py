@@ -137,12 +137,28 @@ class LocalFileDownloader(Downloader):
         shutil.copy(path, filename)
 
 
+class GitDownloader(Downloader):
+
+    def __init__(self, url, branch):
+        self.url = url
+        self.branch = branch
+
+    def copy(self, filename):
+        pass
+
+
 class UrlDownloader(object):
 
     def __init__(self, session, urlstr):
         self.url = urlstr
         self.session = session
         self.log = jam.logging.getLogger("jam.downloader")
+
+        if self.url.startswith("git"):
+            self.downloader = GitDownloader(self.url, session.branch if
+                                            hasattr(session, "branch") else None)
+            self.filename = ""
+            return
 
         url = urlparse(urlstr)
         self.filename = os.path.basename(urlstr)
