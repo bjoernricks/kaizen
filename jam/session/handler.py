@@ -341,7 +341,7 @@ class SessionHandler(object):
 
     def deactivate(self):
         self.log.info("Deactivation of session %r" % self.session_name)
-        if not is_activated():
+        if not self.is_activated():
             self.log.warn("'%s' is not recognized as active but should be" \
                           " deactivated. Either deactivation was forced or"\
                           " the database may be currupted" % self.session_name)
