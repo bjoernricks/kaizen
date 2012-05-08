@@ -26,126 +26,168 @@ import os.path
 from jam.session.session import Session
 from jam.system.command import Configure, CMake, Make, Command, Copy, Delete
 
-class MakeSession(Session):
+class SessionCmd(object):
+
+    depends = []
+
+    def __init__(self, session):
+        self.session = session
+
+
+class MakeCmd(SessionCmd):
 
     def build(self):
-        j = self.config.get("buildjobs")
-        if self.parallel and j > 1:
-            build_args = ["-j" + str(j)] + self.build_args
+        j = self.session.config.get("buildjobs")
+
+        if self.session.parallel and j > 1:
+            build_args = ["-j" + str(j)] + self.session.build_args
         else:
-            build_args = self.build_args
-        make = Make(self.build_path, self.debug)
-        if self.build_cc:
-            make.set_cc(self.build_cc)
-        if self.build_cpp:
-            make.set_cpp(self.build_cpp)
-        if self.build_cflags:
-            make.set_cflags(self.build_cflags)
-        if self.build_cppflags:
-            make.set_cppflags(self.build_cppflags)
-        if self.build_ldflags:
-            make.set_ldflags(self.build_ldflags)
-        if self.build_libs:
-            make.set_libs(self.build_libs)
-        if self.build_cxx:
-            make.set_cxx(self.build_cxx)
-        if self.build_cxxflags:
-            make.set_cxxflags(self.build_cxxflags)
-        if self.build_cpath:
-            make.set_cpath(self.build_cpath)
-        if self.build_library_path:
-            make.set_library_path(self.build_library_path)
+            build_args = self.session.build_args
+
+        make = Make(self.session.build_path, self.session.debug)
+        if self.session.build_cc:
+            make.set_cc(self.session.build_cc)
+        if self.session.build_cpp:
+            make.set_cpp(self.session.build_cpp)
+        if self.session.build_cflags:
+            make.set_cflags(self.session.build_cflags)
+        if self.session.build_cppflags:
+            make.set_cppflags(self.session.build_cppflags)
+        if self.session.build_ldflags:
+            make.set_ldflags(self.session.build_ldflags)
+        if self.session.build_libs:
+            make.set_libs(self.session.build_libs)
+        if self.session.build_cxx:
+            make.set_cxx(self.session.build_cxx)
+        if self.session.build_cxxflags:
+            make.set_cxxflags(self.session.build_cxxflags)
+        if self.session.build_cpath:
+            make.set_cpath(self.session.build_cpath)
+        if self.session.build_library_path:
+            make.set_library_path(self.session.build_library_path)
         make.run(build_args)
 
     def destroot(self):
-        Make(self.build_path, self.debug).install(self.dest_dir)
+        Make(self.session.build_path,
+             self.session.debug).install(self.session.dest_dir)
 
     def clean(self):
-        Make(self.build_path, self.debug).clean()
+        Make(self.session.build_path, self.session.debug).clean()
 
     def distclean(self):
-        Make(self.build_path, self.debug).distclean()
+        Make(self.session.build_path, self.session.debug).distclean()
+
+
+class MakeSession(Session):
+
+    build_cmd = MakeCmd
+    clean_cmd = MakeCmd
+    distclean_cmd = MakeCmd
+    destroot_cmd = MakeCmd
+
+
+class ConfigureCmd(SessionCmd):
 
     def configure(self):
-        pass
+        args = self.session.configure_args
+        args.append("--prefix=" + self.session.prefix)
+        args.append("--srcdir=" + self.session.configure_path)
+        configure = Configure(args, self.session.configure_path,
+                              self.session.build_path, self.session.debug)
+        if self.session.configure_cc:
+            configure.set_cc(self.session.configure_cc)
+        if self.session.configure_cpp:
+            configure.set_cpp(self.session.configure_cpp)
+        if self.session.configure_cflags:
+            configure.set_cflags(self.session.configure_cflags)
+        if self.session.configure_cppflags:
+            configure.set_cppflags(self.session.configure_cppflags)
+        if self.session.configure_ldflags:
+            configure.set_ldflags(self.session.configure_ldflags)
+        if self.session.configure_libs:
+            configure.set_libs(self.session.configure_libs)
+        if self.session.configure_cxx:
+            configure.set_cxx(self.session.configure_cxx)
+        if self.session.configure_cxxflags:
+            configure.set_cxxflags(self.session.configure_cxxflags)
+        if self.session.configure_cpath:
+            configure.set_cpath(self.session.configure_cpath)
+        if self.session.configure_library_path:
+            configure.set_library_path(self.session.configure_library_path)
+        configure.run()
 
 
 class ConfigureSession(MakeSession):
 
-    def configure(self):
-        args = self.configure_args
-        args.append("--prefix=" + self.prefix)
-        args.append("--srcdir=" + self.configure_path)
-        configure = Configure(args, self.configure_path, self.build_path,
-                             self.debug)
-        if self.configure_cc:
-            configure.set_cc(self.configure_cc)
-        if self.configure_cpp:
-            configure.set_cpp(self.configure_cpp)
-        if self.configure_cflags:
-            configure.set_cflags(self.configure_cflags)
-        if self.configure_cppflags:
-            configure.set_cppflags(self.configure_cppflags)
-        if self.configure_ldflags:
-            configure.set_ldflags(self.configure_ldflags)
-        if self.configure_libs:
-            configure.set_libs(self.configure_libs)
-        if self.configure_cxx:
-            configure.set_cxx(self.configure_cxx)
-        if self.configure_cxxflags:
-            configure.set_cxxflags(self.configure_cxxflags)
-        if self.configure_cpath:
-            configure.set_cpath(self.configure_cpath)
-        if self.configure_library_path:
-            configure.set_library_path(self.configure_library_path)
-        configure.run()
+    configure_cmd = ConfigureCmd
 
 
-class CMakeSession(MakeSession):
+class CMakeCmd(SessionCmd):
 
     depends = ["cmake"]
 
     def configure(self):
-        args = self.configure_args
-        args.append("-DCMAKE_INSTALL_PREFIX=" + self.prefix)
+        args = self.session.configure_args
+        args.append("-DCMAKE_INSTALL_PREFIX=" + self.session.prefix)
         args.append("-DCMAKE_COLOR_MAKEFILE=TRUE")
-        if self.verbose:
+
+        if self.session.verbose:
             args.append("-DCMAKE_VERBOSE_MAKEFILE=TRUE")
-        CMake(args, self.configure_path, self.build_path, self.debug).run()
+
+        CMake(args, self.session.configure_path, self.session.build_path,
+              self.session.debug).run()
 
     def distclean(self):
-        Delete(self.build_dir).run()
+        Delete(self.session.build_dir).run()
+
+
+class CMakeSession(MakeSession):
+
+    configure_cmd = CMakeCmd
+    distclean_cmd = CMakeCmd
+
+
+class Python(object):
+
+    depends = ["python"]
+
+    def __init__(self, session):
+        self.session = session
+
+    def configure(self):
+        Copy(self.session.src_path + "/*", self.session.build_path).run()
+
+    def build(self):
+        args = ["setup.py", "build"]
+        args.extend(self.session.build_args)
+        Command("python", args, self.session.build_path,
+                self.session.debug).run()
+
+    def destroot(self):
+        Command("python", ["setup.py", "install", 
+                "--prefix="+ self.session.prefix,
+                "--root=" + self.session.dest_dir,
+                # root implies single-version-externally-managed
+                # "--single-version-externally-managed"
+                ],
+                self.session.build_path,
+                self.debug).run()
+
+    def clean(self):
+        Command("python", ["setup.py", "clean"], self.session.build_path,
+                self.session.debug).run()
+
+    def distclean(self):
+        pass
 
 
 class PythonSession(Session):
 
-    depends = ["python"]
-
-    def configure(self):
-        Copy(self.src_path + "/*", self.build_path).run()
-
-    def build(self):
-        args = ["setup.py", "build"]
-        args.extend(self.build_args)
-        Command("python", args, self.build_path,
-                self.debug).run()
-
-    def destroot(self):
-        Command("python", ["setup.py", "install", 
-                "--prefix="+ self.prefix,
-                "--root=" + self.dest_dir,
-                # root implies single-version-externally-managed
-                # "--single-version-externally-managed"
-                ],
-                self.build_path,
-                self.debug).run()
-
-    def clean(self):
-        Command("python", ["setup.py", "clean"], self.build_path,
-                self.debug).run()
-
-    def distclean(self):
-        pass
+    build_cmd = Python
+    configure_cmd = Python
+    destroot_cmd = Python
+    clean_cmd = Python
+    distclean_cmd = Python
 
 
 class PythonDevelopSession(PythonSession):
