@@ -77,9 +77,9 @@ class Session(object):
     build_cpath = []
     build_library_path = []
 
-    download = UrlDownloader
-    extract = ArchiveFile
-    patchsystem = Simple
+    download_cmd = UrlDownloader
+    extract_cmd = ArchiveFile
+    patch_cmd = Simple
 
     groups = []
 
@@ -209,7 +209,7 @@ class Session(object):
             else:
                 return self.var_replace(value)
         elif name == "depends":
-            deps = value[:] + self.patchsystem.depends
+            deps = self.extract_cmd + self.patch_cmd.depends + value[:]
             for base in type(self).__bases__:
                 superdeps = base.depends
                 if superdeps:

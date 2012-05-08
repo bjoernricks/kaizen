@@ -61,6 +61,8 @@ class UnkownUrlScheme(DownloaderError):
 
 class Downloader(object):
 
+    depends = []
+
     def copy(self, filename, overwrite=False):
         raise NotImplementedError()
 

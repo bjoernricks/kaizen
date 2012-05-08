@@ -200,7 +200,7 @@ class SessionHandler(object):
         self.log.info("Patching session %r" % self.session_name)
         self._groups_call("pre_patch")
         self.session.pre_patch()
-        patchsys = self.session.patchsystem(self.session.src_path,
+        patchsys = self.session.patch_cmd(self.session.src_path,
                 self.session.patch_path, self.session.patches,
                 self.config.get("verbose"))
         patchsys.apply()
@@ -209,7 +209,7 @@ class SessionHandler(object):
 
     def unpatch(self):
         self.log.info("Unpatching session %r" % self.session_name)
-        patchsys = self.session.patchsystem(self.session.src_path,
+        patchsys = self.session.patch_cmd(self.session.src_path,
                 self.session.patch_path, self.session.patches,
                 self.config.get("verbose"))
         patchsys.unapply()
@@ -258,11 +258,11 @@ class SessionHandler(object):
         if not os.path.exists(self.data_dir):
             self.log.debug("Creating download directory %r" % self.data_dir)
             os.makedirs(self.data_dir)
-        if self.session.url and self.session.download:
+        if self.session.url and self.session.download_cmd:
             self.log.info("Copying source file from '%s'." % self.session.url)
             (archive_source, archive_dest) = self._get_download(self.session.url,
                                                                 self.data_dir)
-            dl = self.session.download(self.session, archive_source)
+            dl = self.session.download_cmd(self.session, archive_source)
             download_file = dl.copy(archive_dest, self.force)
             dl.verify(self.session.hash)
             self.install_directories.download = real_path(download_file)
@@ -443,7 +443,7 @@ class SessionHandler(object):
     def extract(self):
         self.log.info("Extracting session %r" % self.session_name)
         if self.session.extract:
-            extractor = self.session.extract(self.session.url)
+            extractor = self.session.extract_cmd(self.session.url)
             extractor.extract(self.data_dir, self.src_dir)
         self.install_directories.source = real_path(self.session.src_path)
         self._update_install_directories()
