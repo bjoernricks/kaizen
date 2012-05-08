@@ -32,6 +32,8 @@ class FileExtractError(JamError):
 
 class FileExtract(object):
 
+    depends = []
+
     def __init__(self, url):
         self.url = url
         self.log = jam.logging.getLogger(self)

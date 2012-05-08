@@ -82,6 +82,11 @@ class Session(object):
     download_cmd = UrlDownloader
     extract_cmd = ArchiveFile
     patch_cmd = Simple
+    build_cmd = None
+    configure_cmd = None
+    destroot_cmd = None
+    clean_cmd = None
+    distclean_cmd = None
 
     groups = []
 
@@ -215,7 +220,10 @@ class Session(object):
             else:
                 return self.var_replace(value)
         elif name == "depends":
-            deps = self.extract_cmd + self.patch_cmd.depends + value[:]
+            deps = self.build_cmd.depends + self.extract_cmd.depends + \
+                   self.patch_cmd.depends + self.configure_cmd.depends + \
+                   self.destroot_cmd.depends + self.clean_cmd.depends + \
+                   self.distclean_cmd.depends + value[:]
             for base in type(self).__bases__:
                 superdeps = base.depends
                 if superdeps:
@@ -227,7 +235,8 @@ class Session(object):
         pass
 
     def configure(self):
-        pass
+        if self.configure_cmd:
+            self.configure_cmd(self).configure()
 
     def pre_configure(self):
         pass
@@ -236,7 +245,8 @@ class Session(object):
         pass
 
     def build(self):
-        pass
+        if self.build_cmd:
+            self.build_cmd(self).build()
 
     def pre_build(self):
         pass
@@ -245,7 +255,8 @@ class Session(object):
         pass
 
     def destroot(self):
-        pass
+        if self.destroot_cmd:
+            self.destroot_cmd(self).destroot()
 
     def pre_destroot(self):
         pass
@@ -254,7 +265,8 @@ class Session(object):
         pass
 
     def clean(self):
-        pass
+        if self.clean_cmd:
+            self.clean_cmd(self).clean()
 
     def pre_clean(self):
         pass
@@ -263,7 +275,8 @@ class Session(object):
         pass
 
     def distclean(self):
-        pass
+        if self.distclean_cmd:
+            self.distclean_cmd(self).distclean()
 
     def pre_activate(self):
         pass
