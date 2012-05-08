@@ -61,8 +61,11 @@ class UnkownUrlScheme(DownloaderError):
 
 class Downloader(object):
 
-    def copy(self, filename):
+    def copy(self, filename, overwrite=False):
         raise NotImplementedError()
+
+    def verify(self, hashes):
+        pass
 
 
 class FtpDownloader(Downloader):
@@ -71,7 +74,7 @@ class FtpDownloader(Downloader):
         self.url = url
         self.log = jam.logging.getLogger("jam.ftpdownloader")
 
-    def copy(self, filename):
+    def copy(self, filename, overwrite=False):
         ftp = ftplib.FTP(self.url.netloc)
         ftp.login()
         f = open(filename, 'w')
@@ -98,7 +101,7 @@ class HttpDownloader(Downloader):
         self.url = url
         self.log = jam.logging.getLogger("jam.httpdownloader")
 
-    def copy(self, filename):
+    def copy(self, filename, overwrite=False):
         u = urllib2.urlopen(self.url)
         f = open(filename, 'w')
         meta = u.info()
@@ -129,7 +132,7 @@ class LocalFileDownloader(Downloader):
         self.root_dir = root_dir
         self.log = jam.logging.getLogger("jam.localfiledownloader")
 
-    def copy(self, filename):
+    def copy(self, filename, overwrite=False):
         path = self.url.path
         if not self.url.scheme and self.root_dir:
             path = os.path.join(self.root_dir, path)
