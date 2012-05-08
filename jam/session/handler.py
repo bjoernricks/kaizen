@@ -262,7 +262,7 @@ class SessionHandler(object):
             self.log.info("Copying source file from '%s'." % self.session.url)
             (archive_source, archive_dest) = self._get_download(self.session.url,
                                                                 self.data_dir)
-            dl = self.session.download(archive_source, self.session.session_path)
+            dl = self.session.download(self.session, archive_source)
             download_file = dl.copy(archive_dest, self.force)
             dl.verify(self.session.hash)
             self.install_directories.download = real_path(download_file)

@@ -139,17 +139,17 @@ class LocalFileDownloader(Downloader):
 
 class UrlDownloader(object):
 
-    def __init__(self, urlstr, root_dir=None):
-        url = urlparse(urlstr)
+    def __init__(self, session, urlstr):
         self.url = urlstr
-        self.root_dir = root_dir
-        self.filename = os.path.basename(urlstr)
+        self.session = session
         self.log = jam.logging.getLogger("jam.downloader")
 
+        url = urlparse(urlstr)
+        self.filename = os.path.basename(urlstr)
         if url.scheme == 'http' or url.scheme == 'https':
             self.downloader = HttpDownloader(urlstr)
         elif url.scheme == "file" or not url.scheme:
-            self.downloader = LocalFileDownloader(url, root_dir)
+            self.downloader = LocalFileDownloader(url, session.session_path)
         elif url.scheme == "ftp":
             self.downloader = FtpDownloader(url)
         else:
