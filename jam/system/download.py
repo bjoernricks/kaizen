@@ -146,11 +146,11 @@ class GitDownloader(Downloader):
         self.url = url
         self.branch = branch
 
-    def copy(self, filename):
+    def copy(self, filename, overwrite=False):
         pass
 
 
-class UrlDownloader(object):
+class UrlDownloader(Downloader):
 
     def __init__(self, session, urlstr):
         self.url = urlstr
