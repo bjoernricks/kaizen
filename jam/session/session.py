@@ -25,7 +25,7 @@ import os.path
 import jam.logging
 
 from jam.utils import real_path
-from jam.download import UrlDownloader
+from jam.system.download import UrlDownloader
 from jam.system.patch import Simple
 from jam.system.extract import ArchiveFile
 
