@@ -244,9 +244,17 @@ class PythonDevelopSession(PythonSession):
             return
         f = open(pth_file, "r")
         try:
-            self.entries = f.readlines()
+            for line in f:
+                if line:
+                    if "\n" in line:
+                        # remove newline
+                        self.entries.append(line[:-1])
+                    else:
+                        self.entries.append(line)
         finally:
             f.close()
+
+        self.log.debug("Current jam-sessions.pth entries are %r" % self.entries)
 
     def add_jam_pth_entry(self):
         if self.build_path not in self.entries:
@@ -264,7 +272,11 @@ class PythonDevelopSession(PythonSession):
         f = open(os.path.join(self.prefix, self.python_package_path,
                               "jam-sessions.pth"), "w")
         try:
-            f.write("\n".join(self.entries))
+            num = len(self.entries)
+            for i, entry in enumerate(self.entries):
+                f.write(entry)
+                if i+1 < num:
+                    f.write("\n")
         finally:
             f.close()
 
