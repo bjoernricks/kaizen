@@ -28,7 +28,7 @@ import jam.logging
 from tempfile import mkdtemp
 
 from jam.utils import Template, Hash, list_contents, extract_file, real_path
-from jam.download import UrlDownloader
+from jam.system.download import UrlDownloader
 from jam.session.error import SessionCreateError
 
 
