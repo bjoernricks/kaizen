@@ -293,6 +293,7 @@ class SessionHandler(object):
                 os.makedirs(dir)
                 self.log.debug("Creating directory '%s'" % dir)
 
+        self.log.debug("Running pre-activate")
         self._groups_call("pre_activate")
         self.session.pre_activate()
 
@@ -336,6 +337,7 @@ class SessionHandler(object):
             dbfile = self.db.session.merge(dbfile)
             self.db.session.add(dbfile)
         self.db.session.commit()
+        self.log.debug("Running post-activate")
         self.session.post_activate()
         self._groups_call("post_activate")
 
@@ -346,6 +348,7 @@ class SessionHandler(object):
                           " deactivated. Either deactivation was forced or"\
                           " the database may be currupted" % self.session_name)
 
+        self.log.debug("Running pre-deactivate")
         self._groups_call("pre_deactivate")
         self.session.pre_deactivate()
 
@@ -373,6 +376,7 @@ class SessionHandler(object):
             self.db.session.delete(directory)
         self.db.session.commit()
 
+        self.log.debug("Running post-deactivate")
         self.session.post_deactivate()
         self._groups_call("post_deactivate")
 
