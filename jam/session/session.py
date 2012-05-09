@@ -220,10 +220,23 @@ class Session(object):
             else:
                 return self.var_replace(value)
         elif name == "depends":
-            deps = self.build_cmd.depends + self.extract_cmd.depends + \
-                   self.patch_cmd.depends + self.configure_cmd.depends + \
-                   self.destroot_cmd.depends + self.clean_cmd.depends + \
-                   self.distclean_cmd.depends + value[:]
+            deps = []
+            if self.build_cmd:
+                deps.extend(self.build_cmd.depends)
+            if self.extract_cmd:
+                deps.extend(self.extract_cmd.depends)
+            if self.patch_cmd:
+                deps.extend(self.patch_cmd.depends)
+            if self.configure_cmd:
+                deps.extend(self.configure_cmd.depends)
+            if self.destroot_cmd:
+                deps.extend(self.destroot_cmd.depends)
+            if self.clean_cmd:
+                deps.extend(self.clean_cmd.depends)
+            if self.distclean_cmd:
+                deps.extend(self.distclean_cmd.depends)
+            deps.extend(value[:])
+
             for base in type(self).__bases__:
                 superdeps = base.depends
                 if superdeps:
