@@ -171,7 +171,7 @@ class Python(object):
                 # "--single-version-externally-managed"
                 ],
                 self.session.build_path,
-                self.debug).run()
+                self.session.debug).run()
 
     def clean(self):
         Command("python", ["setup.py", "clean"], self.session.build_path,
