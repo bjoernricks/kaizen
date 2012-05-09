@@ -116,7 +116,7 @@ class Session(object):
         self.apps_dir = self.config.get("appsdir")
         self.dest_path = self.destroot_path + self.prefix
 
-        self.log = jam.logging.getLogger("session." + self.session_name)
+        self.log = jam.logging.getLogger("jam.session." + self.session_name)
 
         self.__shadow = dict()
 
