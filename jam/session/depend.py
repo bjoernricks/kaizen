@@ -70,8 +70,11 @@ class DependencyAnalyser(object):
                 self.log.warn("Session '%s' has an empty dependency" %
                               session.name)
                 continue
+            if name == self.session.session_name:
+                self.log.warn("Cyclic dependency found.")
+                continue
             if name in self.dependencies:
-                dependency = self.dependencies[name] 
+                dependency = self.dependencies[name]
             elif self.systemprovider and self.systemprovider.provides(name):
                 dependency = self.systemprovider.get(name)
                 self.dependencies[name] = dependency
