@@ -192,6 +192,9 @@ class PythonSession(Session):
 
 class PythonDevelopSession(PythonSession):
 
+    extract_cmd = None
+    download_cmd = None
+
     def init(self):
         self.python_version = ".".join(
                         [str(value) for value in sys.version_info[:2]])
