@@ -129,17 +129,15 @@ class SessionCreator(object):
                     index = filename.rfind(suffix)
                     filename = filename[:index]
             split = filename.rsplit("-", 1)
-            detected_name = split[0]
-            name = detected_name.lower()
+            computed_name = split[0]
+            name = computed_name.lower()
             version = split[1]
-            detected_version = version
-            self.log.info("Detected session version is '%s'" % version)
-            self.log.info("Detected session name is '%s'" % name)
+            computed_version = version
         else:
             name = self.name
             version = self.version
-            detected_name = self.name
-            detected_version = self.version
+            computed_name = self.name
+            computed_version = self.version
 
         if not self.template:
             extract_file(source, self.tmp_dir)
@@ -156,6 +154,11 @@ class SessionCreator(object):
         else:
             template = Template(self.templatename + ".template")
 
+        self.log.debug("Computed session name is '%s'" % computed_name)
+        self.log.debug("Computed session version is '%s'" % computed_version)
+        self.log.info("Session name is '%s'" % name)
+        self.log.info("Session version is '%s'" % version)
+
         vars = dict()
         vars["name"] = name
         vars["version"] = version
@@ -165,15 +168,15 @@ class SessionCreator(object):
         vars["rootdir"] = self.dir
         vars["sessions"] = self.session_dir
         vars["sessionname"] = name.replace("-","").capitalize()
-        vars["detectedname"] = detected_name
-        vars["detectedversion"] = detected_version
+        vars["computedname"] = computed_name
+        vars["computedversion"] = computed_version
 
         # self.name and self.version may contain templates
         if self.name:
             name = self.name % vars
         if self.version:
             version = self.version % vars
-        
+
         if stdout:
             print template.replace(vars)
         else:
