@@ -19,6 +19,16 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 
 # 02110-1301 USA
 
+
+NONE = "None"
+DOWNLOADED = "Downloaded"
+EXTRACTED = "Extracted"
+PATCHED = "Patched"
+CONFIGURED = "Configured"
+BUILT = "Built"
+DESTROOTED = "Destrooted"
+ACTIVATED = "Activated"
+
 class UnknownPhaseError(Exception):
 
     def __init__(self, name):
@@ -63,14 +73,14 @@ class Phases(object):
     def __init__(self):
         self.phases = dict()
         self.phase_names = [
-                             "None",
-                             "Downloaded",
-                             "Extracted",
-                             "Patched",
-                             "Configured",
-                             "Built",
-                             "Destrooted",
-                             "Activated",
+                             NONE,
+                             DOWNLOADED,
+                             EXTRACTED,
+                             PATCHED,
+                             CONFIGURED,
+                             BUILT,
+                             DESTROOTED,
+                             ACTIVATED,
                            ]
         for i, name in enumerate(self.phase_names):
             self.phases[name] = Phase(name, i)
