@@ -23,6 +23,7 @@ import sys
 import os
 import os.path
 
+from jam.logging.log import getLogger
 from jam.session.session import Session
 from jam.system.command import Configure, CMake, Make, Command, Copy, Delete
 
@@ -31,6 +32,7 @@ class SessionCmd(object):
     depends = []
 
     def __init__(self, session):
+        self.log = getLogger(self)
         self.session = session
 
 
@@ -116,10 +118,17 @@ class ConfigureCmd(SessionCmd):
             configure.set_library_path(self.session.configure_library_path)
         configure.run()
 
+    def distclean(self):
+        if self.session.src_path != self.session.build_path:
+            Delete(self.session.build_dir).run()
+        else:
+            Make(self.session.build_path, self.session.debug).distclean()
+
 
 class ConfigureSession(MakeSession):
 
     configure_cmd = ConfigureCmd
+    distclean_cmd = ConfigureCmd
 
 
 class CMakeCmd(SessionCmd):
