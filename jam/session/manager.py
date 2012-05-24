@@ -28,7 +28,6 @@ from jam.session.handler import SessionHandler
 from jam.session.depend import DependencyAnalyser, Dependency, \
                                UnresolvedDependencies, RuntimeDependencyAnalyser
 from jam.phase.phase import phases_list
-from jam.phase.sequence import Sequence, UnSequence
 from jam.db.db import Db
 from jam.db.objects import Installed, SessionPhase
 from jam.utils.signals import ForwardSignal
