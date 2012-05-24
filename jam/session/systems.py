@@ -24,6 +24,7 @@ import os
 import os.path
 
 from jam.logging.log import getLogger
+from jam.session.error import SessionError
 from jam.session.session import Session
 from jam.system.command import Configure, CMake, Make, Command, Copy, Delete
 
@@ -147,7 +148,13 @@ class CMakeCmd(SessionCmd):
               self.session.debug).run()
 
     def distclean(self):
-        Delete(self.session.build_dir).run()
+        if self.session.src_path != self.session.build_path:
+            Delete(self.session.build_dir).run()
+        else:
+            raise SessionError(self.session.name, "CMake is used to build the "
+                               "session but src_path and build_path are set to "
+                               "the same directory %s. Please use out of source"
+                               " builds with CMake." % self.session.src_path)
 
 
 class CMakeSession(MakeSession):
