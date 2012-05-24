@@ -129,38 +129,18 @@ class Sequence(object):
         return "<Sequence name='%s' id='%s'>" % (self.name, id(self))
 
 
-class UnSequence(Sequence):
-
-    def __init__(self, name, required_phase, result_phase, unset_phase,
-                 method_names, always=False, parent_seq=None):
-        super(UnSequence, self).__init__(name, required_phase, result_phase,
-                                         method_names, always, parent_seq)
-        self.unset_phase = unset_phase
-
-    def must_be_called(self, session):
-        return self.always or (self.unset_phase in session.get_phases())
-
-    def handle_phase(self, session):
-        session.unset_phase(self.unset_phase)
-
-    def call(self, session, force=False):
-        if self.parent_seq:
-            self.parent_seq.call(session)
-        call_me = self.must_be_called(session)
-        if not call_me and force:
-            call_me = True
-            self.log.warn("Forcing to call a phase can have several side " \
-                          "effects. You should be really aware of what " \
-                          "you are doing!")
-        if call_me:
-            self.call_methods(session)
-            self.handle_phase(session)
-            return True
-        return False
-
-
 class SetSequence(Sequence):
 
     def __init__(self, name, pre_sequence_name, set_phase_name):
         super(SetSequence, self).__init__(name, pre_sequence_name, None, None,
                                           set_phase_name, None, [name])
+
+class UnSetSequence(Sequence):
+
+    def __init__(self, name, pre_sequence_name, required_phase_name):
+        super(UnSetSequence, self).__init__(name, pre_sequence_name, None,
+                                            required_phase_name, None,
+                                            required_phase_name, [name])
+
+    def must_be_run(self, session):
+        return self.unset_phase in session.get_phases()
