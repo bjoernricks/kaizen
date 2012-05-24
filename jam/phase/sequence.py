@@ -31,6 +31,13 @@ CONFIGURE = "configure"
 BUILD = "build"
 DESTROOT = "destroot"
 ACTIVATE = "activate"
+DEACTIVATE = "deactivate"
+DELETE_DESTROOT = "delete_destroot"
+DELETE_BUILD = "delete_build"
+DISTCLEAN = "distclean"
+UNPATCH = "unpatch"
+DELETE_SOURCE = "delete_source"
+DELETE_DOWNLOAD = "delete_download"
 
 class SequenceError(JamError):
 
