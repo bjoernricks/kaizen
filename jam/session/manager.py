@@ -50,31 +50,14 @@ class SessionManager(object):
         self.init_sequences()
 
     def init_sequences(self):
-        self.download_seq = Sequence("download", phases_list.get("None"),
-                                     phases_list.get("Downloaded"),
-                                     ["download"])
+        self.downlood_seq = self.handler.download_seq
+        self.extract_seq = self.handler.extract_seq
+        self.patch_seq = self.handler.patch_seq
+        self.configure_seq = self.handler.configure_seq
+        self.build_seq = self.handler.build_seq
+        self.destroot_seq = self.handler.destroot_seq
+        self.activate_seq = self.handler.activate_seq
 
-        self.extract_seq = Sequence("extract", phases_list.get("None"),
-                                    phases_list.get("Extracted"), ["extract"],
-                                    False, self.download_seq)
-        self.patch_seq = Sequence("patch", phases_list.get("None"),
-                                  phases_list.get("Patched"), ["patch"], False,
-                                  self.extract_seq)
-        self.configure_seq = Sequence("configure",
-                                      phases_list.get("None"),
-                                      phases_list.get("Configured"),
-                                      ["configure"], False, self.patch_seq)
-        self.build_seq = Sequence("build", phases_list.get("None"),
-                                  phases_list.get("Built"), ["build"], False,
-                                  self.configure_seq)
-        self.destroot_seq = Sequence("destroot",
-                                     phases_list.get("None"),
-                                     phases_list.get("Destrooted"),
-                                     ["destroot"], False, self.build_seq)
-        self.activate_seq = Sequence("activate",
-                                     phases_list.get("None"),
-                                     phases_list.get("Activated"), ["activate"],
-                                     False, self.destroot_seq)
         self.deactivate_seq = UnSequence("deactivate",
                                          phases_list.get("Activated"),
                                          phases_list.get("Destrooted"),
