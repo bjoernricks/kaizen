@@ -44,7 +44,7 @@ class SessionManager(object):
         self.force = force
         self.session_name = name
         self.log = jam.logging.getLogger(self)
-        self.session_wrapper = SessionHandler(config, name, version, force)
+        self.handler = SessionHandler(config, name, version, force)
         self.db = Db(config)
         self._init_signals()
         self.init_sequences()
@@ -137,7 +137,7 @@ class SessionManager(object):
 
     def _init_signals(self):
         self.already_activated = \
-            ForwardSignal(self.session_wrapper.already_activated)
+            ForwardSignal(self.handler.already_activated)
 
     def _install_dependencies(self, depanalyzer):
         dependencies = depanalyzer.analyse()
@@ -152,17 +152,17 @@ class SessionManager(object):
                 self.install_seq(dependency.session)
 
     def install_dependencies(self):
-        depanalyzer = DependencyAnalyser(self.config, self.session_wrapper)
+        depanalyzer = DependencyAnalyser(self.config, self.handler)
         self._install_dependencies(depanalyzer)
 
     def install_runtime_dependencies(self):
         depanalyzer = RuntimeDependencyAnalyser(self.config,
-                                                self.session_wrapper)
+                                                self.handler)
         self._install_dependencies(depanalyzer)
 
     def download(self, all=False, resume_on_error=True):
         if all:
-            dependencies = self.session_wrapper.build_depends()
+            dependencies = self.handler.build_depends()
             for dependency in dependencies.itervalues():
                 if not dependency.get_type() == Dependency.SESSION:
                     continue
@@ -175,35 +175,35 @@ class SessionManager(object):
                         self.log.err("Error while downloading " + 
                                      "session '%s': %s" %\
                                      (dependency.name, e))
-        self.download_seq(self.session_wrapper, self.force)
+        self.download_seq(self.handler, self.force)
 
     def extract(self):
-        self.extract_seq(self.session_wrapper, self.force)
+        self.extract_seq(self.handler, self.force)
 
     def archive(self):
         self.log.info("%s:phase:archive" % self.session_name)
 
     def configure(self):
         self.install_dependencies()
-        self.configure_seq(self.session_wrapper, self.force)
+        self.configure_seq(self.handler, self.force)
 
     def build(self):
         self.install_dependencies()
-        self.build_seq(self.session_wrapper, self.force)
+        self.build_seq(self.handler, self.force)
 
     def destroot(self):
         self.install_dependencies()
-        self.destroot_seq(self.session_wrapper, self.force)
+        self.destroot_seq(self.handler, self.force)
 
     def install(self):
         self.install_dependencies()
         self.log.info("%s:running install" % self.session_name)
-        self.install_seq(self.session_wrapper, self.force)
+        self.install_seq(self.handler, self.force)
         self.common_activate()
 
     def uninstall(self):
         self.log.info("%s:running uninstall" % self.session_name)
-        self.uninstall_seq(self.session_wrapper, self.force)
+        self.uninstall_seq(self.handler, self.force)
         self.common_deactivate()
 
     def common_deactivate(self):
@@ -216,54 +216,54 @@ class SessionManager(object):
         installed = self.db.session.query(Installed).get(self.session_name)
         if not installed:
             installed = Installed(self.session_name,
-                    self.session_wrapper.get_version())
+                    self.handler.get_version())
         else:
-            installed.version = self.session_wrapper.get_version()
+            installed.version = self.handler.get_version()
         self.db.session.add(installed)
         self.db.session.commit()
         self.install_runtime_dependencies()
 
     def activate(self):
         self.install_dependencies()
-        self.activate_seq(self.session_wrapper, self.force)
+        self.activate_seq(self.handler, self.force)
         self.common_activate()
 
     def deactivate(self):
-        self.deactivate_seq(self.session_wrapper, self.force)
+        self.deactivate_seq(self.handler, self.force)
         self.common_deactivate()
 
     def patch(self):
-        self.patch_seq(self.session_wrapper, self.force)
+        self.patch_seq(self.handler, self.force)
 
     def unpatch(self):
-        self.unpatch_seq(self.session_wrapper, self.force)
+        self.unpatch_seq(self.handler, self.force)
 
     def clean(self):
-        self.session_wrapper.clean()
+        self.handler.clean()
 
     def distclean(self):
-        self.distclean_seq(self.session_wrapper, self.force)
+        self.distclean_seq(self.handler, self.force)
 
     def depends(self):
-        return self.session_wrapper.depends()
+        return self.handler.depends()
 
     def delete_destroot(self):
-        self.delete_destroot_seq(self.session_wrapper, self.force)
+        self.delete_destroot_seq(self.handler, self.force)
 
     def delete_build(self):
-        self.delete_build_seq(self.session_wrapper, self.force)
+        self.delete_build_seq(self.handler, self.force)
 
     def delete_source(self):
-        self.delete_source_seq(self.session_wrapper, self.force)
+        self.delete_source_seq(self.handler, self.force)
 
     def delete_download(self):
-        self.delete_download_seq(self.session_wrapper, self.force)
+        self.delete_download_seq(self.handler, self.force)
 
     def get_installed_files(self):
-        return self.session_wrapper.get_installed_files()
+        return self.handler.get_installed_files()
 
     def get_session_phases(self):
-        return self.session_wrapper.get_phases()
+        return self.handler.get_phases()
 
 
 class SessionsList(object):
