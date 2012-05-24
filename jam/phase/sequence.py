@@ -146,9 +146,9 @@ class UnSequence(Sequence):
         call_me = self.must_be_called(session)
         if not call_me and force:
             call_me = True
-            log.warn("Forcing to call a phase can have several side " \
-                     "effects. You should be really aware of what " \
-                     "you are doing!")
+            self.log.warn("Forcing to call a phase can have several side " \
+                          "effects. You should be really aware of what " \
+                          "you are doing!")
         if call_me:
             self.call_methods(session)
             self.handle_phase(session)
