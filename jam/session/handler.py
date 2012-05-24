@@ -27,7 +27,10 @@ import jam.logging
 from jam.external.sqlalchemy import and_
 from jam.db.db import Db
 from jam.db.objects import File, Directory, SessionPhase, InstallDirectories
-from jam.phase.phase import phases_list
+from jam.phase.phase import phases_list, DOWNLOADED, EXTRACTED, PATCHED, \
+                            CONFIGURED, BUILT, DESTROOTED, ACTIVATED
+from jam.phase.sequence import DOWNLOAD, EXTRACT, PATCH, CONFIGURE, BUILD, \
+                               DESTROOT, ACTIVATE, SetSequence
 from jam.session.loader import SessionLoader
 from jam.session.error import SessionError
 from jam.session.validator import SessionValidator
@@ -55,6 +58,7 @@ class SessionHandler(object):
             self.session_dist_version = dist_version
         self._init_directories()
         self._init_signals()
+        self._init_sequences()
         self._load_install_directories()
         self._load_phases()
 
@@ -125,6 +129,66 @@ class SessionHandler(object):
 
     def _init_signals(self):
         self.already_activated = Signal()
+
+    def _init_sequences(self):
+        self.sequences = dict()
+
+        if self.session_class.download_seq:
+            seq = self.session_class.download_seq
+        else:
+            seq = SetSequence("download", None, DOWNLOADED)
+        self.download_seq = seq
+        self.sequences[seq.name] = seq
+
+        if self.session_class.extract_seq:
+            seq = self.session_class.extract_seq
+        else:
+            seq = SetSequence("extract", DOWNLOAD, EXTRACTED)
+        self.extract_seq = seq
+        self.sequences[seq.name] = seq
+
+        if self.session_class.patch_seq:
+            seq = self.session_class.patch_seq
+        else:
+            seq = SetSequence("patch", EXTRACT, PATCHED)
+        self.patch_seq = seq
+        self.sequences[seq.name] = seq
+
+        if self.session_class.configure_seq:
+            seq = self.session_class.configure_seq
+        else:
+            seq = SetSequence("configure", PATCH, CONFIGURED)
+        self.configure_seq = seq
+        self.sequences[seq.name] = seq
+
+        if self.session_class.build_seq:
+            seq = self.session_class.build_seq
+        else:
+            seq = SetSequence("build", CONFIGURE, BUILT)
+        self.build_seq = seq
+        self.sequences[seq.name] = seq
+
+        if self.session_class.destroot_seq:
+            seq = self.session_class.destroot_seq
+        else:
+            seq = SetSequence("destroot", BUILD, DESTROOTED)
+        self.destroot_seq = seq
+        self.sequences[seq.name] = seq
+
+        if self.session_class.activate_seq:
+            seq = self.session_class.activate_seq
+        else:
+            seq = SetSequence("activate", DESTROOT, ACTIVATED)
+        self.activate_seq = seq
+        self.sequences[seq.name] = seq
+
+        for name, seq in self.sequences.items():
+            if seq.pre_sequence_name:
+                pre_seq = self.sequences[seq.pre_sequence_name]
+                seq.set_pre_sequence(pre_seq)
+            if seq.post_sequence_name:
+                post_seq = self.sequences[seq.post_sequence_name]
+                seq.set_post_sequence(post_seq)
 
     def _groups_call(self, methodname):
         for group in self.session._groups:
