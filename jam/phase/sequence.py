@@ -109,11 +109,7 @@ class Sequence(object):
             if self.pre_sequence.has_been_run():
                 return True
 
-        phases = session.get_phases()
-        for phase in self.set_phase_name:
-            if not phase in phases:
-                return True
-        return False
+        return not (self.set_phase in session.get_phases())
 
     def has_been_run(self):
         return self.is_run
