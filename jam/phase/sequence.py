@@ -25,6 +25,14 @@ from jam.error import JamError
 
 log = jam.logging.getLogger(__file__)
 
+DOWNLOAD = "download"
+EXTRACT = "extract"
+PATCH = "patch"
+CONFIGURE = "configure"
+BUILD = "build"
+DESTROOT = "destroot"
+ACTIVATE = "activate"
+
 class SequenceError(JamError):
 
     def __init__(self, sequence_name, session_name, value):
