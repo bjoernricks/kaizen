@@ -155,3 +155,9 @@ class UnSequence(Sequence):
             return True
         return False
 
+
+class SetSequence(Sequence):
+
+    def __init__(self, name, pre_sequence_name, set_phase_name):
+        super(SetSequence, self).__init__(name, pre_sequence_name, None, None,
+                                          set_phase_name, None, [name])
