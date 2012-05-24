@@ -88,6 +88,14 @@ class Session(object):
     clean_cmd = None
     distclean_cmd = None
 
+    download_seq = None
+    extract_seq = None
+    patch_seq = None
+    build_seq = None
+    configure_seq = None
+    destroot_seq = None
+    activate_seq = None
+
     groups = []
 
     def __init__(self, config, src_dir, build_dir, dest_dir):
