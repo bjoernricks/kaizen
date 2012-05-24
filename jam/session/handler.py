@@ -136,50 +136,93 @@ class SessionHandler(object):
         if self.session_class.download_seq:
             seq = self.session_class.download_seq
         else:
-            seq = SetSequence("download", None, DOWNLOADED)
+            seq = SetSequence(DOWNLOAD, None, DOWNLOADED)
         self.download_seq = seq
         self.sequences[seq.name] = seq
 
         if self.session_class.extract_seq:
             seq = self.session_class.extract_seq
         else:
-            seq = SetSequence("extract", DOWNLOAD, EXTRACTED)
+            seq = SetSequence(EXTRACT, DOWNLOAD, EXTRACTED)
         self.extract_seq = seq
         self.sequences[seq.name] = seq
 
         if self.session_class.patch_seq:
             seq = self.session_class.patch_seq
         else:
-            seq = SetSequence("patch", EXTRACT, PATCHED)
+            seq = SetSequence(PATCH, EXTRACT, PATCHED)
         self.patch_seq = seq
         self.sequences[seq.name] = seq
 
         if self.session_class.configure_seq:
             seq = self.session_class.configure_seq
         else:
-            seq = SetSequence("configure", PATCH, CONFIGURED)
+            seq = SetSequence(CONFIGURE, PATCH, CONFIGURED)
         self.configure_seq = seq
         self.sequences[seq.name] = seq
 
         if self.session_class.build_seq:
             seq = self.session_class.build_seq
         else:
-            seq = SetSequence("build", CONFIGURE, BUILT)
+            seq = SetSequence(BUILD, CONFIGURE, BUILT)
         self.build_seq = seq
         self.sequences[seq.name] = seq
 
         if self.session_class.destroot_seq:
             seq = self.session_class.destroot_seq
         else:
-            seq = SetSequence("destroot", BUILD, DESTROOTED)
+            seq = SetSequence(DESTROOT, BUILD, DESTROOTED)
         self.destroot_seq = seq
         self.sequences[seq.name] = seq
 
-        if self.session_class.activate_seq:
-            seq = self.session_class.activate_seq
-        else:
-            seq = SetSequence("activate", DESTROOT, ACTIVATED)
+        seq = SetSequence(ACTIVATE, DESTROOT, ACTIVATED)
         self.activate_seq = seq
+        self.sequences[seq.name] = seq
+
+        seq = UnSetSequence(DEACTIVATE, None, ACTIVATED)
+        self.deactivate_seq = seq
+        self.sequences[seq.name] = seq
+
+        if self.session_class.delete_destroot_seq:
+            seq = self.session_class.delete_destroot_seq
+        else:
+            seq = UnSetSequence(DELETE_DESTROOT, DEACTIVATE, DESTROOTED)
+        self.delete_destroot_seq = seq
+        self.sequences[seq.name] = seq
+
+        if self.session_class.delete_build_seq:
+            seq = self.session_class.delete_build_seq
+        else:
+            seq = UnSetSequence(DELETE_BUILD, DELETE_DESTROOT, BUILT)
+        self.delete_build_seq = seq
+        self.sequences[seq.name] = seq
+
+        if self.session_class.distclean_seq:
+            seq = self.session_class.distclean_seq
+        else:
+            seq = UnSetSequence(DISTCLEAN, DELETE_BUILD, CONFIGURED)
+        self.distclean_seq = seq
+        self.sequences[seq.name] = seq
+
+        if self.session_class.unpatch_seq:
+            seq = self.session_class.unpatch_seq
+        else:
+            seq = UnSetSequence(UNPATCH, DISTCLEAN, PATCHED)
+        self.unpatch_seq = seq
+        self.sequences[seq.name] = seq
+
+        if self.session_class.delete_source_seq:
+            seq = self.session_class.delete_source_seq
+        else:
+            seq = UnSetSequence(DELETE_SOURCE, UNPATCH, EXTRACTED)
+        self.delete_source_seq = seq
+        self.sequences[seq.name] = seq
+
+        if self.session_class.delete_download_seq:
+            seq = self.session_class.delete_download_seq
+        else:
+            seq = UnSetSequence(DELETE_DOWNLOAD, DELETE_SOURCE, DOWNLOADED)
+        self.delete_download_seq = seq
         self.sequences[seq.name] = seq
 
         for name, seq in self.sequences.items():
