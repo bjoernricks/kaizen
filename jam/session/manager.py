@@ -57,66 +57,28 @@ class SessionManager(object):
         self.build_seq = self.handler.build_seq
         self.destroot_seq = self.handler.destroot_seq
         self.activate_seq = self.handler.activate_seq
+        self.deactivate_seq = self.handler.deactivate_seq
+        self.delete_destroot_seq = self.handler.delete_destroot_seq
+        self.delete_build_seq = self.handler.delete_build_seq
+        self.distclean_seq = self.handler.distclean_seq
+        self.unpatch_seq = self.handler.unpatch_seq
+        self.delete_source_seq = self.handler.delete_source_seq
+        self.delete_download_seq = self.handler.delete_download_seq
 
-        self.deactivate_seq = UnSequence("deactivate",
-                                         phases_list.get("Activated"),
-                                         phases_list.get("Destrooted"),
-                                         phases_list.get("Activated"),
-                                         ["deactivate"])
-        self.delete_destroot_seq = UnSequence("delete_destroot",
-                                              phases_list.get("Destrooted"),
-                                              phases_list.get("Built"),
-                                              phases_list.get("Destrooted"),
-                                              ["delete_destroot"], False,
-                                              self.deactivate_seq)
-        self.distclean_seq = UnSequence("distclean",
-                                        phases_list.get("Configured"),
-                                        phases_list.get("Built"),
-                                        phases_list.get("Configured"),
-                                        ["distclean"], False,
-                                        self.delete_destroot_seq)
-        self.delete_build_seq = UnSequence("delete_build",
-                                           phases_list.get("Built"),
-                                           phases_list.get("Patched"),
-                                           phases_list.get("Built"),
-                                           ["delete_build"], False,
-                                           self.distclean_seq)
-        self.unpatch_seq = UnSequence("unpatch",
-                                      phases_list.get("Patched"),
-                                      phases_list.get("Extracted"),
-                                      phases_list.get("Patched"),
-                                      ["unpatch"], False,
-                                      self.delete_build_seq)
-        # unpatch_db_seq: just remove phase from db
-        self.unpatch_db_seq = UnSequence("unpatch",
-                                         phases_list.get("Patched"),
-                                         phases_list.get("Extracted"),
-                                         phases_list.get("Patched"),
-                                         [], False,
-                                         self.delete_build_seq)
-        self.delete_source_seq = UnSequence("delete_source",
-                                            phases_list.get("Extracted"),
-                                            phases_list.get("Downloaded"),
-                                            phases_list.get("Extracted"),
-                                            ["delete_source"], False,
-                                            self.unpatch_db_seq)
-        self.delete_download_seq = UnSequence("delete_download",
-                                              phases_list.get("Downloaded"),
-                                              phases_list.get("None"),
-                                              phases_list.get("Downloaded"),
-                                              ["delete_download"], False,
-                                              self.delete_source_seq)
-        self.install_seq = Sequence("install",
-                                   phases_list.get("None"),
-                                   phases_list.get("Activated"), [],
-                                   False, self.activate_seq)
+        self.install_seq = self.activate_seq
+        self.uninstall_seq = self.delete_source_seq
 
-        self.uninstall_seq = UnSequence("uninstall",
-                                        phases_list.get("Extracted"),
-                                        phases_list.get("Downloaded"),
-                                        phases_list.get("Extracted"),
-                                        [""], False,
-                                        self.delete_source_seq)
+        # self.install_seq = Sequence("install",
+        #                            phases_list.get("None"),
+        #                            phases_list.get("Activated"), [],
+        #                            False, self.activate_seq)
+
+        # self.uninstall_seq = UnSequence("uninstall",
+        #                                 phases_list.get("Extracted"),
+        #                                 phases_list.get("Downloaded"),
+        #                                 phases_list.get("Extracted"),
+        #                                 [""], False,
+        #                                 self.delete_source_seq)
 
     def _init_signals(self):
         self.already_activated = \
