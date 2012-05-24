@@ -30,7 +30,9 @@ from jam.db.objects import File, Directory, SessionPhase, InstallDirectories
 from jam.phase.phase import phases_list, DOWNLOADED, EXTRACTED, PATCHED, \
                             CONFIGURED, BUILT, DESTROOTED, ACTIVATED
 from jam.phase.sequence import DOWNLOAD, EXTRACT, PATCH, CONFIGURE, BUILD, \
-                               DESTROOT, ACTIVATE, SetSequence
+                               DESTROOT, ACTIVATE, DEACTIVATE, DELETE_SOURCE, \
+                               DELETE_DOWNLOAD, DELETE_BUILD, DELETE_DESTROOT, \
+                               UNPATCH, DISTCLEAN, SetSequence, UnSetSequence
 from jam.session.loader import SessionLoader
 from jam.session.error import SessionError
 from jam.session.validator import SessionValidator
