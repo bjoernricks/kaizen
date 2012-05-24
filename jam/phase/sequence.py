@@ -75,7 +75,7 @@ class Sequence(object):
 
     def __call__(self, session, force=False):
         if self.pre_sequence:
-            self.pre_sequence()
+            self.pre_sequence(session)
 
         call_me = self.must_be_run(session)
         if not call_me and force:
@@ -89,7 +89,7 @@ class Sequence(object):
             self.is_run = True
 
         if self.post_sequence:
-            self.post_sequence()
+            self.post_sequence(session)
 
     def handle_phase(self, session):
         if self.set_phase:
