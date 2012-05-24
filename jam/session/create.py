@@ -108,7 +108,7 @@ class SessionCreator(object):
             os.makedirs(self.dir)
         self.tmp_dir = mkdtemp(prefix="tmp-session-", dir=self.dir)
         self.log.debug("Created temporary directory '%s'" % self.tmp_dir)
-        downloader = UrlDownloader(self.url)
+        downloader = UrlDownloader(None, self.url)
         source = downloader.copy(self.tmp_dir)
         hashcalc = Hash(source)
         md5 = hashcalc.md5()
