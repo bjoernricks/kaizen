@@ -22,8 +22,7 @@
 import jam.logging
 
 from jam.error import JamError
-
-log = jam.logging.getLogger(__file__)
+from jam.phase.phase import phases_list
 
 DOWNLOAD = "download"
 EXTRACT = "extract"
@@ -47,38 +46,70 @@ class SequenceError(JamError):
 
 class Sequence(object):
 
-    def __init__(self, name, required_phase, result_phase, method_names,
-                 always=False, parent_seq=None):
+    def __init__(self, name, pre_sequence_name, post_sequence_name,
+                 required_phase_name, set_phase_name, unset_phase_name,
+                 method_names):
+        self.log = jam.logging.getLogger(self)
         self.name = name
-        self.parent_seq = parent_seq
-        self.required_phase = required_phase
-        self.result_phase = result_phase
+        self.pre_sequence_name = pre_sequence_name
+        self.post_sequence_name = post_sequence_name
+        self.required_phase_name = required_phase_name
+        if set_phase_name:
+            self.set_phase = phases_list.get(set_phase_name)
+        else:
+            self.set_phase = None
+        if unset_phase_name:
+            self.unset_phase = phases_list.get(unset_phase_name)
+        else:
+            self.unset_phase = None
         self.method_names = method_names
-        self.always = always
+        self.is_run = False
+        self.pre_sequence = None
+        self.post_sequence = None
 
-    def must_be_called(self, session):
-        return self.always or not (self.result_phase in session.get_phases())
+    def set_pre_sequence(self, sequence):
+        self.pre_sequence = sequence
+
+    def set_post_sequence(self, sequence):
+        self.post_sequence = sequence
 
     def __call__(self, session, force=False):
-        self.call(session, force)
+        if self.pre_sequence:
+            self.pre_sequence()
 
-    def handle_phase(self, session):
-        session.set_phase(self.result_phase)
-
-    def call(self, session, force=False):
-        call_me = self.must_be_called(session)
+        call_me = self.must_be_run(session)
         if not call_me and force:
             call_me = True
-            log.warn("Forcing to call a phase can have several side " \
-                     "effects. You should be really aware of what " \
-                     "you are doing!")
+            self.log.warn("Forcing to call a phase can have several side " \
+                          "effects. You should be really aware of what " \
+                          "you are doing!")
         if call_me:
-            if self.parent_seq:
-                self.parent_seq.call(session)
             self.call_methods(session)
             self.handle_phase(session)
-            return True
+            self.is_run = True
+
+        if self.post_sequence:
+            self.post_sequence()
+
+    def handle_phase(self, session):
+        if self.set_phase:
+            session.set_phase(self.set_phase)
+        if self.unset_phase:
+            session.unset_phase(self.unset_phase)
+
+    def must_be_run(self, session):
+        if self.pre_sequence:
+            if self.pre_sequence.has_been_run():
+                return True
+
+        phases = session.get_phases()
+        for phase in self.set_phase_name:
+            if not phase in phases:
+                return True
         return False
+
+    def has_been_run(self):
+        return self.is_run
 
     def call_methods(self, session):
         for method_name in self.method_names:
