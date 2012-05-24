@@ -210,8 +210,6 @@ class Session(object):
                 raise
             self.__dict__[name] = value
             return value
-        if not value:
-            return value
         if name in ["src_path", "build_path", "configure_args", "url",
                     "build_args", "patches", "configure_path", "patch_path",
                     "configure_cflags", "configure_ldflags", "configure_cc",
@@ -222,6 +220,8 @@ class Session(object):
                     "build_cxx", "build_cxxflags", "build_cpath",
                     "build_library_path",
                     ]:
+            if not value:
+                return value
             if isinstance(value, list):
                 newlist = self.__shadow.get(name)
                 if not newlist:
