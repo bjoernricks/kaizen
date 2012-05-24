@@ -94,7 +94,13 @@ class Session(object):
     build_seq = None
     configure_seq = None
     destroot_seq = None
-    activate_seq = None
+
+    delete_destroot_seq = None
+    delete_build_seq = None
+    distclean_seq = None
+    unpatch_seq = None
+    delete_source_seq = None
+    delete_download_seq = None
 
     groups = []
 
