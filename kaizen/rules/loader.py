@@ -41,12 +41,12 @@ class RulesLoader(Loader):
         return self.classes(module, Rules)
 
     def load(self, rulesname):
-        rulesstring = rulesname + ".rules"
-        ruless = self.ruless(rulesstring)
-        if not ruless:
+        rulestring = rulesname + ".rules"
+        rules = self.rules(rulestring)
+        if not rules:
             self.log.warn("Could not load any rules with name '%s'" %
                           rulesname)
             return None
-        rules = ruless[0]
+        rules = rules[0]
         self.log.debug("Loaded rules class '%s'" % rules.__name__)
         return rules
