@@ -28,7 +28,7 @@ import kaizen
 from kaizen.utils import real_path, get_number_of_cpus
 from kaizen.error import KaizenRuntimeError
 
-KAIZEN_CONFIG_FILES  = ["/etc/kaizenrc", real_path("~/.jam/jamrc")]
+KAIZEN_CONFIG_FILES  = ["/etc/kaizenrc", real_path("~/.kaizen/kaizenrc")]
 
 class Config(object):
     """
@@ -106,7 +106,7 @@ class Config(object):
 
         kaizen_dir = self.config.get("rootdir", None)
         if not kaizen_dir:
-            kaizen_dir = os.path.join(prefix, "jam")
+            kaizen_dir = os.path.join(prefix, "kaizen")
             self.config["rootdir"] = kaizen_dir
         if not self.config.get("system", None):
             self.config["system"] = os.path.join(kaizen_dir, "system")
