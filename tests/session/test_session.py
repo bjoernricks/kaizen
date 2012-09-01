@@ -1,8 +1,8 @@
 # vim: fileencoding=utf-8 et sw=4 ts=4 tw=80:
 
-# jam - An advanced package manager for Free Software
+# kaizen - Continously improve, build and manage free software
 #
-# Copyright (C) 2011  Björn Ricks <bjoern.ricks@googlemail.com>
+# Copyright (C) 2011  Björn Ricks <bjoern.ricks@gmail.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -27,21 +27,21 @@ import unittest
 test_dir = os.path.dirname(__file__)
 sys.path.append(os.path.join(test_dir, os.pardir, os.pardir))
 
-import jam.log
-from jam.session import Session
-from jam.session.wrapper import SessionLoader, SessionValidator
+import kaizen.log
+from kaizen.session import Session
+from kaizen.session.wrapper import SessionLoader, SessionValidator
 
 class MySession(Session):
     pass
 
 
-logger = jam.log.getLogger("jam").set_level(jam.log.Logger.NONE)
+logger = kaizen.log.getLogger("jam").set_level(jam.log.Logger.NONE)
 
 class TestConfig(object):
 
     def __init__(self):
         self.config = {}
-        self.config["jam_sessions"] = os.path.join(test_dir, "session")
+        self.config["kaizen_sessions"] = os.path.join(test_dir, "session")
 
     def get(self, value):
         return self.config.get(value, None)

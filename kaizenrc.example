@@ -1,5 +1,5 @@
-# jam section
-[jam]
+# kaizen section
+[kaizen]
 # default install prefix
 prefix = /opt/local
 
@@ -10,11 +10,11 @@ debug = 0
 verbose = 0
 
 # path to sessions
-sessions = ~/source/jam-sessions
+sessions = ~/source/kaizen-sessions
 
-# jam root dir
-# default is %(prefix)s/jam
-# rootdir = %(prefix)s/jam
+# kaizen root dir
+# default is %(prefix)s/kaizen
+# rootdir = %(prefix)s/kaizen
 
 # path to installed sessions
 # default is %(dir)s/destroot

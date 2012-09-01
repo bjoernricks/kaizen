@@ -1,8 +1,8 @@
 # vim: fileencoding=utf-8 et sw=4 ts=4 tw=80:
 
-# jam - An advanced package manager for Free Software
+# kaizen - Continously improve, build and manage free software
 #
-# Copyright (C) 2011  Björn Ricks <bjoern.ricks@googlemail.com>
+# Copyright (C) 2011  Björn Ricks <bjoern.ricks@gmail.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -19,10 +19,10 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 
 # 02110-1301 USA
 
-import jam.logging
+import kaizen.logging
 
-from jam.error import JamError
-from jam.phase.phase import phases_list
+from kaizen.error import JamError
+from kaizen.phase.phase import phases_list
 
 DOWNLOAD = "download"
 EXTRACT = "extract"
@@ -56,7 +56,7 @@ class Sequence(object):
     def __init__(self, name, pre_sequence_name, post_sequence_name,
                  required_phase_name, set_phase_name, unset_phase_name,
                  method_names):
-        self.log = jam.logging.getLogger(self)
+        self.log = kaizen.logging.getLogger(self)
         self.name = name
         self.pre_sequence_name = pre_sequence_name
         self.post_sequence_name = post_sequence_name

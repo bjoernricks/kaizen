@@ -1,8 +1,8 @@
-﻿jam - Orchestrate your Free Software
-====================================
+﻿kaizen - Continously improve, build and manage free software
+============================================================
 
-jam is a tool to build, install and maintain your software and is written in Python_
+kaizen is a tool to build, install and maintain your software and is written in Python_
 
-Currently jam requires Python 2.4 or higher.
+Currently kaizen requires Python 2.4 or higher.
 
 .. _python: http://www.python.org

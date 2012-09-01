@@ -1,8 +1,8 @@
 # vim: fileencoding=utf-8 et sw=4 ts=4 tw=80:
 
-# jam - An advanced package manager for Free Software
+# kaizen - Continously improve, build and manage free software
 #
-# Copyright (C) 2011  Björn Ricks <bjoern.ricks@googlemail.com>
+# Copyright (C) 2011  Björn Ricks <bjoern.ricks@gmail.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -21,12 +21,12 @@
 
 import os.path
 
-import jam.logging
+import kaizen.logging
 
 from ConfigParser import RawConfigParser
 
-from jam.session.handler import SessionHandler
-from jam.session.error import SessionError
+from kaizen.session.handler import SessionHandler
+from kaizen.session.error import SessionError
 
 class UnresolvedDependencies(SessionError):
 
@@ -52,7 +52,7 @@ class DependencyAnalyser(object):
         self.dependencies = dict()
         self.missing = dict()
         self.systemprovider = SystemProvider(config)
-        self.log = jam.logging.getLogger(self)
+        self.log = kaizen.logging.getLogger(self)
         self.systemprovider.load()
 
     def analyse_session(self, session):
@@ -146,7 +146,7 @@ class SystemProvider(object):
 
     def __init__(self, config):
         self.config = config
-        self.log = jam.logging.getLogger(self)
+        self.log = kaizen.logging.getLogger(self)
         self.configparser = RawConfigParser()
 
     def load(self, filename=None):

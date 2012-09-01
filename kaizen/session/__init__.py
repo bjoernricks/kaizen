@@ -1,8 +1,8 @@
 # vim: fileencoding=utf-8 et sw=4 ts=4 tw=80:
 
-# jam - An advanced package manager for Free Software
+# kaizen - Continously improve, build and manage free software
 #
-# Copyright (C) 2011  Björn Ricks <bjoern.ricks@googlemail.com>
+# Copyright (C) 2011  Björn Ricks <bjoern.ricks@gmail.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -19,12 +19,12 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 
 # 02110-1301 USA
 
-from jam.session.session import Session
-from jam.session.manager import SessionManager
-from jam.session.error import SessionError
+from kaizen.session.session import Session
+from kaizen.session.manager import SessionManager
+from kaizen.session.error import SessionError
 
-from jam.session.systems import MakeSession, ConfigureSession, \
+from kaizen.session.systems import MakeSession, ConfigureSession, \
                                 CMakeSession, PythonSession, \
                                 PythonDevelopSession
 
-from jam.session.create import SessionCreator
+from kaizen.session.create import SessionCreator

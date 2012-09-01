@@ -1,8 +1,8 @@
 # vim: fileencoding=utf-8 et sw=4 ts=4 tw=80:
 
-# jam - An advanced package manager for Free Software
+# kaizen - Continously improve, build and manage free software
 #
-# Copyright (C) 2011  Björn Ricks <bjoern.ricks@googlemail.com>
+# Copyright (C) 2011  Björn Ricks <bjoern.ricks@gmail.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -24,12 +24,12 @@ import os.path
 import shutil
 import ftplib
 
-import jam.logging
+import kaizen.logging
 
 from urlparse import urlparse
 
-from jam.utils import Hash
-from jam.error import JamError
+from kaizen.utils import Hash
+from kaizen.error import JamError
 
 class DownloaderError(JamError):
     pass
@@ -74,7 +74,7 @@ class FtpDownloader(Downloader):
 
     def __init__(self, url):
         self.url = url
-        self.log = jam.logging.getLogger("jam.ftpdownloader")
+        self.log = kaizen.logging.getLogger("jam.ftpdownloader")
 
     def copy(self, filename, overwrite=False):
         ftp = ftplib.FTP(self.url.netloc)
@@ -101,7 +101,7 @@ class HttpDownloader(Downloader):
 
     def __init__(self, url):
         self.url = url
-        self.log = jam.logging.getLogger("jam.httpdownloader")
+        self.log = kaizen.logging.getLogger("jam.httpdownloader")
 
     def copy(self, filename, overwrite=False):
         u = urllib2.urlopen(self.url)
@@ -132,7 +132,7 @@ class LocalFileDownloader(Downloader):
     def __init__(self, url, root_dir=None):
         self.url = url
         self.root_dir = root_dir
-        self.log = jam.logging.getLogger("jam.localfiledownloader")
+        self.log = kaizen.logging.getLogger("jam.localfiledownloader")
 
     def copy(self, filename, overwrite=False):
         path = self.url.path
@@ -157,7 +157,7 @@ class UrlDownloader(Downloader):
     def __init__(self, session, urlstr):
         self.url = urlstr
         self.session = session
-        self.log = jam.logging.getLogger("jam.downloader")
+        self.log = kaizen.logging.getLogger("jam.downloader")
 
         if self.url.startswith("git"):
             self.downloader = GitDownloader(self.url, session.branch if

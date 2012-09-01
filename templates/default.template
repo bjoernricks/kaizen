@@ -1,6 +1,6 @@
-import jam.session
+import kaizen.session
 
-class ${sessionname}(jam.session.Session):
+class ${sessionname}(kaizen.session.Session):
 
     url = "${url}"
     hash = { "md5" : "${md5}",

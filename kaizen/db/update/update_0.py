@@ -1,8 +1,8 @@
 # vim: fileencoding=utf-8 et sw=4 ts=4 tw=80:
 
-# jam - An advanced package manager for Free Software
+# kaizen - Continously improve, build and manage free software
 #
-# Copyright (C) 2011  Björn Ricks <bjoern.ricks@googlemail.com>
+# Copyright (C) 2011  Björn Ricks <bjoern.ricks@gmail.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -19,10 +19,10 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 
 # 02110-1301 USA
 
-from jam.db.update.update import Update as RootUpdate
-from jam.db.objects import SessionPhase, InstallDirectories
-from jam.session.handler import SessionHandler
-from jam.utils.helpers import real_path
+from kaizen.db.update.update import Update as RootUpdate
+from kaizen.db.objects import SessionPhase, InstallDirectories
+from kaizen.session.handler import SessionHandler
+from kaizen.utils.helpers import real_path
 
 
 class Update(RootUpdate):

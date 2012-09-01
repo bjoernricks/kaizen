@@ -1,8 +1,8 @@
 # vim: fileencoding=utf-8 et sw=4 ts=4 tw=80:
 
-# jam - An advanced package manager for Free Software
+# kaizen - Continously improve, build and manage free software
 #
-# Copyright (C) 2011  Björn Ricks <bjoern.ricks@googlemail.com>
+# Copyright (C) 2011  Björn Ricks <bjoern.ricks@gmail.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -23,26 +23,26 @@ import os.path
 
 from ConfigParser import SafeConfigParser
 
-import jam
+import kaizen
 
-from jam.utils import real_path, get_number_of_cpus
-from jam.error import JamRuntimeError
+from kaizen.utils import real_path, get_number_of_cpus
+from kaizen.error import JamRuntimeError
 
-JAM_CONFIG_FILES  = ["/etc/jamrc", real_path("~/.jam/jamrc")]
+JAM_CONFIG_FILES  = ["/etc/kaizenrc", real_path("~/.jam/jamrc")]
 
 class Config(object):
     """
-    Config class for several jam settings
+    Config class for several kaizen settings
 
     Variables are:
-    * version - String: jam version
+    * version - String: kaizen version
     * quiet - Bool: only return parsable output and don't display addition user
                     related output
     * debug - Bool: debug is enabled/disabled (default is False)
     * verbose - Bool: commands should print it's output (default is False)
     * debugdb - Bool: database queries are printed (default is False)
     * prefix - String: absolute path to the prefix (default is /usr/local)
-    * rootdir - String: path to the rootdir (default is %(prefix)s/jam)
+    * rootdir - String: path to the rootdir (default is %(prefix)s/kaizen)
     * downloadroot - String: path to the directory to put in downloaded source
                              (default is %(rootdir)s/cache
     * destroot - String: path to the directory to put in installed files
@@ -50,7 +50,7 @@ class Config(object):
     * buildroot - String: path to the build directory (default is
                           %(rootdir)s/cache)
     * sessions - List: paths to the sessions (default is [%(rootdir)s/sessions])
-    * packagepath - String: absolute path to the jam python package (calculated
+    * packagepath - String: absolute path to the kaizen python package (calculated
                             at runtime)
     * system - String: path to an additional config file containing system
                        releated settings
@@ -81,11 +81,11 @@ class Config(object):
         self.configparser = SafeConfigParser()
         self.configparser.read(files) 
 
-        if not self.configparser.has_section("jam"):
-            self.configparser.add_section("jam")
+        if not self.configparser.has_section("kaizen"):
+            self.configparser.add_section("kaizen")
         prefix = real_path(self._get("prefix", defaults["prefix"]))
 
-        self.config["version"] = jam.__version__
+        self.config["version"] = kaizen.__version__
         self.config["prefix"] = prefix
         self.config["verbose"] = self._getbool("verbose", defaults["verbose"])
         self.config["quiet"] = self._getbool("quiet", defaults["quiet"])
@@ -100,24 +100,24 @@ class Config(object):
         self.config["buildjobs"] = self._getint("buildjobs",
                                                 defaults["buildjobs"])
 
-        jam_package_path = os.path.abspath(os.path.join(os.path.dirname(__file__),
+        kaizen_package_path = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                                         os.path.pardir))
-        self.config["packagepath"] = jam_package_path
+        self.config["packagepath"] = kaizen_package_path
 
-        jam_dir = self.config.get("rootdir", None)
-        if not jam_dir:
-            jam_dir = os.path.join(prefix, "jam")
-            self.config["rootdir"] = jam_dir
+        kaizen_dir = self.config.get("rootdir", None)
+        if not kaizen_dir:
+            kaizen_dir = os.path.join(prefix, "jam")
+            self.config["rootdir"] = kaizen_dir
         if not self.config.get("system", None):
-            self.config["system"] = os.path.join(jam_dir, "system")
+            self.config["system"] = os.path.join(kaizen_dir, "system")
         if not self.config.get("downloadroot", None):
-            self.config["downloadroot"] = os.path.join(jam_dir, "cache")
+            self.config["downloadroot"] = os.path.join(kaizen_dir, "cache")
         if not self.config.get("sessions"):
-            self.config["sessions"] = [os.path.join(jam_dir, "session")]
+            self.config["sessions"] = [os.path.join(kaizen_dir, "session")]
         if not self.config.get("destroot", None):
-            self.config["destroot"] = os.path.join(jam_dir, "destroot")
+            self.config["destroot"] = os.path.join(kaizen_dir, "destroot")
         if not self.config.get("buildroot", None):
-            self.config["buildroot"] = os.path.join(jam_dir, "cache")
+            self.config["buildroot"] = os.path.join(kaizen_dir, "cache")
         if not self.config.get("appsdir", None):
             self.config["appsdir"] = os.path.join(prefix, "Applications")
         if not self.config.get("buildjobs") > 0:
@@ -127,7 +127,7 @@ class Config(object):
         if value in self.preferred:
             return self.preferred[value]
         try:
-            return self.configparser.get("jam", value)
+            return self.configparser.get("kaizen", value)
         except:
             return default
 
@@ -135,7 +135,7 @@ class Config(object):
         if value in self.preferred:
             return self.preferred[value]
         try:
-            return self.configparser.getboolean("jam", value)
+            return self.configparser.getboolean("kaizen", value)
         except:
             return default
 
@@ -143,7 +143,7 @@ class Config(object):
         if value in self.preferred:
             return self.preferred[value]
         try:
-            return self.configparser.getint("jam", value)
+            return self.configparser.getint("kaizen", value)
         except:
             return default
 

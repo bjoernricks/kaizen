@@ -1,8 +1,8 @@
 # vim: fileencoding=utf-8 et sw=4 ts=4 tw=80:
 
-# jam - An advanced package manager for Free Software
+# kaizen - Continously improve, build and manage free software
 #
-# Copyright (C) 2011  Björn Ricks <bjoern.ricks@googlemail.com>
+# Copyright (C) 2011  Björn Ricks <bjoern.ricks@gmail.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -19,9 +19,9 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 
 # 02110-1301 USA
 
-from jam.system.command import Command, Configure, Make, CMake, Copy, Replace, \
+from kaizen.system.command import Command, Configure, Make, CMake, Copy, Replace, \
                                Delete, Move, Mkdirs
 
-from jam.system.patch import Patch, Quilt, Simple
+from kaizen.system.patch import Patch, Quilt, Simple
 
-from jam.system.extract import ArchiveFile, NoneFile
+from kaizen.system.extract import ArchiveFile, NoneFile

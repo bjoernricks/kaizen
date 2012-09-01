@@ -1,8 +1,8 @@
 # vim: fileencoding=utf-8 et sw=4 ts=4 tw=80:
 
-# jam - An advanced package manager for Free Software
+# kaizen - Continously improve, build and manage free software
 #
-# Copyright (C) 2011  Björn Ricks <bjoern.ricks@googlemail.com>
+# Copyright (C) 2011  Björn Ricks <bjoern.ricks@gmail.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -23,11 +23,11 @@ import os.path
 import tarfile
 import zipfile
 
-import jam.logging
+import kaizen.logging
 
-from jam.error import JamRuntimeError
+from kaizen.error import JamRuntimeError
 
-log = jam.logging.getLogger(__name__)
+log = kaizen.logging.getLogger(__name__)
 
 
 def list_contents(dir):
@@ -93,7 +93,7 @@ def extract_file(file_name, dest_dir):
                       (file_name, dest_dir))
         file = tarfile.TarFile(file_name, "r", bz_file)
     elif file_name.endswith(".xz"):
-        from jam.utils.xz import XZFile
+        from kaizen.utils.xz import XZFile
         log.debug("Extracting xz file '%s' to '%s'" % (file_name, dest_dir))
         file = XZFile(file_name)
     elif tarfile.is_tarfile(file_name):

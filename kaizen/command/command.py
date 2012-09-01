@@ -1,8 +1,8 @@
 # vim: fileencoding=utf-8 et sw=4 ts=4 tw=80:
 
-# jam - An advanced package manager for Free Software
+# kaizen - Continously improve, build and manage free software
 #
-# Copyright (C) 2011  Björn Ricks <bjoern.ricks@googlemail.com>
+# Copyright (C) 2011  Björn Ricks <bjoern.ricks@gmail.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -19,9 +19,9 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 
 # 02110-1301 USA
 
-from jam.session.create import SessionCreator
-from jam.console.console import Console
-from jam.command.parser import NameVersionParser
+from kaizen.session.create import SessionCreator
+from kaizen.console.console import Console
+from kaizen.command.parser import NameVersionParser
 
 
 class Command(object):
@@ -294,13 +294,13 @@ class CreateCommand(Command):
         subparser.add_argument("url", nargs=1, help="url to download source file")
         subparser.add_argument("--template", choices=["cmake", "python",
                                "autotools"], help="specify a template for the"\
-                               " new session. If empty jam will guess the"\
+                               " new session. If empty kaizen will guess the"\
                                " right one.")
         subparser.add_argument("--name", "-n", help="name of the new "\
-                               "session. If empty jam will determine the "\
+                               "session. If empty kaizen will determine the "\
                                " name from the source file")
         subparser.add_argument("--session-version", "-s", help="version of the new "\
-                               "session. If empty jam will determine the "\
+                               "session. If empty kaizen will determine the "\
                                " version from the source file", dest="version")
         subparser.add_argument("--keep", action="store_true", 
                                help="keep temporary directory")
@@ -537,7 +537,7 @@ class QuiltCommand(CommandWithSubCommands):
 class UpgradeCommand(Command):
 
     def __init__(self):
-        description = "Upgrade the current jam installation"
+        description = "Upgrade the current kaizen installation"
         super(UpgradeCommand, self).__init__("upgrade", self.main, [],
                                              description)
 

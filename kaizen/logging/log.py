@@ -12,7 +12,7 @@ def getLogger(name):
     return logging.getLogger(logger_name)
 
 def getRootLogger():
-    return logging.getLogger("jam")
+    return logging.getLogger("kaizen")
 
 def out(message, fg=0, bg=0):
     print "%s%s%s" % (Color.start(fg, bg), message, Color.reset())

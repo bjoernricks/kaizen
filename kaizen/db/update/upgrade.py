@@ -1,8 +1,8 @@
 # vim: fileencoding=utf-8 et sw=4 ts=4 tw=80:
 
-# jam - An advanced package manager for Free Software
+# kaizen - Continously improve, build and manage free software
 #
-# Copyright (C) 2011  Björn Ricks <bjoern.ricks@googlemail.com>
+# Copyright (C) 2011  Björn Ricks <bjoern.ricks@gmail.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -21,13 +21,13 @@
 
 import datetime
 
-import jam.logging
+import kaizen.logging
 
-import jam.db.update.update_0 as update_0
+import kaizen.db.update.update_0 as update_0
 
-from jam.db.db import Db
-from jam.db.objects import UpdateVersion
-from jam.db.update.error import UpdateError
+from kaizen.db.db import Db
+from kaizen.db.objects import UpdateVersion
+from kaizen.db.update.error import UpdateError
 
 
 updates = {
@@ -40,7 +40,7 @@ class Upgrade(object):
         self.config = config
         self.db = Db(config)
         cls = self.__class__
-        self.log = jam.logging.getLogger(self)
+        self.log = kaizen.logging.getLogger(self)
 
     def run(self):
         version = self.db.schema.version

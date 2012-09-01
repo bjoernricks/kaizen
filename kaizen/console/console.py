@@ -1,8 +1,8 @@
 # vim: fileencoding=utf-8 et sw=4 ts=4 tw=80:
 
-# jam - An advanced package manager for Free Software
+# kaizen - Continously improve, build and manage free software
 #
-# Copyright (C) 2011  Björn Ricks <bjoern.ricks@googlemail.com>
+# Copyright (C) 2011  Björn Ricks <bjoern.ricks@gmail.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -21,11 +21,11 @@
 
 import os
 
-from jam.session.manager import SessionManager, SessionsList
-from jam.session.depend import Dependency, SystemProvider
-from jam.system.patch import Quilt
-from jam.db.update.upgrade import Upgrade
-from jam.logging.out import out
+from kaizen.session.manager import SessionManager, SessionsList
+from kaizen.session.depend import Dependency, SystemProvider
+from kaizen.system.patch import Quilt
+from kaizen.db.update.upgrade import Upgrade
+from kaizen.logging.out import out
 
 
 class Console(object):

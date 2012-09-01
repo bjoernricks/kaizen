@@ -1,5 +1,5 @@
-import jam.session
+import kaizen.session
 
-class DerivedTestSession(jam.session.CMakeSession):
+class DerivedTestSession(kaizen.session.CMakeSession):
     version = "1.0.abc"
 

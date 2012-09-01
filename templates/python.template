@@ -1,6 +1,6 @@
-import jam.session
+import kaizen.session
 
-class ${sessionname}(jam.session.PythonSession):
+class ${sessionname}(kaizen.session.PythonSession):
 
     url = "${url}"
     hash = { "md5" : "${md5}",
@@ -8,7 +8,7 @@ class ${sessionname}(jam.session.PythonSession):
     version = "${version}"
     name = "${detectedname}"
 
-    # jam.session.PythonSession already depends on python
+    # kaizen.session.PythonSession already depends on python
     # depends = ["python"]
 
     # uncomment to set path to source directory

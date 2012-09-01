@@ -1,8 +1,8 @@
 # vim: fileencoding=utf-8 et sw=4 ts=4 tw=80:
 
-# jam - An advanced package manager for Free Software
+# kaizen - Continously improve, build and manage free software
 #
-# Copyright (C) 2011  Björn Ricks <bjoern.ricks@googlemail.com>
+# Copyright (C) 2011  Björn Ricks <bjoern.ricks@gmail.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -22,28 +22,28 @@
 import os.path
 import shutil
 
-import jam.logging
+import kaizen.logging
 
-from jam.external.sqlalchemy import and_
-from jam.db.db import Db
-from jam.db.objects import File, Directory, SessionPhase, InstallDirectories
-from jam.phase.phase import phases_list, DOWNLOADED, EXTRACTED, PATCHED, \
+from kaizen.external.sqlalchemy import and_
+from kaizen.db.db import Db
+from kaizen.db.objects import File, Directory, SessionPhase, InstallDirectories
+from kaizen.phase.phase import phases_list, DOWNLOADED, EXTRACTED, PATCHED, \
                             CONFIGURED, BUILT, DESTROOTED, ACTIVATED
-from jam.phase.sequence import DOWNLOAD, EXTRACT, PATCH, CONFIGURE, BUILD, \
+from kaizen.phase.sequence import DOWNLOAD, EXTRACT, PATCH, CONFIGURE, BUILD, \
                                DESTROOT, ACTIVATE, DEACTIVATE, DELETE_SOURCE, \
                                DELETE_DOWNLOAD, DELETE_BUILD, DELETE_DESTROOT, \
                                UNPATCH, DISTCLEAN, SetSequence, UnSetSequence
-from jam.session.loader import SessionLoader
-from jam.session.error import SessionError
-from jam.session.validator import SessionValidator
-from jam.utils import real_path, list_dir, list_subdir
-from jam.utils.signals import Signal
+from kaizen.session.loader import SessionLoader
+from kaizen.session.error import SessionError
+from kaizen.session.validator import SessionValidator
+from kaizen.utils import real_path, list_dir, list_subdir
+from kaizen.utils.signals import Signal
 
 
 class SessionHandler(object):
 
     def __init__(self, config, session_name, dist_version=None, force=False):
-        self.log = jam.logging.getLogger(self)
+        self.log = kaizen.logging.getLogger(self)
         self.config = config
         self.session_name = session_name
         self.force = force
@@ -295,11 +295,11 @@ class SessionHandler(object):
         return query.all()
 
     def build_depends(self):
-        from jam.session.depend import DependencyAnalyser
+        from kaizen.session.depend import DependencyAnalyser
         return DependencyAnalyser(self.config, self).analyse()
 
     def runtime_depends(self):
-        from jam.session.depend import RuntimeDependencyAnalyser
+        from kaizen.session.depend import RuntimeDependencyAnalyser
         return RuntimeDependencyAnalyser(self.config, self).analyse()
 
     def depends(self):

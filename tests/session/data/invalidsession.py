@@ -1,4 +1,4 @@
-import jam.session
+import kaizen.session
 
-class InvalidSession(jam.session.Session):
+class InvalidSession(kaizen.session.Session):
     version = None

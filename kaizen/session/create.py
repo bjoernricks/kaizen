@@ -1,8 +1,8 @@
 # vim: fileencoding=utf-8 et sw=4 ts=4 tw=80:
 
-# jam - An advanced package manager for Free Software
+# kaizen - Continously improve, build and manage free software
 #
-# Copyright (C) 2011  Björn Ricks <bjoern.ricks@googlemail.com>
+# Copyright (C) 2011  Björn Ricks <bjoern.ricks@gmail.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -23,13 +23,13 @@ import os
 import os.path
 import shutil
 
-import jam.logging
+import kaizen.logging
 
 from tempfile import mkdtemp
 
-from jam.utils import Template, Hash, list_contents, extract_file, real_path
-from jam.system.download import UrlDownloader
-from jam.session.error import SessionCreateError
+from kaizen.utils import Template, Hash, list_contents, extract_file, real_path
+from kaizen.system.download import UrlDownloader
+from kaizen.session.error import SessionCreateError
 
 
 class TypeDetector(object):
@@ -92,7 +92,7 @@ class SessionCreator(object):
         self.name = None
         self.version = None
         self.tmp_dir = None
-        self.log = jam.logging.getLogger("jam.sessioncreator")
+        self.log = kaizen.logging.getLogger("jam.sessioncreator")
 
     def set_template(self, template):
         self.template = template

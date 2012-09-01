@@ -1,8 +1,8 @@
 # vim: fileencoding=utf-8 et sw=4 ts=4 tw=80:
 
-# jam - An advanced package manager for Free Software
+# kaizen - Continously improve, build and manage free software
 #
-# Copyright (C) 2011  Björn Ricks <bjoern.ricks@googlemail.com>
+# Copyright (C) 2011  Björn Ricks <bjoern.ricks@gmail.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -21,13 +21,13 @@
 
 import os.path
 
-import jam.logging
+import kaizen.logging
 
-from jam.db.tables import Tables
-from jam.db.objects import Info, Installed, File, Directory, SessionPhase, \
+from kaizen.db.tables import Tables
+from kaizen.db.objects import Info, Installed, File, Directory, SessionPhase, \
         UpdateVersion, InstallDirectories, SchemaVersion
-from jam.external.sqlalchemy import String, create_engine
-from jam.external.sqlalchemy.orm import mapper, sessionmaker
+from kaizen.external.sqlalchemy import String, create_engine
+from kaizen.external.sqlalchemy.orm import mapper, sessionmaker
 
 CURRENT_DB_SCHEMA = 0
 
@@ -41,11 +41,11 @@ class Db(object):
     def __init__(self, config):
         if not "_already_init" in dir(self):
             cls = self.__class__
-            self.log = jam.logging.getLogger("%s.%s" % (cls.__module__,
+            self.log = kaizen.logging.getLogger("%s.%s" % (cls.__module__,
                                                         cls.__name__))
             rootdir = config.get("rootdir")
             debug_db = config.get("debugdb")
-            db_path = os.path.join(rootdir, "jam.db")
+            db_path = os.path.join(rootdir, "kaizen.db")
             if not os.path.exists(rootdir):
                 os.makedirs(rootdir)
             self.engine = create_engine("sqlite:///%s" % db_path,

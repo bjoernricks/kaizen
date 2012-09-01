@@ -1,6 +1,6 @@
-import jam.session
+import kaizen.session
 
-class TestSession(jam.session.Session):
+class TestSession(kaizen.session.Session):
 
     version = "1.0"
     name = "test"

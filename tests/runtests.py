@@ -1,8 +1,8 @@
 # vim: fileencoding=utf-8 et sw=4 ts=4 tw=80:
 
-# jam - An advanced package manager for Free Software
+# kaizen - Continously improve, build and manage free software
 #
-# Copyright (C) 2011  Björn Ricks <bjoern.ricks@googlemail.com>
+# Copyright (C) 2011  Björn Ricks <bjoern.ricks@gmail.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -27,7 +27,7 @@ import optparse
 test_dir = os.path.abspath(os.path.dirname(__file__))
 sys.path.append(os.path.join(test_dir, os.pardir))
 
-from jam.utils import list_dir
+from kaizen.utils import list_dir
 
 def find_test_modules(dirname, package = None):
     if package:

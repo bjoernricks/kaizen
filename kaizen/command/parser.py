@@ -1,8 +1,8 @@
 # vim: fileencoding=utf-8 et sw=4 ts=4 tw=80:
 
-# jam - An advanced package manager for Free Software
+# kaizen - Continously improve, build and manage free software
 #
-# Copyright (C) 2011  Björn Ricks <bjoern.ricks@googlemail.com>
+# Copyright (C) 2011  Björn Ricks <bjoern.ricks@gmail.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -19,9 +19,9 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 
 # 02110-1301 USA
 
-import jam
+import kaizen
 
-from jam.external.argparse import ArgumentParser as ArgParser, ArgumentError
+from kaizen.external.argparse import ArgumentParser as ArgParser, ArgumentError
 
 
 class ArgumentParser(ArgParser):
@@ -29,7 +29,7 @@ class ArgumentParser(ArgParser):
     def __init__(self, usage=None, create_late=False, **kwargs):
         if not usage:
             usage = "%(prog)s [options] command {arguments}"
-        description = "jam - Orchestrate your software"
+        description = "kaizen - Orchestrate your software"
         kwargs.pop("description", None)
         kwargs.pop("usage", None)
         add_help = kwargs.pop("add_help", False)
@@ -45,14 +45,14 @@ class ArgumentParser(ArgParser):
                           dest="debug",
                           help="enable debug output")
         self.group.add_argument("--settings", action="store_true",
-                          help="print jam settings")
+                          help="print kaizen settings")
         if not create_late:
             self._add_additional_arguments()
 
     def _add_additional_arguments(self):
         if self.args_added:
             return
-        version = "%(prog)s " + jam.__version__
+        version = "%(prog)s " + kaizen.__version__
         self.group.add_argument("--version", action="version", version=version)
         self.group.add_argument("-v", "--verbose", action="store_true",
                           dest="verbose",

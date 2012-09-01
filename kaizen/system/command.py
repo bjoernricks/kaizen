@@ -1,8 +1,8 @@
 # vim: fileencoding=utf-8 et sw=4 ts=4 tw=80:
 
-# jam - An advanced package manager for Free Software
+# kaizen - Continously improve, build and manage free software
 #
-# Copyright (C) 2011  Björn Ricks <bjoern.ricks@googlemail.com>
+# Copyright (C) 2011  Björn Ricks <bjoern.ricks@gmail.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -25,10 +25,10 @@ import shutil
 import re
 import glob
 
-import jam.run
-import jam.logging
+import kaizen.run
+import kaizen.logging
 
-from jam.utils import real_path
+from kaizen.utils import real_path
 
 class BaseCommand(object):
 
@@ -90,7 +90,7 @@ class BuildSystem(BuildCommand):
         self.build_dir = build_dir
         self.cwd_dir = real_path(build_dir)
         self.verbose = verbose
-        self.log = jam.logging.getLogger("jam.buildsystem")
+        self.log = kaizen.logging.getLogger("jam.buildsystem")
 
 
 class Configure(BuildSystem):
@@ -100,7 +100,7 @@ class Configure(BuildSystem):
         cmd.extend(self.args)
         self.log.debug("Configure run '%s' in '%s' with env '%s'" % (cmd,
                         self.cwd_dir, self.env))
-        jam.run.call(cmd, not self.verbose, extra_env=self.env,
+        kaizen.run.call(cmd, not self.verbose, extra_env=self.env,
                      cwd=self.cwd_dir)
 
 
@@ -112,7 +112,7 @@ class CMake(BuildSystem):
         cmd.append(real_path(self.src_dir))
         self.log.debug("CMake run '%s' in '%s' with env '%s'" % (cmd,
                        self.cwd_dir, self.env))
-        jam.run.call(cmd, not self.verbose, extra_env=self.env,
+        kaizen.run.call(cmd, not self.verbose, extra_env=self.env,
                      cwd=self.cwd_dir)
 
 
@@ -123,14 +123,14 @@ class Make(BuildCommand):
         self.dir = dir
         self.cwd_dir = real_path(dir)
         self.verbose = verbose
-        self.log = jam.logging.getLogger("jam.make")
+        self.log = kaizen.logging.getLogger("jam.make")
 
     def run(self, args=[]):
         cmd = ["make"]
         cmd.extend(args)
         self.log.debug("Make run '%s' in '%s' with env '%s'" % (cmd,
                        self.cwd_dir, self.env))
-        jam.run.call(cmd, not self.verbose, extra_env=self.env, cwd=self.cwd_dir)
+        kaizen.run.call(cmd, not self.verbose, extra_env=self.env, cwd=self.cwd_dir)
 
     def install(self, dest_dir=None):
         args = []
@@ -154,7 +154,7 @@ class Command(BaseCommand):
         self.args = args
         self.cwd_dir = real_path(cwd)
         self.verbose = verbose
-        self.log = jam.logging.getLogger("jam.command")
+        self.log = kaizen.logging.getLogger("jam.command")
 
     def run(self):
         cmd = [self.cmd]
@@ -163,7 +163,7 @@ class Command(BaseCommand):
             cmd.extend(new_arg)
         self.log.debug("Running command '%s' in '%s' with env %s" % (cmd,
             self.cwd_dir, self.env))
-        jam.run.call(cmd, not self.verbose, cwd=self.cwd_dir, extra_env=self.env)
+        kaizen.run.call(cmd, not self.verbose, cwd=self.cwd_dir, extra_env=self.env)
 
     def set_args(self, args):
         self.args = args
@@ -182,7 +182,7 @@ class Patch(Command):
 class Copy(BaseCommand):
 
     def __init__(self, src, dest):
-        self.log = jam.logging.getLogger(self)
+        self.log = kaizen.logging.getLogger(self)
         self.src = src
         self.dest = dest
 
@@ -220,7 +220,7 @@ class Copy(BaseCommand):
 class Move(BaseCommand):
 
     def __init__(self, src, dest):
-        self.log = jam.logging.getLogger(self)
+        self.log = kaizen.logging.getLogger(self)
         self.src = src
         self.dest = dest
 
@@ -233,7 +233,7 @@ class Move(BaseCommand):
 class Replace(BaseCommand):
 
     def __init__(self, pattern, replace, source, dest=None):
-        self.log = jam.logging.getLogger(self)
+        self.log = kaizen.logging.getLogger(self)
         self.pattern = pattern
         self.replace = replace
         self.source = source
@@ -263,7 +263,7 @@ class Delete(BaseCommand):
 
     def __init__(self, dir):
         self.dir = dir
-        self.log = jam.logging.getLogger(self)
+        self.log = kaizen.logging.getLogger(self)
 
     def run(self):
         # TODO: delete only content of dir
@@ -284,7 +284,7 @@ class Mkdirs(BaseCommand):
 
     def __init__(self, path):
         self.path = path
-        self.log = jam.logging.getLogger(self)
+        self.log = kaizen.logging.getLogger(self)
 
     def run(self):
         if os.path.exists(self.path):

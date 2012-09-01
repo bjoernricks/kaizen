@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # vim: fileencoding=utf-8 et sw=4 ts=4 tw=80:
 
-# jam - An advanced package manager for Free Software
+# kaizen - Continously improve, build and manage free software
 #
-# Copyright (C) 2011  Björn Ricks <bjoern.ricks@googlemail.com>
+# Copyright (C) 2011  Björn Ricks <bjoern.ricks@gmail.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -24,24 +24,24 @@
 from setuptools import setup, find_packages
 
 import os.path
-import jam.config
+import kaizen.config
 
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__),
                              fname)).read()
 
-setup(name="jam",
-      version=jam.__version__,
+setup(name="kaizen",
+      version=kaizen.__version__,
       description="",
       author="Björn Ricks",
       author_email="bjoern.ricks@gmail.com",
-      url="https://github.com/bjoernricks/jam",
+      url="https://github.com/bjoernricks/kaizen",
       license = "LGPLv2+, GPLv2+",
       long_description=read("README"),
       packages=find_packages(),
       package_data = {"" : ["*.txt", "*.rst"],
                      },
-      # entry_points = { "console_scripts": ["jam=jam.console.main:main"] },
+      # entry_points = { "console_scripts": ["kaizen=jam.console.main:main"] },
       classifiers=[
           "Development Status :: 3 - Alpha",
           "Topic :: Utilities",

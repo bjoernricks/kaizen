@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # vim: fileencoding=utf-8 et sw=4 ts=4 tw=80:
 
-# jam - An advanced package manager for Free Software
+# kaizen - Continously improve, build and manage free software
 #
-# Copyright (C) 2011  Björn Ricks <bjoern.ricks@googlemail.com>
+# Copyright (C) 2011  Björn Ricks <bjoern.ricks@gmail.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -22,12 +22,12 @@
 
 import sys
 
-import jam.command
+import kaizen.command
 
-from jam.config import Config, JAM_CONFIG_FILES
-from jam.utils import Loader
-from jam.command.parser import ArgumentParser
-from jam.logging.out import out
+from kaizen.config import Config, JAM_CONFIG_FILES
+from kaizen.utils import Loader
+from kaizen.command.parser import ArgumentParser
+from kaizen.logging.out import out
 
 class Main(object):
 
@@ -44,11 +44,11 @@ class Main(object):
 
     def main(self):
         if sys.version_info < (2, 4):
-            raise Exception("jam requires Python 2.4 or higher.")
+            raise Exception("kaizen requires Python 2.4 or higher.")
 
-        formatter = jam.logging.Formatter("%(levelname)s - %(name)s - %(message)s")
-        self.logger = jam.logging.getRootLogger()
-        handler = jam.logging.ColorStreamHandler()
+        formatter = kaizen.logging.Formatter("%(levelname)s - %(name)s - %(message)s")
+        self.logger = kaizen.logging.getRootLogger()
+        handler = kaizen.logging.ColorStreamHandler()
         handler.setFormatter(formatter)
         self.logger.addHandler(handler)
 
@@ -68,13 +68,13 @@ class Main(object):
         config = Config(JAM_CONFIG_FILES, vars(options))
 
         if config.get("debug"):
-            self.logger.setLevel(jam.logging.DEBUG)
+            self.logger.setLevel(kaizen.logging.DEBUG)
 
         subparsers = parser.add_subparsers(dest="command", title="commands",
                                            description="valid commands",
                                            metavar="")
 
-        for command in Loader().classes(jam.command, all=True):
+        for command in Loader().classes(kaizen.command, all=True):
             command().add_parser(subparsers)
 
         options = parser.parse_args(all_args)

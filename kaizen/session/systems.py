@@ -1,8 +1,8 @@
 # vim: fileencoding=utf-8 et sw=4 ts=4 tw=80:
 
-# jam - An advanced package manager for Free Software
+# kaizen - Continously improve, build and manage free software
 #
-# Copyright (C) 2011  Björn Ricks <bjoern.ricks@googlemail.com>
+# Copyright (C) 2011  Björn Ricks <bjoern.ricks@gmail.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -23,10 +23,10 @@ import sys
 import os
 import os.path
 
-from jam.logging.log import getLogger
-from jam.session.error import SessionError
-from jam.session.session import Session
-from jam.system.command import Configure, CMake, Make, Command, Copy, Delete
+from kaizen.logging.log import getLogger
+from kaizen.session.error import SessionError
+from kaizen.session.session import Session
+from kaizen.system.command import Configure, CMake, Make, Command, Copy, Delete
 
 class SessionCmd(object):
 
@@ -243,19 +243,19 @@ class PythonDevelopSession(PythonSession):
         Delete(os.path.join(self.python_path, "easy-install.pth")).run()
 
     def post_activate(self):
-        self.read_jam_pth()
-        self.add_jam_pth_entry()
-        self.write_jam_pth()
+        self.read_kaizen_pth()
+        self.add_kaizen_pth_entry()
+        self.write_kaizen_pth()
 
     def post_deactivate(self):
-        self.read_jam_pth()
-        self.delete_jam_pth()
-        self.write_jam_pth()
+        self.read_kaizen_pth()
+        self.delete_kaizen_pth()
+        self.write_kaizen_pth()
 
-    def read_jam_pth(self):
+    def read_kaizen_pth(self):
         self.entries = []
         pth_file = os.path.join(self.prefix, self.python_package_path,
-                                "jam-sessions.pth")
+                                "kaizen-sessions.pth")
         if not os.path.isfile(pth_file):
             return
         f = open(pth_file, "r")
@@ -270,23 +270,23 @@ class PythonDevelopSession(PythonSession):
         finally:
             f.close()
 
-        self.log.debug("Current jam-sessions.pth entries are %r" % self.entries)
+        self.log.debug("Current kaizen-sessions.pth entries are %r" % self.entries)
 
-    def add_jam_pth_entry(self):
+    def add_kaizen_pth_entry(self):
         if self.build_path not in self.entries:
-            self.log.debug("adding jam-session.pth entry '%s'" % \
+            self.log.debug("adding kaizen-session.pth entry '%s'" % \
                            self.build_path)
             self.entries.append(self.build_path)
 
-    def delete_jam_pth(self):
+    def delete_kaizen_pth(self):
         if self.build_path in self.entries:
-            self.log.debug("removing jam-session.pth entry '%s'" % \
+            self.log.debug("removing kaizen-session.pth entry '%s'" % \
                            self.build_path)
             self.entries.remove(self.build_path)
 
-    def write_jam_pth(self):
+    def write_kaizen_pth(self):
         f = open(os.path.join(self.prefix, self.python_package_path,
-                              "jam-sessions.pth"), "w")
+                              "kaizen-sessions.pth"), "w")
         try:
             num = len(self.entries)
             for i, entry in enumerate(self.entries):

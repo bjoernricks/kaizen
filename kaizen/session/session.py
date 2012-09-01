@@ -1,8 +1,8 @@
 # vim: fileencoding=utf-8 et sw=4 ts=4 tw=80:
 
-# jam - An advanced package manager for Free Software
+# kaizen - Continously improve, build and manage free software
 #
-# Copyright (C) 2011  Björn Ricks <bjoern.ricks@googlemail.com>
+# Copyright (C) 2011  Björn Ricks <bjoern.ricks@gmail.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -22,12 +22,12 @@
 import inspect
 import os.path
 
-import jam.logging
+import kaizen.logging
 
-from jam.utils import real_path
-from jam.system.download import UrlDownloader
-from jam.system.patch import Simple
-from jam.system.extract import ArchiveFile
+from kaizen.utils import real_path
+from kaizen.system.download import UrlDownloader
+from kaizen.system.patch import Simple
+from kaizen.system.extract import ArchiveFile
 
 
 class Session(object):
@@ -130,7 +130,7 @@ class Session(object):
         self.apps_dir = self.config.get("appsdir")
         self.dest_path = self.destroot_path + self.prefix
 
-        self.log = jam.logging.getLogger("jam.session." + self.session_name)
+        self.log = kaizen.logging.getLogger("jam.session." + self.session_name)
 
         self.__shadow = dict()
 

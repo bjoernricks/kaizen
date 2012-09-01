@@ -1,4 +1,4 @@
-import jam.session
+import kaizen.session
 
-class SessionWithoutName(jam.session.Session):
+class SessionWithoutName(kaizen.session.Session):
     version = "1.1"

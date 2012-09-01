@@ -1,8 +1,8 @@
 # vim: fileencoding=utf-8 et sw=4 ts=4 tw=80:
 
-# jam - An advanced package manager for Free Software
+# kaizen - Continously improve, build and manage free software
 #
-# Copyright (C) 2011  Björn Ricks <bjoern.ricks@googlemail.com>
+# Copyright (C) 2011  Björn Ricks <bjoern.ricks@gmail.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -21,16 +21,16 @@
 
 import os.path
 
-import jam.logging
+import kaizen.logging
 
-from jam.session.error import SessionError
-from jam.session.handler import SessionHandler
-from jam.session.depend import DependencyAnalyser, Dependency, \
+from kaizen.session.error import SessionError
+from kaizen.session.handler import SessionHandler
+from kaizen.session.depend import DependencyAnalyser, Dependency, \
                                UnresolvedDependencies, RuntimeDependencyAnalyser
-from jam.phase.phase import phases_list
-from jam.db.db import Db
-from jam.db.objects import Installed, SessionPhase
-from jam.utils.signals import ForwardSignal
+from kaizen.phase.phase import phases_list
+from kaizen.db.db import Db
+from kaizen.db.objects import Installed, SessionPhase
+from kaizen.utils.signals import ForwardSignal
 
 
 class SessionManager(object):
@@ -42,7 +42,7 @@ class SessionManager(object):
         self.config = config
         self.force = force
         self.session_name = name
-        self.log = jam.logging.getLogger(self)
+        self.log = kaizen.logging.getLogger(self)
         self.handler = SessionHandler(config, name, version, force)
         self.db = Db(config)
         self._init_signals()
