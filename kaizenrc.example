@@ -9,26 +9,26 @@ debug = 0
 # print verbose 1 = ON, 0 = OFF
 verbose = 0
 
-# path to sessions
-sessions = ~/source/kaizen-sessions
+# path to rules
+rules = ~/source/kaizen-rules
 
 # kaizen root dir
 # default is %(prefix)s/kaizen
 # rootdir = %(prefix)s/kaizen
 
-# path to installed sessions
+# path to installed rules
 # default is %(dir)s/destroot
-# a session will be installed in %(destroot)s/%(session)s/%(version)s
+# a rule will be installed in %(destroot)s/%(rules)s/%(version)s
 # destroot = %(dir)s/destroot
 
 # path to downloaded data
 # default is $(dir)s/cache
-# data for a session will be stored in %(downloadroot)s/%(session)s/data
+# data for a rule will be stored in %(downloadroot)s/%(rule)s/data
 # downloadroot = %(dir)s/cache
 
 # path to build directory
 # default is %(dir)s/cache
-# build directory for a session will be
-# %(buildroot)s/%(session)s/%(version)s/build
+# build directory for a rule will be
+# %(buildroot)s/%(rule)s/%(version)s/build
 # buildroot = %(dir)s/cache
 
