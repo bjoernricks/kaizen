@@ -1,6 +1,6 @@
 # vim: fileencoding=utf-8 et sw=4 ts=4 tw=80:
 
-# kaizen - Continously improve, build and manage free software
+# kaizen - Continuously improve, build and manage free software
 #
 # Copyright (C) 2011  Björn Ricks <bjoern.ricks@gmail.com>
 #
@@ -51,7 +51,7 @@ class Tables(object):
         self.metadata.bind = db.engine
 
         self.info_table = Table('info', self.metadata,
-                         Column('session', String, primary_key = True),
+                         Column('rules', String, primary_key = True),
                          Column('desription', String),
                          Column('license', String),
                          Column('maintainer', String),
@@ -61,29 +61,29 @@ class Tables(object):
                          Column('scm_web', String))
 
         # Installed table is now intended to record manually installed
-        # session. It doesn't include session which are installed as
+        # rules. It doesn't include rules which are installed as
         # dependency
         self.installed_table = Table('installed', self.metadata,
-                          Column('session', String,
-                                 ForeignKey(self.info_table.c.session),
+                          Column('rules', String,
+                                 ForeignKey(self.info_table.c.rules),
                                  primary_key = True),
                           Column('version', String, nullable = False))
 
         self.files_table = Table('files', self.metadata,
                       Column('filename', String, primary_key = True),
-                      Column('session', String,
-                             ForeignKey(self.info_table.c.session),
+                      Column('rules', String,
+                             ForeignKey(self.info_table.c.rules),
                              nullable = False))
 
         self.dirs_table = Table('directories', self.metadata,
                           Column('directory', String, primary_key=True),
-                          Column('session', String,
-                                 ForeignKey(self.info_table.c.session),
+                          Column('rules', String,
+                                 ForeignKey(self.info_table.c.rules),
                                  primary_key=True))
 
         self.phases_table = Table("phases", self.metadata,
-                       Column('session', String,
-                              ForeignKey(self.info_table.c.session),
+                       Column('rules', String,
+                              ForeignKey(self.info_table.c.rules),
                               primary_key = True),
                        Column('version', String, primary_key = True),
                        Column('phase', PhaseType, primary_key=True))
@@ -98,7 +98,7 @@ class Tables(object):
 
         self.install_directories_table = Table("install_directories",
                 self.metadata,
-                Column("session", String, ForeignKey(self.info_table.c.session),
+                Column("rules", String, ForeignKey(self.info_table.c.rules),
                     primary_key=True),
                 Column("version", String, primary_key=True),
                 Column("download", String),

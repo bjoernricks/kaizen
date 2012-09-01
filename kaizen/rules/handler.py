@@ -1,6 +1,6 @@
 # vim: fileencoding=utf-8 et sw=4 ts=4 tw=80:
 
-# kaizen - Continously improve, build and manage free software
+# kaizen - Continuously improve, build and manage free software
 #
 # Copyright (C) 2011  Björn Ricks <bjoern.ricks@gmail.com>
 #
@@ -26,38 +26,38 @@ import kaizen.logging
 
 from kaizen.external.sqlalchemy import and_
 from kaizen.db.db import Db
-from kaizen.db.objects import File, Directory, SessionPhase, InstallDirectories
+from kaizen.db.objects import File, Directory, RulesPhase, InstallDirectories
 from kaizen.phase.phase import phases_list, DOWNLOADED, EXTRACTED, PATCHED, \
                             CONFIGURED, BUILT, DESTROOTED, ACTIVATED
 from kaizen.phase.sequence import DOWNLOAD, EXTRACT, PATCH, CONFIGURE, BUILD, \
                                DESTROOT, ACTIVATE, DEACTIVATE, DELETE_SOURCE, \
                                DELETE_DOWNLOAD, DELETE_BUILD, DELETE_DESTROOT, \
                                UNPATCH, DISTCLEAN, SetSequence, UnSetSequence
-from kaizen.session.loader import SessionLoader
-from kaizen.session.error import SessionError
-from kaizen.session.validator import SessionValidator
+from kaizen.rules.loader import RulesLoader
+from kaizen.rules.error import RulesError
+from kaizen.rules.validator import RulesValidator
 from kaizen.utils import real_path, list_dir, list_subdir
 from kaizen.utils.signals import Signal
 
 
-class SessionHandler(object):
+class RulesHandler(object):
 
-    def __init__(self, config, session_name, dist_version=None, force=False):
+    def __init__(self, config, rules_name, dist_version=None, force=False):
         self.log = kaizen.logging.getLogger(self)
         self.config = config
-        self.session_name = session_name
+        self.rules_name = rules_name
         self.force = force
         self.db = Db(config)
-        self._session_class = None
-        self._session = None
+        self._rules_class = None
+        self._rules = None
 
         self.install_directories = None
 
         if not dist_version:
-            # if version is not provided use version from current session
-            self.session_dist_version = self.session_class.get_dist_version()
+            # if version is not provided use version from current rules
+            self.rules_dist_version = self.rules_class.get_dist_version()
         else:
-            self.session_dist_version = dist_version
+            self.rules_dist_version = dist_version
         self._init_directories()
         self._init_signals()
         self._init_sequences()
@@ -65,48 +65,48 @@ class SessionHandler(object):
         self._load_phases()
 
     @property
-    def session_class(self):
-        if not self._session_class:
-            self._session_class = self._load_session()
-        return self._session_class
+    def rules_class(self):
+        if not self._rules_class:
+            self._rules_class = self._load_rules()
+        return self._rules_class
 
     @property
-    def session(self):
-        if not self._session:
-            self._session = self._init_session()
-        return self._session
+    def rules(self):
+        if not self._rules:
+            self._rules = self._init_rules()
+        return self._rules
 
-    def _load_session(self):
-        self.log.debug("Loading session class")
-        session_loader = SessionLoader(self.config)
-        session = session_loader.load(self.session_name)
-        if not session:
-            raise SessionError(self.session_name,
-                               "Could not load session from '%s'" %
-                               self.config.get("sessions"))
-        return session
+    def _load_rules(self):
+        self.log.debug("Loading rules class")
+        rules_loader = RulesLoader(self.config)
+        rules = rules_loader.load(self.rules_name)
+        if not rules:
+            raise RulesError(self.rules_name,
+                               "Could not load rules from '%s'" %
+                               self.config.get("rules"))
+        return rules
 
-    def _init_session(self):
-        self.log.debug("Init session %r" % self.session_name)
-        session = self.session_class
-        validator = SessionValidator()
-        if not validator.validate(session):
-            raise SessionError(self.session_name,
-                               "Loaded invalid session from '%s'. Errors: %s" %
-                               (self.config.get("sessions"),
+    def _init_rules(self):
+        self.log.debug("Init rules %r" % self.rules_name)
+        rules = self.rules_class
+        validator = RulesValidator()
+        if not validator.validate(rules):
+            raise RulesError(self.rules_name,
+                               "Loaded invalid rules from '%s'. Errors: %s" %
+                               (self.config.get("rules"),
                                "\n".join(validator.errors)))
-        return session(self.config, self.src_dir, self.build_dir, self.dest_dir)
+        return rules(self.config, self.src_dir, self.build_dir, self.dest_dir)
 
     def _load_install_directories(self):
         if self.install_directories:
             return
         query = self.db.session.query(InstallDirectories).filter(and_( \
-                InstallDirectories.session == self.session_name,
-                InstallDirectories.version == self.session_dist_version))
+                InstallDirectories.rules == self.rules_name,
+                InstallDirectories.version == self.rules_dist_version))
         install_directories = query.first()
         if not install_directories:
-            install_directories = InstallDirectories(self.session_name,
-                                                     self.session_dist_version)
+            install_directories = InstallDirectories(self.rules_name,
+                                                     self.rules_dist_version)
             self.db.session.add(install_directories)
             self.db.session.commit()
         self.install_directories = install_directories
@@ -116,8 +116,8 @@ class SessionHandler(object):
         self.db.session.commit()
 
     def _init_directories(self):
-        version = self.session_dist_version
-        name = self.session_name
+        version = self.rules_dist_version
+        name = self.rules_name
         build_cache = self.config.get("buildroot")
         download_cache = self.config.get("downloadroot")
         destroot = self.config.get("destroot")
@@ -135,43 +135,43 @@ class SessionHandler(object):
     def _init_sequences(self):
         self.sequences = dict()
 
-        if self.session_class.download_seq:
-            seq = self.session_class.download_seq
+        if self.rules_class.download_seq:
+            seq = self.rules_class.download_seq
         else:
             seq = SetSequence(DOWNLOAD, None, DOWNLOADED)
         self.download_seq = seq
         self.sequences[seq.name] = seq
 
-        if self.session_class.extract_seq:
-            seq = self.session_class.extract_seq
+        if self.rules_class.extract_seq:
+            seq = self.rules_class.extract_seq
         else:
             seq = SetSequence(EXTRACT, DOWNLOAD, EXTRACTED)
         self.extract_seq = seq
         self.sequences[seq.name] = seq
 
-        if self.session_class.patch_seq:
-            seq = self.session_class.patch_seq
+        if self.rules_class.patch_seq:
+            seq = self.rules_class.patch_seq
         else:
             seq = SetSequence(PATCH, EXTRACT, PATCHED)
         self.patch_seq = seq
         self.sequences[seq.name] = seq
 
-        if self.session_class.configure_seq:
-            seq = self.session_class.configure_seq
+        if self.rules_class.configure_seq:
+            seq = self.rules_class.configure_seq
         else:
             seq = SetSequence(CONFIGURE, PATCH, CONFIGURED)
         self.configure_seq = seq
         self.sequences[seq.name] = seq
 
-        if self.session_class.build_seq:
-            seq = self.session_class.build_seq
+        if self.rules_class.build_seq:
+            seq = self.rules_class.build_seq
         else:
             seq = SetSequence(BUILD, CONFIGURE, BUILT)
         self.build_seq = seq
         self.sequences[seq.name] = seq
 
-        if self.session_class.destroot_seq:
-            seq = self.session_class.destroot_seq
+        if self.rules_class.destroot_seq:
+            seq = self.rules_class.destroot_seq
         else:
             seq = SetSequence(DESTROOT, BUILD, DESTROOTED)
         self.destroot_seq = seq
@@ -185,43 +185,43 @@ class SessionHandler(object):
         self.deactivate_seq = seq
         self.sequences[seq.name] = seq
 
-        if self.session_class.delete_destroot_seq:
-            seq = self.session_class.delete_destroot_seq
+        if self.rules_class.delete_destroot_seq:
+            seq = self.rules_class.delete_destroot_seq
         else:
             seq = UnSetSequence(DELETE_DESTROOT, DEACTIVATE, DESTROOTED)
         self.delete_destroot_seq = seq
         self.sequences[seq.name] = seq
 
-        if self.session_class.delete_build_seq:
-            seq = self.session_class.delete_build_seq
+        if self.rules_class.delete_build_seq:
+            seq = self.rules_class.delete_build_seq
         else:
             seq = UnSetSequence(DELETE_BUILD, DELETE_DESTROOT, BUILT)
         self.delete_build_seq = seq
         self.sequences[seq.name] = seq
 
-        if self.session_class.distclean_seq:
-            seq = self.session_class.distclean_seq
+        if self.rules_class.distclean_seq:
+            seq = self.rules_class.distclean_seq
         else:
             seq = UnSetSequence(DISTCLEAN, DELETE_BUILD, CONFIGURED)
         self.distclean_seq = seq
         self.sequences[seq.name] = seq
 
-        if self.session_class.unpatch_seq:
-            seq = self.session_class.unpatch_seq
+        if self.rules_class.unpatch_seq:
+            seq = self.rules_class.unpatch_seq
         else:
             seq = UnSetSequence(UNPATCH, DISTCLEAN, PATCHED)
         self.unpatch_seq = seq
         self.sequences[seq.name] = seq
 
-        if self.session_class.delete_source_seq:
-            seq = self.session_class.delete_source_seq
+        if self.rules_class.delete_source_seq:
+            seq = self.rules_class.delete_source_seq
         else:
             seq = UnSetSequence(DELETE_SOURCE, UNPATCH, EXTRACTED)
         self.delete_source_seq = seq
         self.sequences[seq.name] = seq
 
-        if self.session_class.delete_download_seq:
-            seq = self.session_class.delete_download_seq
+        if self.rules_class.delete_download_seq:
+            seq = self.rules_class.delete_download_seq
         else:
             seq = UnSetSequence(DELETE_DOWNLOAD, DELETE_SOURCE, DOWNLOADED)
         self.delete_download_seq = seq
@@ -236,7 +236,7 @@ class SessionHandler(object):
                 seq.set_post_sequence(post_seq)
 
     def _groups_call(self, methodname):
-        for group in self.session._groups:
+        for group in self.rules._groups:
             method = getattr(group, methodname)
             method()
 
@@ -252,21 +252,21 @@ class SessionHandler(object):
     def _check_installed_files(self, files):
         query = self.db.session.query(File).filter(and_(File.filename.in_(
                                       [x for (x, y) in files]),
-                                       File.session != self.session_name))
+                                       File.rules != self.rules_name))
         if query.count():
             self.log.error("The following files are already installed by a " \
-                           "different session:")
+                           "different rules:")
             for file in query:
-                self.log.error("Session: '%s', Filename: '%s'" % (file.session,
+                self.log.error("Rules: '%s', Filename: '%s'" % (file.rules,
                                                                  file.filename))
                 return
 
     def _load_phases(self):
-        phases = self.db.session.query(SessionPhase).filter(
-                                            and_(SessionPhase.session ==
-                                                 self.session_name,
-                                            SessionPhase.version ==
-                                            self.session_dist_version)
+        phases = self.db.session.query(RulesPhase).filter(
+                                            and_(RulesPhase.rules ==
+                                                 self.rules_name,
+                                            RulesPhase.version ==
+                                            self.rules_dist_version)
                                             ).all()
         self.phases = [phase.phase for phase in phases]
 
@@ -274,57 +274,57 @@ class SessionHandler(object):
         return self.phases
 
     def set_phase(self, phase):
-        sessionphase = SessionPhase(self.session_name,
-                                    self.session_dist_version, phase)
-        sessionphase = self.db.session.merge(sessionphase)
+        rulesphase = RulesPhase(self.rules_name,
+                                    self.rules_dist_version, phase)
+        rulesphase = self.db.session.merge(rulesphase)
         self.db.session.commit()
         self._load_phases()
 
     def unset_phase(self, phase):
         if phase in self.phases:
-            self.db.session.query(SessionPhase).filter(
-                    and_(SessionPhase.session == self.session_name,
-                    SessionPhase.version == self.session_dist_version,
-                    SessionPhase.phase == phase)).delete()
+            self.db.session.query(RulesPhase).filter(
+                    and_(RulesPhase.rules == self.rules_name,
+                    RulesPhase.version == self.rules_dist_version,
+                    RulesPhase.phase == phase)).delete()
             self.db.session.commit()
             self._load_phases()
 
     def get_installed_files(self):
-        query = self.db.session.query(File).filter(File.session ==
-                                                   self.session_name)
+        query = self.db.session.query(File).filter(File.rules ==
+                                                   self.rules_name)
         return query.all()
 
     def build_depends(self):
-        from kaizen.session.depend import DependencyAnalyser
+        from kaizen.rules.depend import DependencyAnalyser
         return DependencyAnalyser(self.config, self).analyse()
 
     def runtime_depends(self):
-        from kaizen.session.depend import RuntimeDependencyAnalyser
+        from kaizen.rules.depend import RuntimeDependencyAnalyser
         return RuntimeDependencyAnalyser(self.config, self).analyse()
 
     def depends(self):
         return (self.build_depends(), self.runtime_depends())
 
     def patch(self):
-        self.log.info("Patching session %r" % self.session_name)
+        self.log.info("Patching rules %r" % self.rules_name)
         self._groups_call("pre_patch")
-        self.session.pre_patch()
-        patchsys = self.session.patch_cmd(self.session.src_path,
-                self.session.patch_path, self.session.patches,
+        self.rules.pre_patch()
+        patchsys = self.rules.patch_cmd(self.rules.src_path,
+                self.rules.patch_path, self.rules.patches,
                 self.config.get("verbose"))
         patchsys.apply()
         self._groups_call("post_patch")
-        self.session.post_patch()
+        self.rules.post_patch()
 
     def unpatch(self):
-        self.log.info("Unpatching session %r" % self.session_name)
-        patchsys = self.session.patch_cmd(self.session.src_path,
-                self.session.patch_path, self.session.patches,
+        self.log.info("Unpatching rules %r" % self.rules_name)
+        patchsys = self.rules.patch_cmd(self.rules.src_path,
+                self.rules.patch_path, self.rules.patches,
                 self.config.get("verbose"))
         patchsys.unapply()
 
     def delete_destroot(self):
-        self.log.info("Deleting destroot of session %r" % self.session_name)
+        self.log.info("Deleting destroot of rules %r" % self.rules_name)
         dest_dir = self.install_directories.destroot
         if dest_dir and os.path.exists(dest_dir):
             self.log.debug("Deleting destroot directory '%s'" % dest_dir)
@@ -339,21 +339,21 @@ class SessionHandler(object):
         #    os.remove(self.destroot_dir)
 
     def delete_build(self):
-        self.log.info("Deleting build of session %r" % self.session_name)
+        self.log.info("Deleting build of rules %r" % self.rules_name)
         build_dir = self.install_directories.build
         if build_dir and os.path.exists(build_dir):
             self.log.debug("Deleting build directory '%s'" % build_dir)
             shutil.rmtree(build_dir)
 
     def delete_source(self):
-        self.log.info("Deleting source of session %r" % self.session_name)
+        self.log.info("Deleting source of rules %r" % self.rules_name)
         src_dir = self.install_directories.source
         if src_dir and os.path.exists(src_dir):
             self.log.debug("Deleting source directory '%s'" % src_dir)
             shutil.rmtree(src_dir)
 
     def delete_download(self):
-        self.log.info("Delete download of session %r" % self.session_name)
+        self.log.info("Delete download of rules %r" % self.rules_name)
         download = self.install_directories.download
         if download and os.path.exists(download):
             self.log.debug("Deleting download file '%s'" % download)
@@ -363,27 +363,27 @@ class SessionHandler(object):
             os.rmdir(self.data_dir)
 
     def download(self):
-        self.log.info("Download of session %r" % self.session_name)
+        self.log.info("Download of rules %r" % self.rules_name)
         if not os.path.exists(self.data_dir):
             self.log.debug("Creating download directory %r" % self.data_dir)
             os.makedirs(self.data_dir)
-        if self.session.url and self.session.download_cmd:
-            self.log.info("Copying source file from '%s'." % self.session.url)
-            (archive_source, archive_dest) = self._get_download(self.session.url,
+        if self.rules.url and self.rules.download_cmd:
+            self.log.info("Copying source file from '%s'." % self.rules.url)
+            (archive_source, archive_dest) = self._get_download(self.rules.url,
                                                                 self.data_dir)
-            dl = self.session.download_cmd(self.session, archive_source)
+            dl = self.rules.download_cmd(self.rules, archive_source)
             download_file = dl.copy(archive_dest, self.force)
-            dl.verify(self.session.hash)
+            dl.verify(self.rules.hash)
             self.install_directories.download = real_path(download_file)
             self.db.session.add(self.install_directories)
             self.db.session.commit()
 
     def activate(self):
-        self.log.info("Activation of session %r" % self.session_name)
+        self.log.info("Activation of rules %r" % self.rules_name)
 
         if self.is_activated():
-            self.log.debug("Session %r is already activated" % \
-                           self.session_name)
+            self.log.debug("Rules %r is already activated" % \
+                           self.rules_name)
             return self.already_activated()
 
         current_dir = os.path.join(self.destroot_dir, "current")
@@ -395,7 +395,7 @@ class SessionHandler(object):
 
         (dirs, files) = list_subdir(self.dest_dir)
         # create necessary directories and run pre_activate
-        # in pre_activate a session may create directories, files, etc.
+        # in pre_activate a rules may create directories, files, etc.
         for subdir in dirs:
             dir = os.path.join("/", subdir)
             if not os.path.exists(dir):
@@ -404,7 +404,7 @@ class SessionHandler(object):
 
         self.log.debug("Running pre-activate")
         self._groups_call("pre_activate")
-        self.session.pre_activate()
+        self.rules.pre_activate()
 
         (dirs, files) = list_subdir(self.dest_dir)
         activate_files = []
@@ -430,7 +430,7 @@ class SessionHandler(object):
         # record created directories in db
         for subdir in dirs:
             dir = os.path.join("/", subdir)
-            dbdir = Directory(self.session_name, dir)
+            dbdir = Directory(self.rules_name, dir)
             dbdir = self.db.session.merge(dbdir)
             self.db.session.add(dbdir)
         self.db.session.commit()
@@ -442,24 +442,24 @@ class SessionHandler(object):
             if os.path.lexists(file_path):
                 os.remove(file_path)
             os.symlink(destdir_file_path, file_path)
-            dbfile = File(file_path, self.session_name)
+            dbfile = File(file_path, self.rules_name)
             dbfile = self.db.session.merge(dbfile)
             self.db.session.add(dbfile)
         self.db.session.commit()
         self.log.debug("Running post-activate")
-        self.session.post_activate()
+        self.rules.post_activate()
         self._groups_call("post_activate")
 
     def deactivate(self):
-        self.log.info("Deactivation of session %r" % self.session_name)
+        self.log.info("Deactivation of rules %r" % self.rules_name)
         if not self.is_activated():
             self.log.warn("'%s' is not recognized as active but should be" \
                           " deactivated. Either deactivation was forced or"\
-                          " the database may be currupted" % self.session_name)
+                          " the database may be currupted" % self.rules_name)
 
         self.log.debug("Running pre-deactivate")
         self._groups_call("pre_deactivate")
-        self.session.pre_deactivate()
+        self.rules.pre_deactivate()
 
         # delete activated files
         for file in self.get_installed_files():
@@ -474,8 +474,8 @@ class SessionHandler(object):
         self.db.session.commit()
 
         # delete empty directories
-        query = self.db.session.query(Directory).filter(Directory.session ==
-                                                        self.session_name)
+        query = self.db.session.query(Directory).filter(Directory.rules ==
+                                                        self.rules_name)
         for directory in query.all():
             dir = directory.directory
             if os.path.exists(dir) and not os.listdir(dir) and not \
@@ -486,80 +486,80 @@ class SessionHandler(object):
         self.db.session.commit()
 
         self.log.debug("Running post-deactivate")
-        self.session.post_deactivate()
+        self.rules.post_deactivate()
         self._groups_call("post_deactivate")
 
     def is_activated(self, exact=False):
         db = self.db.session
         if exact:
-            query = db.query(SessionPhase).filter(and_(
-                SessionPhase.session == self.session_name,
-                SessionPhase.version == self.session_dist_version,
-                SessionPhase.phase ==
+            query = db.query(RulesPhase).filter(and_(
+                RulesPhase.rules == self.rules_name,
+                RulesPhase.version == self.rules_dist_version,
+                RulesPhase.phase ==
                 phases_list.get("Activated")
                 ))
         else:
-            query = db.query(SessionPhase).filter(and_(
-                SessionPhase.session == self.session_name,
-                SessionPhase.phase ==
+            query = db.query(RulesPhase).filter(and_(
+                RulesPhase.rules == self.rules_name,
+                RulesPhase.phase ==
                 phases_list.get("Activated")
                 ))
         return query.count() > 0
 
     def configure(self):
-        self.log.info("Configuration of session %r" % self.session_name)
-        build_path = self.session.build_path
+        self.log.info("Configuration of rules %r" % self.rules_name)
+        build_path = self.rules.build_path
         if not os.path.exists(build_path):
             self.log.debug("Creating build dir '%s'" % build_path)
             os.makedirs(build_path)
         self._groups_call("pre_configure")
-        self.session.pre_configure()
-        self.session.configure()
-        self.session.post_configure()
+        self.rules.pre_configure()
+        self.rules.configure()
+        self.rules.post_configure()
         self._groups_call("post_configure")
 
     def build(self):
-        self.log.info("Build session %r" % self.session_name)
+        self.log.info("Build rules %r" % self.rules_name)
         self._groups_call("pre_build")
-        self.session.pre_build()
-        self.session.build()
-        self.session.post_build()
-        self.install_directories.build = real_path(self.session.build_path)
+        self.rules.pre_build()
+        self.rules.build()
+        self.rules.post_build()
+        self.install_directories.build = real_path(self.rules.build_path)
         self._update_install_directories()
         self._groups_call("post_build")
 
     def destroot(self):
-        self.log.info("Destrooting session %r" % self.session_name)
+        self.log.info("Destrooting rules %r" % self.rules_name)
         if not os.path.exists(self.dest_dir):
             self.log.debug("Creating destroot dir '%s'" % self.dest_dir)
             os.makedirs(self.dest_dir)
         self.install_directories.destroot = self.dest_dir
         self._update_install_directories()
         self._groups_call("pre_destroot")
-        self.session.pre_destroot()
-        self.session.destroot()
-        self.session.post_destroot()
+        self.rules.pre_destroot()
+        self.rules.destroot()
+        self.rules.post_destroot()
         self._groups_call("post_destroot")
 
     def clean(self):
-        self.log.info("Clean session %r" % self.session_name)
+        self.log.info("Clean rules %r" % self.rules_name)
         self._groups_call("pre_clean")
-        self.session.pre_clean()
-        self.session.clean()
-        self.session.post_clean()
+        self.rules.pre_clean()
+        self.rules.clean()
+        self.rules.post_clean()
         self._groups_call("post_clean")
 
     def distclean(self):
-        self.log.info("Distclean session %r" % self.session_name)
-        self.session.distclean()
+        self.log.info("Distclean rules %r" % self.rules_name)
+        self.rules.distclean()
 
     def extract(self):
-        self.log.info("Extracting session %r" % self.session_name)
-        if self.session.extract_cmd:
-            extractor = self.session.extract_cmd(self.session.url)
+        self.log.info("Extracting rules %r" % self.rules_name)
+        if self.rules.extract_cmd:
+            extractor = self.rules.extract_cmd(self.rules.url)
             extractor.extract(self.data_dir, self.src_dir)
-        self.install_directories.source = real_path(self.session.src_path)
+        self.install_directories.source = real_path(self.rules.src_path)
         self._update_install_directories()
 
     def get_version(self):
-        return self.session_dist_version
+        return self.rules_dist_version

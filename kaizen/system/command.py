@@ -1,6 +1,6 @@
 # vim: fileencoding=utf-8 et sw=4 ts=4 tw=80:
 
-# kaizen - Continously improve, build and manage free software
+# kaizen - Continuously improve, build and manage free software
 #
 # Copyright (C) 2011  Björn Ricks <bjoern.ricks@gmail.com>
 #
@@ -90,7 +90,7 @@ class BuildSystem(BuildCommand):
         self.build_dir = build_dir
         self.cwd_dir = real_path(build_dir)
         self.verbose = verbose
-        self.log = kaizen.logging.getLogger("jam.buildsystem")
+        self.log = kaizen.logging.getLogger(self)
 
 
 class Configure(BuildSystem):
@@ -123,7 +123,7 @@ class Make(BuildCommand):
         self.dir = dir
         self.cwd_dir = real_path(dir)
         self.verbose = verbose
-        self.log = kaizen.logging.getLogger("jam.make")
+        self.log = kaizen.logging.getLogger(self)
 
     def run(self, args=[]):
         cmd = ["make"]
@@ -154,7 +154,7 @@ class Command(BaseCommand):
         self.args = args
         self.cwd_dir = real_path(cwd)
         self.verbose = verbose
-        self.log = kaizen.logging.getLogger("jam.command")
+        self.log = kaizen.logging.getLogger(self)
 
     def run(self):
         cmd = [self.cmd]

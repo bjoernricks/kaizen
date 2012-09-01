@@ -1,6 +1,6 @@
 # vim: fileencoding=utf-8 et sw=4 ts=4 tw=80:
 
-# kaizen - Continously improve, build and manage free software
+# kaizen - Continuously improve, build and manage free software
 #
 # Copyright (C) 2011  Björn Ricks <bjoern.ricks@gmail.com>
 #
@@ -19,12 +19,19 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 
 # 02110-1301 USA
 
-from kaizen.session.session import Session
-from kaizen.session.manager import SessionManager
-from kaizen.session.error import SessionError
+from kaizen.error import KaizenError
 
-from kaizen.session.systems import MakeSession, ConfigureSession, \
-                                CMakeSession, PythonSession, \
-                                PythonDevelopSession
+class RulesError(KaizenError):
 
-from kaizen.session.create import SessionCreator
+    def __init__(self, rules_name, value):
+        self.rules_name = rules_name
+        self.value = value
+
+    def __str__(self):
+        return "Error in rules '%s': %s" % (self.rules_name, self.value)
+
+
+class RulesCreateError(KaizenError):
+    pass
+
+

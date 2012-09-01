@@ -1,6 +1,6 @@
 # vim: fileencoding=utf-8 et sw=4 ts=4 tw=80:
 
-# kaizen - Continously improve, build and manage free software
+# kaizen - Continuously improve, build and manage free software
 #
 # Copyright (C) 2011  Björn Ricks <bjoern.ricks@gmail.com>
 #
@@ -22,31 +22,31 @@
 import kaizen.logging
 
 from kaizen.utils import Loader, real_path
-from kaizen.session.session import Session
+from kaizen.rules.rules import Rules
 
-class SessionLoader(Loader):
+class RulesLoader(Loader):
 
     def __init__(self, config):
-        super(SessionLoader, self).__init__()
+        super(RulesLoader, self).__init__()
         self.config = config
         self.log = kaizen.logging.getLogger(self)
-        paths = self.config.get("sessions")
+        paths = self.config.get("rules")
         self.add_paths([real_path(path.strip()) for path in paths])
 
-    def sessions(self, modulename):
-        as_module = "kaizen.session._modules." + modulename
+    def rules(self, modulename):
+        as_module = "kaizen.rules._modules." + modulename
         module = self.module(modulename, as_module)
         if not module:
-            return None 
-        return self.classes(module, Session)
-
-    def load(self, sessionname):
-        sessionstring = sessionname + ".rules"
-        sessions = self.sessions(sessionstring)
-        if not sessions:
-            self.log.warn("Could not load any session with name '%s'" %
-                          sessionname)
             return None
-        session = sessions[0]
-        self.log.debug("Loaded session class '%s'" % session.__name__)
-        return session
+        return self.classes(module, Rules)
+
+    def load(self, rulesname):
+        rulesstring = rulesname + ".rules"
+        ruless = self.ruless(rulesstring)
+        if not ruless:
+            self.log.warn("Could not load any rules with name '%s'" %
+                          rulesname)
+            return None
+        rules = ruless[0]
+        self.log.debug("Loaded rules class '%s'" % rules.__name__)
+        return rules

@@ -1,6 +1,6 @@
 # vim: fileencoding=utf-8 et sw=4 ts=4 tw=80:
 
-# kaizen - Continously improve, build and manage free software
+# kaizen - Continuously improve, build and manage free software
 #
 # Copyright (C) 2011  Björn Ricks <bjoern.ricks@gmail.com>
 #
@@ -19,7 +19,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 
 # 02110-1301 USA
 
-from kaizen.session.create import SessionCreator
+from kaizen.rules.create import RulesCreator
 from kaizen.console.console import Console
 from kaizen.command.parser import NameVersionParser
 
@@ -76,88 +76,88 @@ class CommandWithSubCommands(Command):
         pass
 
 
-class SessionNameCommand(Command):
+class RulesNameCommand(Command):
 
     def __init__(self, name, description=None, aliases=[]):
-        super(SessionNameCommand, self).__init__(name, self.main,
+        super(RulesNameCommand, self).__init__(name, self.main,
                                                  aliases, description)
 
     def add_parser(self, parser):
-        usage = "%(prog)s [global options] " + self.name + " <sessionname> " \
+        usage = "%(prog)s [global options] " + self.name + " <rulesname> " \
                 "{arguments}"
-        subparser = super(SessionNameCommand, self).add_parser(parser, usage)
-        subparser.add_argument("sessionname", nargs=1)
+        subparser = super(RulesNameCommand, self).add_parser(parser, usage)
+        subparser.add_argument("rulesname", nargs=1)
         return subparser
 
     def main(self, options, config):
         pass
 
 
-class BuildCommand(SessionNameCommand):
+class BuildCommand(RulesNameCommand):
 
     def __init__(self):
         description = "Run build process"
         super(BuildCommand, self).__init__("build", description)
 
     def main(self, options, config):
-        Console(config).build_session(options.sessionname[0],
+        Console(config).build_rules(options.rulesname[0],
                                       options.force)
 
 
-class PatchCommand(SessionNameCommand):
+class PatchCommand(RulesNameCommand):
 
     def __init__(self):
         description = "Apply patches to sources"
         super(PatchCommand, self).__init__("patch", description)
 
     def main(self, options, config):
-        Console(config).patch_session(options.sessionname[0],
+        Console(config).patch_rules(options.rulesname[0],
                                       options.force)
 
 
-class UnPatchCommand(SessionNameCommand):
+class UnPatchCommand(RulesNameCommand):
 
     def __init__(self):
         description = "Revert patches applied sources"
         super(UnPatchCommand, self).__init__("unpatch", description)
 
     def main(self, options, config):
-        Console(config).unpatch_session(options.sessionname[0],
+        Console(config).unpatch_rules(options.rulesname[0],
                                         options.force)
 
 
-class ConfigureCommand(SessionNameCommand):
+class ConfigureCommand(RulesNameCommand):
 
     def __init__(self):
-        description = "Configure a session"
+        description = "Configure rules"
         super(ConfigureCommand, self).__init__("configure", description,
                                                ["conf"])
 
     def main(self, options, config):
-        Console(config).configure_session(options.sessionname[0],
+        Console(config).configure_rules(options.rulesname[0],
                                           options.force)
 
 
-class ExtractCommand(SessionNameCommand):
+class ExtractCommand(RulesNameCommand):
 
     def __init__(self):
         description = "Extract downloaded sources"
         super(ExtractCommand, self).__init__("extract", description, [])
 
     def main(self, options, config):
-        Console(config).extract_session(options.sessionname[0],
+        Console(config).extract_rules(options.rulesname[0],
                                         options.force)
 
 
-class DownloadCommand(SessionNameCommand):
+class DownloadCommand(RulesNameCommand):
 
     def __init__(self):
-        description = "Download sources of a session"
+        description = "Download sources of rules"
         super(DownloadCommand, self).__init__("download", description,
                                               ["fetch"])
 
     def main(self, options, config):
-        Console(config).download_session(options.sessionname[0],
+        Console(config).download_rules(options.rulesname[0],
                                          options.all, options.force)
 
     def add_parser(self, parser):
@@ -166,34 +166,34 @@ class DownloadCommand(SessionNameCommand):
                                help="download also sources from dependencies")
 
 
-class DestrootCommand(SessionNameCommand):
+class DestrootCommand(RulesNameCommand):
 
     def __init__(self):
-        description = "Install session into the destroot directory"
+        description = "Install rules into the destroot directory"
         super(DestrootCommand, self).__init__("destroot", description,
                                               ["dest"])
 
     def main(self, options, config):
-        Console(config).destroot_session(options.sessionname[0],
+        Console(config).destroot_rules(options.rulesname[0],
                                          options.force)
 
 
-class InstallCommand(SessionNameCommand):
+class InstallCommand(RulesNameCommand):
 
     def __init__(self):
-        description = "Install a session"
+        description = "Install rules"
         super(InstallCommand, self).__init__("install", description,
                                              ["inst"])
 
     def main(self, options, config):
-        Console(config).install_session(options.sessionname[0],
+        Console(config).install_rules(options.rulesname[0],
                                         options.force)
 
 
-class UninstallCommand(SessionNameCommand):
+class UninstallCommand(RulesNameCommand):
 
     def __init__(self):
-        description = "Uninstall a session"
+        description = "Uninstall rules"
         super(UninstallCommand, self).__init__("uninstall", description,
                                                ["uninst"])
     def add_parser(self, parser):
@@ -202,37 +202,37 @@ class UninstallCommand(SessionNameCommand):
         return parser
 
     def main(self, options, config):
-        Console(config).uninstall_session(options.sessionname[0],
+        Console(config).uninstall_rules(options.rulesname[0],
                                           options.version,
                                           options.force)
 
 
-class ActivateCommand(SessionNameCommand):
+class ActivateCommand(RulesNameCommand):
 
     def __init__(self):
-        description = "Activate a session"
+        description = "Activate rules"
         super(ActivateCommand, self).__init__("activate", description)
 
     def main(self, options, config):
-        Console(config).activate_session(options.sessionname[0],
+        Console(config).activate_rules(options.rulesname[0],
                                          options.force)
 
 
-class DeactivateCommand(SessionNameCommand):
+class DeactivateCommand(RulesNameCommand):
 
     def __init__(self):
-        description = "Deactivate a session"
+        description = "Deactivate rules"
         super(DeactivateCommand, self).__init__("deactivate", description)
 
     def main(self, options, config):
-        Console(config).deactivate_session(options.sessionname[0],
+        Console(config).deactivate_rules(options.rulesname[0],
                                                 options.force)
 
 
-class DeleteCommand(SessionNameCommand):
+class DeleteCommand(RulesNameCommand):
 
     def __init__(self):
-        description = "Delete (parts of) a session"
+        description = "Delete (parts of) rules"
         super(DeleteCommand, self).__init__("delete", description, [])
 
     def add_parser(self, parser):
@@ -254,37 +254,37 @@ class DeleteCommand(SessionNameCommand):
 
     def main(self, options, config):
         console = Console(config)
-        sessionname = options.sessionname[0]
+        rulesname = options.rulesname[0]
         force = options.force
         if options.distclean:
-            console.distclean_session(sessionname, force)
+            console.distclean_rules(rulesname, force)
         elif options.source:
-            console.delete_source_session(sessionname, force)
+            console.delete_source_rules(rulesname, force)
         elif options.destroot:
-            console.delete_destroot_session(sessionname, force)
+            console.delete_destroot_rules(rulesname, force)
         elif options.download:
-            console.delete_download_session(sessionname, force)
+            console.delete_download_rules(rulesname, force)
         elif options.clean:
-            console.clean_session(sessionname, force)
+            console.clean_rules(rulesname, force)
         else:
-            console.delete_build_session(sessionname, force)
+            console.delete_build_rules(rulesname, force)
 
 
-class DependsCommand(SessionNameCommand):
+class DependsCommand(RulesNameCommand):
 
     def __init__(self):
-        description = "List dependencies of a session"
+        description = "List dependencies of rules"
         super(DependsCommand, self).__init__("depends", description,
                                              ["deps"])
 
     def main(self, options, config):
-        Console(config).list_session_dependencies(options.sessionname[0])
+        Console(config).list_rules_dependencies(options.rulesname[0])
 
 
 class CreateCommand(Command):
 
     def __init__(self):
-        description = "Create a new Session"
+        description = "Create new Rules"
         super(CreateCommand, self).__init__("create", self.main, [],
                                             description)
 
@@ -294,22 +294,22 @@ class CreateCommand(Command):
         subparser.add_argument("url", nargs=1, help="url to download source file")
         subparser.add_argument("--template", choices=["cmake", "python",
                                "autotools"], help="specify a template for the"\
-                               " new session. If empty kaizen will guess the"\
+                               " new rules. If empty kaizen will guess the"\
                                " right one.")
         subparser.add_argument("--name", "-n", help="name of the new "\
-                               "session. If empty kaizen will determine the "\
+                               "rules. If empty kaizen will determine the "\
                                " name from the source file")
-        subparser.add_argument("--session-version", "-s", help="version of the new "\
-                               "session. If empty kaizen will determine the "\
+        subparser.add_argument("--rules-version", "-s", help="version of the new "\
+                               "rules. If empty kaizen will determine the "\
                                " version from the source file", dest="version")
         subparser.add_argument("--keep", action="store_true", 
                                help="keep temporary directory")
         subparser.add_argument("--print", dest="stdout", action="store_true",
                                help="print to stdout instead of creating a "\
-                               "new session")
+                               "new rules")
 
     def main(self, options, config):
-        creator = SessionCreator(config, options.url[0], options.keep)
+        creator = RulesCreator(config, options.url[0], options.keep)
         if options.name:
             creator.set_name(options.name)
 
@@ -326,33 +326,33 @@ class ShowCommand(CommandWithSubCommands):
 
     def __init__(self):
         name = "show"
-        description = "Show information about a session"
+        description = "Show information about rules"
         usage = "%(prog)s [global options] " + name + \
-                " <files|phases> sessionname"
+                " <files|phases> rulesname"
         super(ShowCommand, self).__init__(name, usage, description)
 
     def add_cmds(self, subparser):
         usage = "%(prog)s [global options] " + self.name + \
-                " files sessionname"
+                " files rulesname"
         cmd = subparser.add_parser("files", help="list installed files of a " \
-                                   "session", usage=usage)
+                                   "rules", usage=usage)
         self._add_args(cmd)
         usage = "%(prog)s [global options] " + self.name + \
-                " phases sessionname"
+                " phases rulesname"
         cmd = subparser.add_parser("phases", help="list the current phases " \
-                                   "a session", usage=usage)
+                                   "rules", usage=usage)
         self._add_args(cmd)
 
     def main(self, options, config):
         console = Console(config)
-        session_name = options.sessionname[0]
+        rules_name = options.rulesname[0]
         if options.subcommand == "phases":
-            console.list_session_phases(session_name)
+            console.list_rules_phases(rules_name)
         elif options.subcommand == "files":
-            console.list_session_files(session_name)
+            console.list_rules_files(rules_name)
 
     def _add_args(self, cmd):
-        cmd.add_argument("sessionname", nargs=1)
+        cmd.add_argument("rulesname", nargs=1)
 
 
 class ListCommand(CommandWithSubCommands):
@@ -366,18 +366,18 @@ class ListCommand(CommandWithSubCommands):
 
     def add_cmds(self, subparser):
         usage = "%(prog)s [global options] " + self.name + "installed"
-        cmd = subparser.add_parser("installed", help="show installed sessions",
+        cmd = subparser.add_parser("installed", help="show installed rules",
                                    usage=usage)
         usage = "%(prog)s [global options] " + self.name +  "activated"
-        cmd = subparser.add_parser("activated", help="show activated sessions",
+        cmd = subparser.add_parser("activated", help="show activated rules",
                                    usage=usage)
 
     def main(self, options, config):
         console = Console(config)
         if options.subcommand == "installed":
-            console.list_installed_sessions()
+            console.list_installed_rules()
         elif options.subcommand == "activated":
-            console.list_activated_sessions()
+            console.list_activated_rules()
 
 
 class SystemProvidesCommand(CommandWithSubCommands):
@@ -430,30 +430,30 @@ class QuiltCommand(CommandWithSubCommands):
 
     def __init__(self):
         name = "quilt"
-        description = "Manage patches for a session with quilt"
+        description = "Manage patches for rules with quilt"
         usage = "%(prog)s [global options] " + name + \
-                " <pop|push> [-a] sessionname\n" + \
+                " <pop|push> [-a] rulesname\n" + \
                 "                            " + name + " refresh " + \
-                "sessionname\n" + \
+                "rulesname\n" + \
                 "                            " + name + " new " + \
-                "patchname sessionname\n" + \
+                "patchname rulesname\n" + \
                 "                            " + name + " delete " + \
-                "sessionname\n" + \
+                "rulesname\n" + \
                 "                            " + name + " edit " + \
-                "<file1, file2, ...> sessionname\n" + \
+                "<file1, file2, ...> rulesname\n" + \
                 "                            " + name + " import " + \
-                "<patch1, patch2, ...> sessionname\n"
+                "<patch1, patch2, ...> rulesname\n"
         super(QuiltCommand, self).__init__(name, usage, description)
 
     def main(self, options, config):
         console = Console(config)
-        session_name = options.sessionname[0]
+        rules_name = options.rulesname[0]
 
     def _get_usage(self, cmd, extra=None):
         usage = "%(prog)s [global options] " + self.name + " " + cmd + " "
         if extra:
             usage = usage + extra + " "
-        usage = usage + "sessionname"
+        usage = usage + "rulesname"
         return usage
 
 
@@ -511,27 +511,27 @@ class QuiltCommand(CommandWithSubCommands):
         self._add_args(cmd)
 
     def _add_args(self, cmd):
-        cmd.add_argument("sessionname", nargs=1, help="name of the session " \
+        cmd.add_argument("rulesname", nargs=1, help="name of the rules " \
                 "to patch")
 
     def main(self, options, config):
         console = Console(config)
         subcmd = options.subcommand
-        sessionname = options.sessionname[0]
+        rulesname = options.rulesname[0]
         if subcmd == "push":
-            console.quilt_push(sessionname, options.all)
+            console.quilt_push(rulesname, options.all)
         elif subcmd == "pop":
-            console.quilt_pop(sessionname, options.all)
+            console.quilt_pop(rulesname, options.all)
         elif subcmd == "refresh":
-            console.quilt_refresh(sessionname)
+            console.quilt_refresh(rulesname)
         elif subcmd == "new":
-            console.quilt_new(sessionname, options.patchname[0])
+            console.quilt_new(rulesname, options.patchname[0])
         elif subcmd == "delete":
-            console.quilt_delete(sessionname)
+            console.quilt_delete(rulesname)
         elif subcmd == "import":
-            console.quilt_import(sessionname, options.patches)
+            console.quilt_import(rulesname, options.patches)
         elif subcmd == "edit":
-            console.quilt_edit(sessionname, options.files)
+            console.quilt_edit(rulesname, options.files)
 
 
 class UpgradeCommand(Command):

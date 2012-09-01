@@ -1,6 +1,6 @@
 # vim: fileencoding=utf-8 et sw=4 ts=4 tw=80:
 
-# kaizen - Continously improve, build and manage free software
+# kaizen - Continuously improve, build and manage free software
 #
 # Copyright (C) 2011  Björn Ricks <bjoern.ricks@gmail.com>
 #
@@ -23,10 +23,10 @@ import os.path
 
 import kaizen.logging
 
-from kaizen.error import JamError
+from kaizen.error import KaizenError
 from kaizen.utils import extract_file
 
-class FileExtractError(JamError):
+class FileExtractError(KaizenError):
     pass
 
 

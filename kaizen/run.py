@@ -1,6 +1,6 @@
 # vim: fileencoding=utf-8 et sw=4 ts=4 tw=80:
 
-# kaizen - Continously improve, build and manage free software
+# kaizen - Continuously improve, build and manage free software
 #
 # Copyright (C) 2007, 2008 by Intevation GmbH
 # Copyright (C) 2011  Björn Ricks <bjoern.ricks@gmail.com>
@@ -25,10 +25,10 @@
 import os
 import subprocess
 
-from kaizen.error import JamError
+from kaizen.error import KaizenError
 
 
-class SubprocessError(JamError):
+class SubprocessError(KaizenError):
 
     def __init__(self, command, returncode, output=None):
         self.command = command

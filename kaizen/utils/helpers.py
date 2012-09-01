@@ -1,6 +1,6 @@
 # vim: fileencoding=utf-8 et sw=4 ts=4 tw=80:
 
-# kaizen - Continously improve, build and manage free software
+# kaizen - Continuously improve, build and manage free software
 #
 # Copyright (C) 2011  Björn Ricks <bjoern.ricks@gmail.com>
 #
@@ -25,7 +25,7 @@ import zipfile
 
 import kaizen.logging
 
-from kaizen.error import JamRuntimeError
+from kaizen.error import KaizenRuntimeError
 
 log = kaizen.logging.getLogger(__name__)
 
@@ -83,7 +83,7 @@ def real_path(path):
 
 def extract_file(file_name, dest_dir):
     if not os.path.isfile(file_name):
-        raise JamRuntimeError("Unable to extract file. '%s' is does not exit or \
+        raise KaizenRuntimeError("Unable to extract file. '%s' is does not exit or \
                            is not a file." % file_name)
     if file_name.endswith(".bz2") or file_name.endswith(".tbz2"):
         # bz2 doesn't support multiple streams therefore use bz2file module
@@ -103,7 +103,7 @@ def extract_file(file_name, dest_dir):
         log.debug("Extracting zip file '%s' to '%s'" % (file_name, dest_dir))
         file = zipfile.ZipFile(file_name)
     else:
-        raise JamRuntimeError("Unable to extract file. '%s' can not be recognized " \
+        raise KaizenRuntimeError("Unable to extract file. '%s' can not be recognized " \
                            "as a valid source archive." % file_name)
     file.extractall(dest_dir)
 

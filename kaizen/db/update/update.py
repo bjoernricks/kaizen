@@ -1,6 +1,6 @@
 # vim: fileencoding=utf-8 et sw=4 ts=4 tw=80:
 
-# kaizen - Continously improve, build and manage free software
+# kaizen - Continuously improve, build and manage free software
 #
 # Copyright (C) 2011  Björn Ricks <bjoern.ricks@gmail.com>
 #
@@ -25,7 +25,7 @@ from datetime import datetime
 
 from kaizen.db.db import Db
 from kaizen.db.objects import UpdateVersion
-from kaizen.error import JamError
+from kaizen.error import KaizenError
 
 
 class Update(object):
@@ -53,7 +53,7 @@ class Update(object):
         self.db.session.commit()
 
 
-class UpdateError(JamError):
+class UpdateError(KaizenError):
 
     def __init__(self, value):
         self.value = value

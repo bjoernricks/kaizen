@@ -1,6 +1,6 @@
 # vim: fileencoding=utf-8 et sw=4 ts=4 tw=80:
 
-# kaizen - Continously improve, build and manage free software
+# kaizen - Continuously improve, build and manage free software
 #
 # Copyright (C) 2011  Björn Ricks <bjoern.ricks@gmail.com>
 #
@@ -29,7 +29,8 @@ class ArgumentParser(ArgParser):
     def __init__(self, usage=None, create_late=False, **kwargs):
         if not usage:
             usage = "%(prog)s [options] command {arguments}"
-        description = "kaizen - Orchestrate your software"
+        description = "kaizen - Continuously improve, build and manage free " \
+                      "software"
         kwargs.pop("description", None)
         kwargs.pop("usage", None)
         add_help = kwargs.pop("add_help", False)
@@ -40,7 +41,7 @@ class ArgumentParser(ArgParser):
         self.group = self.add_argument_group("global options")
         self.group.add_argument("--config", dest="config",
                           help="path to the config file")
-        self.group.add_argument("--sessions", help="path to sessions")
+        self.group.add_argument("--rules", help="path to rules")
         self.group.add_argument("-d", "--debug", action="store_true",
                           dest="debug",
                           help="enable debug output")
@@ -87,7 +88,7 @@ class NameVersionParser(object):
             if name.startswith("@"):
                 if cur_name is None:
                     raise ArgumentError(None, "Version parameter %r must be "
-                                        "passed after the session name" % name)
+                                        "passed after the rules name" % name)
                 self.names.append((cur_name, name[1:]))
                 cur_name = None
             else:

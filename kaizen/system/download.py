@@ -1,6 +1,6 @@
 # vim: fileencoding=utf-8 et sw=4 ts=4 tw=80:
 
-# kaizen - Continously improve, build and manage free software
+# kaizen - Continuously improve, build and manage free software
 #
 # Copyright (C) 2011  Björn Ricks <bjoern.ricks@gmail.com>
 #
@@ -29,9 +29,9 @@ import kaizen.logging
 from urlparse import urlparse
 
 from kaizen.utils import Hash
-from kaizen.error import JamError
+from kaizen.error import KaizenError
 
-class DownloaderError(JamError):
+class DownloaderError(KaizenError):
     pass
 
 
@@ -74,7 +74,7 @@ class FtpDownloader(Downloader):
 
     def __init__(self, url):
         self.url = url
-        self.log = kaizen.logging.getLogger("jam.ftpdownloader")
+        self.log = kaizen.logging.getLogger(self)
 
     def copy(self, filename, overwrite=False):
         ftp = ftplib.FTP(self.url.netloc)
@@ -101,7 +101,7 @@ class HttpDownloader(Downloader):
 
     def __init__(self, url):
         self.url = url
-        self.log = kaizen.logging.getLogger("jam.httpdownloader")
+        self.log = kaizen.logging.getLogger(self)
 
     def copy(self, filename, overwrite=False):
         u = urllib2.urlopen(self.url)
@@ -132,7 +132,7 @@ class LocalFileDownloader(Downloader):
     def __init__(self, url, root_dir=None):
         self.url = url
         self.root_dir = root_dir
-        self.log = kaizen.logging.getLogger("jam.localfiledownloader")
+        self.log = kaizen.logging.getLogger(self)
 
     def copy(self, filename, overwrite=False):
         path = self.url.path
@@ -154,14 +154,14 @@ class GitDownloader(Downloader):
 
 class UrlDownloader(Downloader):
 
-    def __init__(self, session, urlstr):
+    def __init__(self, rules, urlstr):
         self.url = urlstr
-        self.session = session
-        self.log = kaizen.logging.getLogger("jam.downloader")
+        self.rules = rules
+        self.log = kaizen.logging.getLogger(self)
 
         if self.url.startswith("git"):
-            self.downloader = GitDownloader(self.url, session.branch if
-                                            hasattr(session, "branch") else None)
+            self.downloader = GitDownloader(self.url, rules.branch if
+                                            hasattr(rules, "branch") else None)
             self.filename = ""
             return
 
@@ -170,7 +170,7 @@ class UrlDownloader(Downloader):
         if url.scheme == 'http' or url.scheme == 'https':
             self.downloader = HttpDownloader(urlstr)
         elif url.scheme == "file" or not url.scheme:
-            self.downloader = LocalFileDownloader(url, session.session_path)
+            self.downloader = LocalFileDownloader(url, rules.rules_path)
         elif url.scheme == "ftp":
             self.downloader = FtpDownloader(url)
         else:

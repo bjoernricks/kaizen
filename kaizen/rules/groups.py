@@ -1,6 +1,6 @@
 # vim: fileencoding=utf-8 et sw=4 ts=4 tw=80:
 
-# kaizen - Continously improve, build and manage free software
+# kaizen - Continuously improve, build and manage free software
 #
 # Copyright (C) 2011  Björn Ricks <bjoern.ricks@gmail.com>
 #
@@ -51,41 +51,41 @@ class Group(object):
     build_cpath = []
     build_library_path = []
 
-    def __init__(self, session, config):
+    def __init__(self, rules, config):
         self.config = config
-        self.session = session
+        self.rules = rules
 
-        session.configure_cflags.extend(self.configure_cflags)
-        session.configure_ldflags.extend(self.configure_ldflags)
-        session.configure_cppflags.extend(self.configure_cppflags)
-        session.configure_cxxflags.extend(self.configure_cxxflags)
-        session.configure_libs.extend(self.configure_libs)
-        session.configure_cpath.extend(self.configure_cpath)
-        session.configure_library_path.extend(self.configure_library_path)
-        if not session.configure_cc:
-            session.configure_cc = self.configure_cc
-        if not session.configure_cpp:
-            session.configure_cpp = self.configure_cpp
-        if not session.configure_cxx:
-            session.configure_cxx = self.configure_cxx
+        rules.configure_cflags.extend(self.configure_cflags)
+        rules.configure_ldflags.extend(self.configure_ldflags)
+        rules.configure_cppflags.extend(self.configure_cppflags)
+        rules.configure_cxxflags.extend(self.configure_cxxflags)
+        rules.configure_libs.extend(self.configure_libs)
+        rules.configure_cpath.extend(self.configure_cpath)
+        rules.configure_library_path.extend(self.configure_library_path)
+        if not rules.configure_cc:
+            rules.configure_cc = self.configure_cc
+        if not rules.configure_cpp:
+            rules.configure_cpp = self.configure_cpp
+        if not rules.configure_cxx:
+            rules.configure_cxx = self.configure_cxx
 
-        session.build_cflags.extend(self.build_cflags)
-        session.build_ldflags.extend(self.build_ldflags)
-        session.build_cppflags.extend(self.build_cppflags)
-        session.build_cxxflags.extend(self.build_cxxflags)
-        session.build_libs.extend(self.build_libs)
-        session.build_cpath.extend(self.build_cpath)
-        session.build_library_path.extend(self.build_library_path)
-        if not session.build_cc:
-            session.build_cc = self.build_cc
-        if not session.build_cpp:
-            session.build_cpp = self.build_cpp
-        if not session.build_cxx:
-            session.build_cxx = self.build_cxx
+        rules.build_cflags.extend(self.build_cflags)
+        rules.build_ldflags.extend(self.build_ldflags)
+        rules.build_cppflags.extend(self.build_cppflags)
+        rules.build_cxxflags.extend(self.build_cxxflags)
+        rules.build_libs.extend(self.build_libs)
+        rules.build_cpath.extend(self.build_cpath)
+        rules.build_library_path.extend(self.build_library_path)
+        if not rules.build_cc:
+            rules.build_cc = self.build_cc
+        if not rules.build_cpp:
+            rules.build_cpp = self.build_cpp
+        if not rules.build_cxx:
+            rules.build_cxx = self.build_cxx
 
-        session.depends.extend(self.depends)
-        session.configure_args.extend(self.configure_args)
-        session.build_args.extend(self.build_args)
+        rules.depends.extend(self.depends)
+        rules.configure_args.extend(self.configure_args)
+        rules.build_args.extend(self.build_args)
 
     def pre_configure(self):
         pass
@@ -134,14 +134,14 @@ class UpdateMimeDatabase(Group):
 
     depends = ["shared-mime-info"]
 
-    def __init__(self, session, config):
-        super(UpdateMimeDatabase, self).__init__(session, config)
+    def __init__(self, rules, config):
+        super(UpdateMimeDatabase, self).__init__(rules, config)
         args = []
         debug = self.config.get("debug")
         if debug:
             args.append("-V")
-        args.append(session.prefix + "/share/mime")
-        self.updatemime = Command(session.prefix + "/bin/update-mime-database",
+        args.append(rules.prefix + "/share/mime")
+        self.updatemime = Command(rules.prefix + "/bin/update-mime-database",
                                   args, os.getcwd(), debug)
 
     def post_activate(self):
@@ -153,12 +153,12 @@ class UpdateMimeDatabase(Group):
 
 class KDE(UpdateMimeDatabase):
 
-    def __init__(self, session, config):
-        super(KDE, self).__init__(session, config)
-        if session.name != "kdelibs":
-            session.depends.append("kdelibs")
+    def __init__(self, rules, config):
+        super(KDE, self).__init__(rules, config)
+        if rules.name != "kdelibs":
+            rules.depends.append("kdelibs")
         debug = self.config.get("debug")
-        self.kbuildsycoca = Command(session.prefix + "/bin/kbuildsycoca4", [],
+        self.kbuildsycoca = Command(rules.prefix + "/bin/kbuildsycoca4", [],
                                     os.getcwd(), debug)
 
     def post_activate(self):
@@ -167,5 +167,5 @@ class KDE(UpdateMimeDatabase):
 
     def post_deactivate(self):
         super(KDE, self).post_deactivate()
-        if self.session.name != "kdelibs":
+        if self.rules.name != "kdelibs":
             self.kbuildsycoca.run()

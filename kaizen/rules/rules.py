@@ -1,6 +1,6 @@
 # vim: fileencoding=utf-8 et sw=4 ts=4 tw=80:
 
-# kaizen - Continously improve, build and manage free software
+# kaizen - Continuously improve, build and manage free software
 #
 # Copyright (C) 2011  Björn Ricks <bjoern.ricks@gmail.com>
 #
@@ -30,9 +30,9 @@ from kaizen.system.patch import Simple
 from kaizen.system.extract import ArchiveFile
 
 
-class Session(object):
+class Rules(object):
     """
-    Base Class for all Sessions
+    Base Class for all Rules
 
     All pre/post methods must not rely on any stuff that a corresponding
     pre/post method has created, set, etc. That means e.g. the post_deactivate
@@ -112,30 +112,30 @@ class Session(object):
         self.verbose = self.config.get("verbose")
         self.debug = self.config.get("debug")
         self.prefix = self.config.get("prefix")
-        self.session_dirs = self.config.get("sessions")
+        self.rules_dirs = self.config.get("rules")
         self.destroot_dir = self.config.get("destroot")
         self.buildjobs = self.config.get("buildjobs")
-        # session name must be in sync with wrapper session name for destroot
+        # rules name must be in sync with wrapper rules name for destroot
         # installation. Currently it's not best to have different sources
-        # for session name. Changing the module layout for session installation
-        # could fail if a session uses self.destdir_path then.
+        # for rules name. Changing the module layout for rules installation
+        # could fail if a rules uses self.destdir_path then.
         # TODO: All parameters should be set by Wrapper
-        self.session_name = self.__module__.split(".")[-2]
-        self.destroot_path = os.path.join(self.destroot_dir, self.session_name,
+        self.rules_name = self.__module__.split(".")[-2]
+        self.destroot_path = os.path.join(self.destroot_dir, self.rules_name,
                                           self.get_dist_version())
         # TODO check if destroot_path and dest_dir are equal
-        self.session_path = real_path(os.path.dirname(
+        self.rules_path = real_path(os.path.dirname(
                                      inspect.getfile(self.__class__)))
         self.package_path = self.config.get("packagepath")
         self.apps_dir = self.config.get("appsdir")
         self.dest_path = self.destroot_path + self.prefix
 
-        self.log = kaizen.logging.getLogger("jam.session." + self.session_name)
+        self.log = kaizen.logging.getLogger("kaizen.rules." + self.rules_name)
 
         self.__shadow = dict()
 
         if not self.name:
-            self.name = self.session_name
+            self.name = self.rules_name
 
         self.vars = dict()
         self.vars["prefix"] = self.config.get("prefix")
@@ -145,7 +145,7 @@ class Session(object):
         self.vars["name"] = self.name
         self.vars["src_dir"] = self.src_dir
         self.vars["build_dir"] = self.build_dir
-        self.vars["session_path"] = self.session_path
+        self.vars["rules_path"] = self.rules_path
         self.vars["dist_version"] = self.get_dist_version()
         self.vars["package_path"] = self.package_path
         self.vars["apps_dir"] = self.apps_dir
@@ -163,12 +163,12 @@ class Session(object):
         self.vars["build_path"] = self.build_path
 
         if not self.patch_path:
-            self.patch_path = os.path.join(self.session_path, "patches")
+            self.patch_path = os.path.join(self.rules_path, "patches")
         self.patch_path = real_path(self.patch_path)
         self.vars["patch_path"] = self.patch_path
 
         # src_path may be differenct then the path to the sources where
-        # e.g. configure should be run. A session may copy the sources to
+        # e.g. configure should be run. A rules may copy the sources to
         # a different dir to be able to do clean builds.
         if not self.configure_path:
             self.configure_path = self.src_path

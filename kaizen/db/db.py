@@ -1,6 +1,6 @@
 # vim: fileencoding=utf-8 et sw=4 ts=4 tw=80:
 
-# kaizen - Continously improve, build and manage free software
+# kaizen - Continuously improve, build and manage free software
 #
 # Copyright (C) 2011  Björn Ricks <bjoern.ricks@gmail.com>
 #
@@ -24,7 +24,7 @@ import os.path
 import kaizen.logging
 
 from kaizen.db.tables import Tables
-from kaizen.db.objects import Info, Installed, File, Directory, SessionPhase, \
+from kaizen.db.objects import Info, Installed, File, Directory, RulesPhase, \
         UpdateVersion, InstallDirectories, SchemaVersion
 from kaizen.external.sqlalchemy import String, create_engine
 from kaizen.external.sqlalchemy.orm import mapper, sessionmaker
@@ -58,7 +58,7 @@ class Db(object):
             mapper(Installed, self.tables.installed_table)
             mapper(File, self.tables.files_table)
             mapper(Directory, self.tables.dirs_table)
-            mapper(SessionPhase, self.tables.phases_table)
+            mapper(RulesPhase, self.tables.phases_table)
             mapper(SchemaVersion, self.tables.dbversion_table)
             mapper(UpdateVersion, self.tables.updates_table)
             mapper(InstallDirectories, self.tables.install_directories_table)

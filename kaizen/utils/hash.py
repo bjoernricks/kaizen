@@ -1,6 +1,6 @@
 # vim: fileencoding=utf-8 et sw=4 ts=4 tw=80:
 
-# kaizen - Continously improve, build and manage free software
+# kaizen - Continuously improve, build and manage free software
 #
 # Copyright (C) 2011  Björn Ricks <bjoern.ricks@gmail.com>
 #
@@ -21,7 +21,7 @@
 
 import os.path
 
-from kaizen.error import JamRuntimeError
+from kaizen.error import KaizenRuntimeError
 
 try:
     from hashlib import md5 # requires python 2.5
@@ -50,7 +50,7 @@ class Hash(object):
     def _calculate_hash(self, hashalgorithm):
         """ calculates a hash of a file """
         if not os.path.isfile(self.filename):
-            raise JamRuntimeError("Could not calculate hash. File not found: %s"
+            raise KaizenRuntimeError("Could not calculate hash. File not found: %s"
                                 % self.filename)
         f = file(self.filename, 'rb')
         m = hashalgorithm()

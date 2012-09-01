@@ -1,6 +1,6 @@
 # vim: fileencoding=utf-8 et sw=4 ts=4 tw=80:
 
-# kaizen - Continously improve, build and manage free software
+# kaizen - Continuously improve, build and manage free software
 #
 # Copyright (C) 2011  Björn Ricks <bjoern.ricks@gmail.com>
 #
@@ -25,12 +25,12 @@ import kaizen.logging
 
 from ConfigParser import RawConfigParser
 
-from kaizen.session.handler import SessionHandler
-from kaizen.session.error import SessionError
+from kaizen.rules.handler import RulesHandler
+from kaizen.rules.error import RulesError
 
-class UnresolvedDependencies(SessionError):
+class UnresolvedDependencies(RulesError):
 
-    def __init__(self, session_name, missing):
+    def __init__(self, rules_name, missing):
         self.missing = missing
         value = "Couldn't not resolve all dependencies\n"
         for dependency in self.missing.itervalues():
@@ -39,25 +39,25 @@ class UnresolvedDependencies(SessionError):
                                                             dependency.version)
             else:
                 value += "'%s' is missing\n" % dependency.name
-        super(UnresolvedDependencies, self).__init__(session_name, value)
+        super(UnresolvedDependencies, self).__init__(rules_name, value)
 
 
 class DependencyAnalyser(object):
 
     dependency_field = "depends"
 
-    def __init__(self, config, session):
+    def __init__(self, config, rules):
         self.config = config
-        self.session = session
+        self.rules = rules
         self.dependencies = dict()
         self.missing = dict()
         self.systemprovider = SystemProvider(config)
         self.log = kaizen.logging.getLogger(self)
         self.systemprovider.load()
 
-    def analyse_session(self, session):
+    def analyse_rules(self, rules):
         dependencies = []
-        depends = getattr(session.session, self.dependency_field)
+        depends = getattr(rules.rules, self.dependency_field)
         if not depends:
             return dependencies
         for depend in depends:
@@ -67,10 +67,10 @@ class DependencyAnalyser(object):
                 name = depend[0]
                 version = depend[1]
             if not name:
-                self.log.warn("Session '%s' has an empty dependency" %
-                              session.name)
+                self.log.warn("Rules '%s' has an empty dependency" %
+                              rules.name)
                 continue
-            if name == self.session.session_name:
+            if name == self.rules.rules_name:
                 self.log.warn("Cyclic dependency found.")
                 continue
             if name in self.dependencies:
@@ -80,12 +80,12 @@ class DependencyAnalyser(object):
                 self.dependencies[name] = dependency
             else:
                 try:
-                    depend_session = SessionHandler(self.config, name)
-                    dependency = SessionDependency(depend_session, name, version)
+                    depend_rules = RulesHandler(self.config, name)
+                    dependency = RulesDependency(depend_rules, name, version)
                     self.dependencies[name] = dependency
-                    cur_deps = self.analyse_session(depend_session)
+                    cur_deps = self.analyse_rules(depend_rules)
                     dependency.add_dependencies(cur_deps)
-                except SessionError, e:
+                except RulesError, e:
                     self.log.error("Error while loading dependency '%s': %s" % \
                                    (name, e))
                     dependency = Dependency(name)
@@ -95,7 +95,7 @@ class DependencyAnalyser(object):
         return dependencies
 
     def analyse(self):
-        self.analyse_session(self.session)
+        self.analyse_rules(self.rules)
         return self.dependencies
 
     def get_missing(self):
@@ -127,11 +127,11 @@ class Dependency(object):
         self.dependencies.extend(dependencies)
 
 
-class SessionDependency(Dependency):
+class RulesDependency(Dependency):
 
-    def __init__(self, session, name, version=None):
-        self.session = session
-        super(SessionDependency, self).__init__(name, version,
+    def __init__(self, rules, name, version=None):
+        self.rules = rules
+        super(RulesDependency, self).__init__(name, version,
                                                 Dependency.SESSION)
 
 

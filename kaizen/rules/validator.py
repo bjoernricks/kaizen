@@ -1,6 +1,6 @@
 # vim: fileencoding=utf-8 et sw=4 ts=4 tw=80:
 
-# kaizen - Continously improve, build and manage free software
+# kaizen - Continuously improve, build and manage free software
 #
 # Copyright (C) 2011  Björn Ricks <bjoern.ricks@gmail.com>
 #
@@ -19,27 +19,27 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 
 # 02110-1301 USA
 
-class SessionValidator(object):
+class RulesValidator(object):
 
     errors = []
 
-    def validate(self, session):
+    def validate(self, rules):
         valid = True
         try:
-            if not session.version:
+            if not rules.version:
                 valid = False
-                self.errors.append("Session '%s' version not set." %
-                                   session.__name__)
+                self.errors.append("Rules '%s' version not set." %
+                                   rules.__name__)
         except AttributeError, error:
-            self.errors.append("Session '%s' has no attribute version." %
-                               session.__name__)
+            self.errors.append("Rules '%s' has no attribute version." %
+                               rules.__name__)
         try:
-            if not session.name:
+            if not rules.name:
                 valid = False
-                self.errors.append("Session '%s' name not set." %
-                                   session.__name__)
+                self.errors.append("Rules '%s' name not set." %
+                                   rules.__name__)
         except AttributeError, error:
-            self.errors.append("Session '%s' has not attribute name." %
-                               session.__name__)
+            self.errors.append("Rules '%s' has not attribute name." %
+                               rules.__name__)
 
         return valid

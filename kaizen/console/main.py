@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # vim: fileencoding=utf-8 et sw=4 ts=4 tw=80:
 
-# kaizen - Continously improve, build and manage free software
+# kaizen - Continuously improve, build and manage free software
 #
 # Copyright (C) 2011  Björn Ricks <bjoern.ricks@gmail.com>
 #
@@ -24,7 +24,7 @@ import sys
 
 import kaizen.command
 
-from kaizen.config import Config, JAM_CONFIG_FILES
+from kaizen.config import Config, KAIZEN_CONFIG_FILES
 from kaizen.utils import Loader
 from kaizen.command.parser import ArgumentParser
 from kaizen.logging.out import out
@@ -35,7 +35,7 @@ class Main(object):
         out("Version:      %r" % self.config.get("version"))
         out("Debug:        %r" % self.config.get("debug"))
         out("Verbose:      %r" % self.config.get("verbose"))
-        out("Sessions:     %r" % self.config.get("sessions"))
+        out("Rules:     %r" % self.config.get("rules"))
         out("Root:         %r" % self.config.get("rootdir"))
         out("Destroot:     %r" % self.config.get("destroot"))
         out("Buildroot:    %r" % self.config.get("buildroot"))
@@ -65,7 +65,7 @@ class Main(object):
             return
 
         #parse config for debug option
-        config = Config(JAM_CONFIG_FILES, vars(options))
+        config = Config(KAIZEN_CONFIG_FILES, vars(options))
 
         if config.get("debug"):
             self.logger.setLevel(kaizen.logging.DEBUG)
@@ -79,7 +79,7 @@ class Main(object):
 
         options = parser.parse_args(all_args)
 
-        self.config = Config(JAM_CONFIG_FILES, vars(options))
+        self.config = Config(KAIZEN_CONFIG_FILES, vars(options))
 
         if self.config.get("debug"):
             self.print_settings()

@@ -1,6 +1,6 @@
 # vim: fileencoding=utf-8 et sw=4 ts=4 tw=80:
 
-# kaizen - Continously improve, build and manage free software
+# kaizen - Continuously improve, build and manage free software
 #
 # Copyright (C) 2011  Björn Ricks <bjoern.ricks@gmail.com>
 #
@@ -24,64 +24,64 @@ import os
 import os.path
 
 from kaizen.logging.log import getLogger
-from kaizen.session.error import SessionError
-from kaizen.session.session import Session
+from kaizen.rules.error import RulesError
+from kaizen.rules.rules import Rules
 from kaizen.system.command import Configure, CMake, Make, Command, Copy, Delete
 
-class SessionCmd(object):
+class RulesCmd(object):
 
     depends = []
 
-    def __init__(self, session):
+    def __init__(self, rules):
         self.log = getLogger(self)
-        self.session = session
+        self.rules = rules
 
 
-class MakeCmd(SessionCmd):
+class MakeCmd(RulesCmd):
 
     def build(self):
-        j = self.session.config.get("buildjobs")
+        j = self.rules.config.get("buildjobs")
 
-        if self.session.parallel and j > 1:
-            build_args = ["-j" + str(j)] + self.session.build_args
+        if self.rules.parallel and j > 1:
+            build_args = ["-j" + str(j)] + self.rules.build_args
         else:
-            build_args = self.session.build_args
+            build_args = self.rules.build_args
 
-        make = Make(self.session.build_path, self.session.debug)
-        if self.session.build_cc:
-            make.set_cc(self.session.build_cc)
-        if self.session.build_cpp:
-            make.set_cpp(self.session.build_cpp)
-        if self.session.build_cflags:
-            make.set_cflags(self.session.build_cflags)
-        if self.session.build_cppflags:
-            make.set_cppflags(self.session.build_cppflags)
-        if self.session.build_ldflags:
-            make.set_ldflags(self.session.build_ldflags)
-        if self.session.build_libs:
-            make.set_libs(self.session.build_libs)
-        if self.session.build_cxx:
-            make.set_cxx(self.session.build_cxx)
-        if self.session.build_cxxflags:
-            make.set_cxxflags(self.session.build_cxxflags)
-        if self.session.build_cpath:
-            make.set_cpath(self.session.build_cpath)
-        if self.session.build_library_path:
-            make.set_library_path(self.session.build_library_path)
+        make = Make(self.rules.build_path, self.rules.debug)
+        if self.rules.build_cc:
+            make.set_cc(self.rules.build_cc)
+        if self.rules.build_cpp:
+            make.set_cpp(self.rules.build_cpp)
+        if self.rules.build_cflags:
+            make.set_cflags(self.rules.build_cflags)
+        if self.rules.build_cppflags:
+            make.set_cppflags(self.rules.build_cppflags)
+        if self.rules.build_ldflags:
+            make.set_ldflags(self.rules.build_ldflags)
+        if self.rules.build_libs:
+            make.set_libs(self.rules.build_libs)
+        if self.rules.build_cxx:
+            make.set_cxx(self.rules.build_cxx)
+        if self.rules.build_cxxflags:
+            make.set_cxxflags(self.rules.build_cxxflags)
+        if self.rules.build_cpath:
+            make.set_cpath(self.rules.build_cpath)
+        if self.rules.build_library_path:
+            make.set_library_path(self.rules.build_library_path)
         make.run(build_args)
 
     def destroot(self):
-        Make(self.session.build_path,
-             self.session.debug).install(self.session.dest_dir)
+        Make(self.rules.build_path,
+             self.rules.debug).install(self.rules.dest_dir)
 
     def clean(self):
-        Make(self.session.build_path, self.session.debug).clean()
+        Make(self.rules.build_path, self.rules.debug).clean()
 
     def distclean(self):
-        Make(self.session.build_path, self.session.debug).distclean()
+        Make(self.rules.build_path, self.rules.debug).distclean()
 
 
-class MakeSession(Session):
+class MakeRules(Rules):
 
     build_cmd = MakeCmd
     clean_cmd = MakeCmd
@@ -89,75 +89,75 @@ class MakeSession(Session):
     destroot_cmd = MakeCmd
 
 
-class ConfigureCmd(SessionCmd):
+class ConfigureCmd(RulesCmd):
 
     def configure(self):
-        args = self.session.configure_args
-        args.append("--prefix=" + self.session.prefix)
-        args.append("--srcdir=" + self.session.configure_path)
-        configure = Configure(args, self.session.configure_path,
-                              self.session.build_path, self.session.debug)
-        if self.session.configure_cc:
-            configure.set_cc(self.session.configure_cc)
-        if self.session.configure_cpp:
-            configure.set_cpp(self.session.configure_cpp)
-        if self.session.configure_cflags:
-            configure.set_cflags(self.session.configure_cflags)
-        if self.session.configure_cppflags:
-            configure.set_cppflags(self.session.configure_cppflags)
-        if self.session.configure_ldflags:
-            configure.set_ldflags(self.session.configure_ldflags)
-        if self.session.configure_libs:
-            configure.set_libs(self.session.configure_libs)
-        if self.session.configure_cxx:
-            configure.set_cxx(self.session.configure_cxx)
-        if self.session.configure_cxxflags:
-            configure.set_cxxflags(self.session.configure_cxxflags)
-        if self.session.configure_cpath:
-            configure.set_cpath(self.session.configure_cpath)
-        if self.session.configure_library_path:
-            configure.set_library_path(self.session.configure_library_path)
+        args = self.rules.configure_args
+        args.append("--prefix=" + self.rules.prefix)
+        args.append("--srcdir=" + self.rules.configure_path)
+        configure = Configure(args, self.rules.configure_path,
+                              self.rules.build_path, self.rules.debug)
+        if self.rules.configure_cc:
+            configure.set_cc(self.rules.configure_cc)
+        if self.rules.configure_cpp:
+            configure.set_cpp(self.rules.configure_cpp)
+        if self.rules.configure_cflags:
+            configure.set_cflags(self.rules.configure_cflags)
+        if self.rules.configure_cppflags:
+            configure.set_cppflags(self.rules.configure_cppflags)
+        if self.rules.configure_ldflags:
+            configure.set_ldflags(self.rules.configure_ldflags)
+        if self.rules.configure_libs:
+            configure.set_libs(self.rules.configure_libs)
+        if self.rules.configure_cxx:
+            configure.set_cxx(self.rules.configure_cxx)
+        if self.rules.configure_cxxflags:
+            configure.set_cxxflags(self.rules.configure_cxxflags)
+        if self.rules.configure_cpath:
+            configure.set_cpath(self.rules.configure_cpath)
+        if self.rules.configure_library_path:
+            configure.set_library_path(self.rules.configure_library_path)
         configure.run()
 
     def distclean(self):
-        if self.session.src_path != self.session.build_path:
-            Delete(self.session.build_dir).run()
+        if self.rules.src_path != self.rules.build_path:
+            Delete(self.rules.build_dir).run()
         else:
-            Make(self.session.build_path, self.session.debug).distclean()
+            Make(self.rules.build_path, self.rules.debug).distclean()
 
 
-class ConfigureSession(MakeSession):
+class ConfigureRules(MakeRules):
 
     configure_cmd = ConfigureCmd
     distclean_cmd = ConfigureCmd
 
 
-class CMakeCmd(SessionCmd):
+class CMakeCmd(RulesCmd):
 
     depends = ["cmake"]
 
     def configure(self):
-        args = self.session.configure_args
-        args.append("-DCMAKE_INSTALL_PREFIX=" + self.session.prefix)
+        args = self.rules.configure_args
+        args.append("-DCMAKE_INSTALL_PREFIX=" + self.rules.prefix)
         args.append("-DCMAKE_COLOR_MAKEFILE=TRUE")
 
-        if self.session.verbose:
+        if self.rules.verbose:
             args.append("-DCMAKE_VERBOSE_MAKEFILE=TRUE")
 
-        CMake(args, self.session.configure_path, self.session.build_path,
-              self.session.debug).run()
+        CMake(args, self.rules.configure_path, self.rules.build_path,
+              self.rules.debug).run()
 
     def distclean(self):
-        if self.session.src_path != self.session.build_path:
-            Delete(self.session.build_dir).run()
+        if self.rules.src_path != self.rules.build_path:
+            Delete(self.rules.build_dir).run()
         else:
-            raise SessionError(self.session.name, "CMake is used to build the "
-                               "session but src_path and build_path are set to "
+            raise RulesError(self.rules.name, "CMake is used to build the "
+                               "rules but src_path and build_path are set to "
                                "the same directory %s. Please use out of source"
-                               " builds with CMake." % self.session.src_path)
+                               " builds with CMake." % self.rules.src_path)
 
 
-class CMakeSession(MakeSession):
+class CMakeRules(MakeRules):
 
     configure_cmd = CMakeCmd
     distclean_cmd = CMakeCmd
@@ -167,37 +167,37 @@ class Python(object):
 
     depends = ["python"]
 
-    def __init__(self, session):
-        self.session = session
+    def __init__(self, rules):
+        self.rules = rules
 
     def configure(self):
-        Copy(self.session.src_path + "/*", self.session.build_path).run()
+        Copy(self.rules.src_path + "/*", self.rules.build_path).run()
 
     def build(self):
         args = ["setup.py", "build"]
-        args.extend(self.session.build_args)
-        Command("python", args, self.session.build_path,
-                self.session.debug).run()
+        args.extend(self.rules.build_args)
+        Command("python", args, self.rules.build_path,
+                self.rules.debug).run()
 
     def destroot(self):
         Command("python", ["setup.py", "install", 
-                "--prefix="+ self.session.prefix,
-                "--root=" + self.session.dest_dir,
+                "--prefix="+ self.rules.prefix,
+                "--root=" + self.rules.dest_dir,
                 # root implies single-version-externally-managed
                 # "--single-version-externally-managed"
                 ],
-                self.session.build_path,
-                self.session.debug).run()
+                self.rules.build_path,
+                self.rules.debug).run()
 
     def clean(self):
-        Command("python", ["setup.py", "clean"], self.session.build_path,
-                self.session.debug).run()
+        Command("python", ["setup.py", "clean"], self.rules.build_path,
+                self.rules.debug).run()
 
     def distclean(self):
         pass
 
 
-class PythonSession(Session):
+class PythonRules(Rules):
 
     build_cmd = Python
     configure_cmd = Python
@@ -206,7 +206,7 @@ class PythonSession(Session):
     distclean_cmd = Python
 
 
-class PythonDevelopSession(PythonSession):
+class PythonDevelopRules(PythonRules):
 
     extract_cmd = None
     download_cmd = None
@@ -255,7 +255,7 @@ class PythonDevelopSession(PythonSession):
     def read_kaizen_pth(self):
         self.entries = []
         pth_file = os.path.join(self.prefix, self.python_package_path,
-                                "kaizen-sessions.pth")
+                                "kaizen-rules.pth")
         if not os.path.isfile(pth_file):
             return
         f = open(pth_file, "r")
@@ -270,23 +270,23 @@ class PythonDevelopSession(PythonSession):
         finally:
             f.close()
 
-        self.log.debug("Current kaizen-sessions.pth entries are %r" % self.entries)
+        self.log.debug("Current kaizen-rules.pth entries are %r" % self.entries)
 
     def add_kaizen_pth_entry(self):
         if self.build_path not in self.entries:
-            self.log.debug("adding kaizen-session.pth entry '%s'" % \
+            self.log.debug("adding kaizen-rules.pth entry '%s'" % \
                            self.build_path)
             self.entries.append(self.build_path)
 
     def delete_kaizen_pth(self):
         if self.build_path in self.entries:
-            self.log.debug("removing kaizen-session.pth entry '%s'" % \
+            self.log.debug("removing kaizen-rules.pth entry '%s'" % \
                            self.build_path)
             self.entries.remove(self.build_path)
 
     def write_kaizen_pth(self):
         f = open(os.path.join(self.prefix, self.python_package_path,
-                              "kaizen-sessions.pth"), "w")
+                              "kaizen-rules.pth"), "w")
         try:
             num = len(self.entries)
             for i, entry in enumerate(self.entries):
@@ -297,7 +297,7 @@ class PythonDevelopSession(PythonSession):
             f.close()
 
 
-class GitSession(Session):
+class GitRules(Rules):
 
     depends = ["python-dulwich"]
 

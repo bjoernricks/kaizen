@@ -1,6 +1,6 @@
 # vim: fileencoding=utf-8 et sw=4 ts=4 tw=80:
 
-# kaizen - Continously improve, build and manage free software
+# kaizen - Continuously improve, build and manage free software
 #
 # Copyright (C) 2011  Björn Ricks <bjoern.ricks@gmail.com>
 #
@@ -21,8 +21,8 @@
 
 import os
 
-from kaizen.session.manager import SessionManager, SessionsList
-from kaizen.session.depend import Dependency, SystemProvider
+from kaizen.rules.manager import RulesManager, RulesList
+from kaizen.rules.depend import Dependency, SystemProvider
 from kaizen.system.patch import Quilt
 from kaizen.db.update.upgrade import Upgrade
 from kaizen.logging.out import out
@@ -34,28 +34,28 @@ class Console(object):
         self.config = config
         self.quiet = self.config.get("quiet")
 
-    def list_session_files(self, sessionname):
-        manager = SessionManager(self.config, sessionname)
+    def list_rules_files(self, rulesname):
+        manager = RulesManager(self.config, rulesname)
         files = manager.get_installed_files()
         if files:
             print "\n".join([file.filename for file in files])
         else:
-            print "'%s' has no files installed" % sessionname
+            print "'%s' has no files installed" % rulesname
 
-    def list_session_phases(self, sessionname):
-        manager = SessionManager(self.config, sessionname)
-        phases = manager.get_session_phases()
+    def list_rules_phases(self, rulesname):
+        manager = RulesManager(self.config, rulesname)
+        phases = manager.get_rules_phases()
         if phases:
             print ", ".join([phase.name for phase in phases])
         else:
-            print "'%s' has no phase" % sessionname
+            print "'%s' has no phase" % rulesname
 
     def _print_dependencies(self, dependencies, max_length):
         for name, dependency in dependencies.items():
             if dependency.get_type() == Dependency.NONE:
                 provided_by = "not available"
             elif dependency.get_type() == Dependency.SESSION:
-                provided_by = "provided by session"
+                provided_by = "provided by rules"
             elif dependency.get_type() == Dependency.SYSTEM:
                 provided_by = "provided by system"
             else:
@@ -63,13 +63,13 @@ class Console(object):
             print "--> %s%s(%s)" % (name, self._get_filler(name, max_length),
                                     provided_by)
 
-    def list_session_dependencies(self, sessionname):
-        manager = SessionManager(self.config, sessionname)
+    def list_rules_dependencies(self, rulesname):
+        manager = RulesManager(self.config, rulesname)
         (build, runtime) = manager.depends()
         if not build and not runtime:
-            print "%s has no dependencies" % sessionname
+            print "%s has no dependencies" % rulesname
             return
-        print "Session %s depends on:" % sessionname
+        print "Rules %s depends on:" % rulesname
         max_length = max([len(name) for name in build.keys()] + \
             [len(name) for name in runtime.keys()])
         if runtime:
@@ -79,90 +79,90 @@ class Console(object):
             print "\nBuild dependencies:"
             self._print_dependencies(build, max_length)
 
-    def list_installed_sessions(self):
-        slist = SessionsList(self.config)
-        installed = slist.get_installed_sessions()
-        max_length = max([len(s.session) for s in installed])
+    def list_installed_rules(self):
+        slist = RulesList(self.config)
+        installed = slist.get_installed_rules()
+        max_length = max([len(s.rules) for s in installed])
         for s in installed:
-            print "%s%s%s" % (s.session, self._get_filler(s.session,
+            print "%s%s%s" % (s.rules, self._get_filler(s.rules,
                               max_length), s.version)
 
-    def list_activated_sessions(self):
-        slist = SessionsList(self.config)
-        installed = slist.get_activated_sessions()
-        max_length = max([len(s.session) for s in installed])
+    def list_activated_rules(self):
+        slist = RulesList(self.config)
+        installed = slist.get_activated_rules()
+        max_length = max([len(s.rules) for s in installed])
         for s in installed:
-            print "%s%s%s" % (s.session, self._get_filler(s.session,
+            print "%s%s%s" % (s.rules, self._get_filler(s.rules,
                               max_length), s.version)
 
-    def build_session(self, sessionname, force=False):
-        manager = SessionManager(self.config, sessionname, force)
+    def build_rules(self, rulesname, force=False):
+        manager = RulesManager(self.config, rulesname, force)
         manager.build()
 
-    def patch_session(self, sessionname, force=False):
-        manager = SessionManager(self.config, sessionname, force)
+    def patch_rules(self, rulesname, force=False):
+        manager = RulesManager(self.config, rulesname, force)
         manager.patch()
 
-    def unpatch_session(self, sessionname, force=False):
-        manager = SessionManager(self.config, sessionname, force)
+    def unpatch_rules(self, rulesname, force=False):
+        manager = RulesManager(self.config, rulesname, force)
         manager.unpatch()
 
-    def configure_session(self, sessionname, force=False):
-        manager = SessionManager(self.config, sessionname, force)
+    def configure_rules(self, rulesname, force=False):
+        manager = RulesManager(self.config, rulesname, force)
         manager.configure()
 
-    def extract_session(self, sessionname, force=False):
-        manager = SessionManager(self.config, sessionname, force)
+    def extract_rules(self, rulesname, force=False):
+        manager = RulesManager(self.config, rulesname, force)
         manager.extract()
 
-    def download_session(self, sessionname, download_all, force=False):
-        manager = SessionManager(self.config, sessionname, force)
+    def download_rules(self, rulesname, download_all, force=False):
+        manager = RulesManager(self.config, rulesname, force)
         manager.download(download_all)
 
-    def destroot_session(self, sessionname, force=False):
-        manager = SessionManager(self.config, sessionname, force)
+    def destroot_rules(self, rulesname, force=False):
+        manager = RulesManager(self.config, rulesname, force)
         manager.destroot()
 
-    def install_session(self, sessionname, force=False):
-        manager = SessionManager(self.config, sessionname, force)
-        manager.already_activated.connect(self.on_session_already_activated)
+    def install_rules(self, rulesname, force=False):
+        manager = RulesManager(self.config, rulesname, force)
+        manager.already_activated.connect(self.on_rules_already_activated)
         manager.install()
 
-    def uninstall_session(self, sessionname, version=None, force=False):
-        manager = SessionManager(self.config, sessionname, version, force)
+    def uninstall_rules(self, rulesname, version=None, force=False):
+        manager = RulesManager(self.config, rulesname, version, force)
         manager.uninstall()
 
-    def activate_session(self, sessionname, force=False):
-        manager = SessionManager(self.config, sessionname, force)
-        manager.already_activated.connect(self.on_session_already_activated)
+    def activate_rules(self, rulesname, force=False):
+        manager = RulesManager(self.config, rulesname, force)
+        manager.already_activated.connect(self.on_rules_already_activated)
         manager.activate()
 
-    def deactivate_session(self, sessionname, force=False):
-        manager = SessionManager(self.config, sessionname, force)
+    def deactivate_rules(self, rulesname, force=False):
+        manager = RulesManager(self.config, rulesname, force)
         manager.deactivate()
 
-    def distclean_session(self, sessionname, force=False):
-        manager = SessionManager(self.config, sessionname, force)
+    def distclean_rules(self, rulesname, force=False):
+        manager = RulesManager(self.config, rulesname, force)
         manager.distclean()
 
-    def clean_session(self, sessionname, force=False):
-        manager = SessionManager(self.config, sessionname, force)
+    def clean_rules(self, rulesname, force=False):
+        manager = RulesManager(self.config, rulesname, force)
         manager.clean()
 
-    def delete_source_session(self, sessionname, force=False):
-        manager = SessionManager(self.config, sessionname, force)
+    def delete_source_rules(self, rulesname, force=False):
+        manager = RulesManager(self.config, rulesname, force)
         manager.delete_source()
 
-    def delete_destroot_session(self, sessionname, force=False):
-        manager = SessionManager(self.config, sessionname, force)
+    def delete_destroot_rules(self, rulesname, force=False):
+        manager = RulesManager(self.config, rulesname, force)
         manager.delete_destroot()
 
-    def delete_download_session(self, sessionname, force=False):
-        manager = SessionManager(self.config, sessionname, force)
+    def delete_download_rules(self, rulesname, force=False):
+        manager = RulesManager(self.config, rulesname, force)
         manager.delete_download()
 
-    def delete_build_session(self, sessionname, force=False):
-        manager = SessionManager(self.config, sessionname, force)
+    def delete_build_rules(self, rulesname, force=False):
+        manager = RulesManager(self.config, rulesname, force)
         manager.delete_build()
 
     def add_system_provides(self, names):
@@ -190,53 +190,53 @@ class Console(object):
     def list_system_provides(self):
         provider = SystemProvider(self.config)
         provider.load()
-        max_length = max([len(session) for session, version in provider.list()])
-        for session, version in sorted(provider.list()):
-            print "%s%s%s" % (session, self._get_filler(session,
+        max_length = max([len(rules) for rules, version in provider.list()])
+        for rules, version in sorted(provider.list()):
+            print "%s%s%s" % (rules, self._get_filler(rules,
                               max_length), version)
 
-    def quilt_pop(self, sessionname, all=False):
-        quilt = self._quilt(sessionname)
+    def quilt_pop(self, rulesname, all=False):
+        quilt = self._quilt(rulesname)
         if all:
             quilt.unapply()
         else:
             quilt.pop()
 
-    def quilt_push(self, sessionname, all=False):
-        quilt = self._quilt(sessionname)
+    def quilt_push(self, rulesname, all=False):
+        quilt = self._quilt(rulesname)
         if all:
             quilt.apply()
         else:
             quilt.push()
 
-    def quilt_refresh(self, sessionname):
-        quilt = self._quilt(sessionname)
+    def quilt_refresh(self, rulesname):
+        quilt = self._quilt(rulesname)
         quilt.refresh()
 
-    def quilt_delete(self, sessionname):
-        quilt = self._quilt(sessionname)
+    def quilt_delete(self, rulesname):
+        quilt = self._quilt(rulesname)
         quilt.delete()
 
-    def quilt_new(self, sessionname, patchname):
-        quilt = self._quilt(sessionname)
+    def quilt_new(self, rulesname, patchname):
+        quilt = self._quilt(rulesname)
         quilt.new(patchname)
 
-    def quilt_import(self, sessionname, patches):
-        quilt = self._quilt(sessionname, os.getcwd())
+    def quilt_import(self, rulesname, patches):
+        quilt = self._quilt(rulesname, os.getcwd())
         quilt.import_patches(patches)
 
-    def quilt_edit(self, sessionname, filenames):
-        quilt = self._quilt(sessionname)
+    def quilt_edit(self, rulesname, filenames):
+        quilt = self._quilt(rulesname)
         quilt.edit(filenames)
 
-    def _quilt(self, sessionname, src_path=None):
-        manager = SessionManager(self.config, sessionname)
-        # session must be at least in phase extract
+    def _quilt(self, rulesname, src_path=None):
+        manager = RulesManager(self.config, rulesname)
+        # rules must be at least in phase extract
         manager.extract()
-        session = manager.session_wrapper.session
+        rules = manager.rules_wrapper.rules
         if not src_path:
-            src_path = session.src_path
-        return Quilt(src_path, session.patch_path, session.patches,
+            src_path = rules.src_path
+        return Quilt(src_path, rules.patch_path, rules.patches,
                      self.config.get("verbose"))
 
     def _get_filler(self, text, max_length):
@@ -246,5 +246,5 @@ class Console(object):
         upgrade = Upgrade(self.config)
         upgrade.run()
 
-    def on_session_already_activated(self):
-        out("Session is already activated.")
+    def on_rules_already_activated(self):
+        out("Rules is already activated.")

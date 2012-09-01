@@ -1,6 +1,6 @@
 # vim: fileencoding=utf-8 et sw=4 ts=4 tw=80:
 
-# kaizen - Continously improve, build and manage free software
+# kaizen - Continuously improve, build and manage free software
 #
 # Copyright (C) 2011  Björn Ricks <bjoern.ricks@gmail.com>
 #
@@ -34,35 +34,35 @@ class Info(object):
 
 class Installed(object):
 
-    def __init__(self, session, version):
-        self.session = session
+    def __init__(self, rules, version):
+        self.rules = rules
         self.version = version
 
 
 class File(object):
 
-    def __init__(self, filename, session):
+    def __init__(self, filename, rules):
         self.filename = filename
-        self.session = session
+        self.rules = rules
 
 
 class Directory(object):
 
-    def __init__(self, directory, session):
+    def __init__(self, directory, rules):
         self.directory = directory
-        self.session = session
+        self.rules = rules
 
 
-class SessionPhase(object):
+class RulesPhase(object):
 
-    def __init__(self, session, version, phase):
-        self.session = session
+    def __init__(self, rules, version, phase):
+        self.rules = rules
         self.version = version
         self.phase = phase
 
     def __repr__(self):
-        return "<SessionPhase id='0x%x' session='%s' version='%s' phase='%s'>" % (
-               id(self), self.session, self.version, self.phase.name)
+        return "<RulesPhase id='0x%x' rules='%s' version='%s' phase='%s'>" % (
+               id(self), self.rules, self.version, self.phase.name)
 
 
 class SchemaVersion(object):
@@ -89,9 +89,9 @@ class UpdateVersion(object):
 
 class InstallDirectories(object):
 
-    def __init__(self, session, version, download=None, source=None, build=None,
+    def __init__(self, rules, version, download=None, source=None, build=None,
                  destroot=None):
-        self.session = session
+        self.rules = rules
         self.version = version
         self.download = download
         self.source = source
@@ -99,7 +99,7 @@ class InstallDirectories(object):
         self.destroot = destroot
 
     def __repr__(self):
-        return "<InstallDirectories id='0x%x' session=%r version=%r " \
+        return "<InstallDirectories id='0x%x' rules=%r version=%r " \
                "download=%r source=%r build=%r destroot=%r>" % (id(self),
-                       self.session, self.version, self.download, self.source,
+                       self.rules, self.version, self.download, self.source,
                        self.build, self.destroot)

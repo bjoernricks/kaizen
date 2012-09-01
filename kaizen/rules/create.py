@@ -1,6 +1,6 @@
 # vim: fileencoding=utf-8 et sw=4 ts=4 tw=80:
 
-# kaizen - Continously improve, build and manage free software
+# kaizen - Continuously improve, build and manage free software
 #
 # Copyright (C) 2011  Björn Ricks <bjoern.ricks@gmail.com>
 #
@@ -29,7 +29,7 @@ from tempfile import mkdtemp
 
 from kaizen.utils import Template, Hash, list_contents, extract_file, real_path
 from kaizen.system.download import UrlDownloader
-from kaizen.session.error import SessionCreateError
+from kaizen.rules.error import RulesCreateError
 
 
 class TypeDetector(object):
@@ -81,18 +81,18 @@ detectors = [FileDetector("CMakeLists.txt", "cmake"),
              FileDetector("configure", "autotools"),]
 
 
-class SessionCreator(object):
+class RulesCreator(object):
 
     def __init__(self, config, url, keep=False):
         self.url = url
         self.keep = keep
-        self.session_dir = config.get("sessions")
+        self.rules_dir = config.get("rules")
         self.dir = config.get("rootdir")
         self.template = None
         self.name = None
         self.version = None
         self.tmp_dir = None
-        self.log = kaizen.logging.getLogger("jam.sessioncreator")
+        self.log = kaizen.logging.getLogger(self)
 
     def set_template(self, template):
         self.template = template
@@ -106,7 +106,7 @@ class SessionCreator(object):
     def create(self, stdout=False):
         if not os.path.isdir(self.dir):
             os.makedirs(self.dir)
-        self.tmp_dir = mkdtemp(prefix="tmp-session-", dir=self.dir)
+        self.tmp_dir = mkdtemp(prefix="tmp-rules-", dir=self.dir)
         self.log.debug("Created temporary directory '%s'" % self.tmp_dir)
         downloader = UrlDownloader(None, self.url)
         source = downloader.copy(self.tmp_dir)
@@ -119,7 +119,7 @@ class SessionCreator(object):
         filename = os.path.basename(source)
         if not "-" in filename and (not self.name or not self.version):
             self.clean()
-            raise SessionCreateError("Could not detect name and "\
+            raise RulesCreateError("Could not detect name and "\
                     "version from file '%s'" % filename)
 
         if "-" in filename:
@@ -154,10 +154,10 @@ class SessionCreator(object):
         else:
             template = Template(self.templatename + ".template")
 
-        self.log.debug("Computed session name is '%s'" % computed_name)
-        self.log.debug("Computed session version is '%s'" % computed_version)
-        self.log.info("Session name is '%s'" % name)
-        self.log.info("Session version is '%s'" % version)
+        self.log.debug("Computed rules name is '%s'" % computed_name)
+        self.log.debug("Computed rules version is '%s'" % computed_version)
+        self.log.info("Rules name is '%s'" % name)
+        self.log.info("Rules version is '%s'" % version)
 
         vars = dict()
         vars["name"] = name
@@ -166,8 +166,8 @@ class SessionCreator(object):
         vars["sha1"] = sha1
         vars["url"] = self.url
         vars["rootdir"] = self.dir
-        vars["sessions"] = self.session_dir
-        vars["sessionname"] = name.replace("-","").capitalize()
+        vars["rules"] = self.rules_dir
+        vars["rulesname"] = name.replace("-","").capitalize()
         vars["computedname"] = computed_name
         vars["computedversion"] = computed_version
 
@@ -180,13 +180,13 @@ class SessionCreator(object):
         if stdout:
             print template.replace(vars)
         else:
-            new_session_dir = os.path.join(real_path(self.session_dir[0]), name)
-            if not os.path.exists(new_session_dir):
-                os.makedirs(new_session_dir)
+            new_rules_dir = os.path.join(real_path(self.rules_dir[0]), name)
+            if not os.path.exists(new_rules_dir):
+                os.makedirs(new_rules_dir)
             try:
-                sessionfile = os.path.join(new_session_dir, "rules.py")
-                f = open(sessionfile, "w")
-                self.log.info("Creating new session file '%s'" % sessionfile)
+                rulesfile = os.path.join(new_rules_dir, "rules.py")
+                f = open(rulesfile, "w")
+                self.log.info("Creating new rules file '%s'" % rulesfile)
                 f.write(template.replace(vars))
             finally:
                 f.close()

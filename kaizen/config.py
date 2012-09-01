@@ -1,6 +1,6 @@
 # vim: fileencoding=utf-8 et sw=4 ts=4 tw=80:
 
-# kaizen - Continously improve, build and manage free software
+# kaizen - Continuously improve, build and manage free software
 #
 # Copyright (C) 2011  Björn Ricks <bjoern.ricks@gmail.com>
 #
@@ -26,9 +26,9 @@ from ConfigParser import SafeConfigParser
 import kaizen
 
 from kaizen.utils import real_path, get_number_of_cpus
-from kaizen.error import JamRuntimeError
+from kaizen.error import KaizenRuntimeError
 
-JAM_CONFIG_FILES  = ["/etc/kaizenrc", real_path("~/.jam/jamrc")]
+KAIZEN_CONFIG_FILES  = ["/etc/kaizenrc", real_path("~/.jam/jamrc")]
 
 class Config(object):
     """
@@ -49,7 +49,7 @@ class Config(object):
                          (default is %(rootdir)s/destroot)
     * buildroot - String: path to the build directory (default is
                           %(rootdir)s/cache)
-    * sessions - List: paths to the sessions (default is [%(rootdir)s/sessions])
+    * rules - List: paths to the rules (default is [%(rootdir)s/rules])
     * packagepath - String: absolute path to the kaizen python package (calculated
                             at runtime)
     * system - String: path to an additional config file containing system
@@ -74,7 +74,7 @@ class Config(object):
         defaults["buildjobs"] = 1
 
         # use preferred values from options
-        for key in defaults.keys() + ["sessions"]:
+        for key in defaults.keys() + ["rules"]:
             if key in options and options[key]:
                 self.preferred[key] = options[key]
 
@@ -91,7 +91,7 @@ class Config(object):
         self.config["quiet"] = self._getbool("quiet", defaults["quiet"])
         self.config["debug"] = self._getbool("debug", defaults["debug"])
         self.config["rootdir"] = self._get("rootdir")
-        self.config["sessions"] = self._getlist("sessions")
+        self.config["rules"] = self._getlist("rules")
         self.config["destroot"] = self._get("destroot")
         self.config["downloadroot"] = self._get("downloadroot")
         self.config["buildroot"] = self._get("buildroot")
@@ -112,8 +112,8 @@ class Config(object):
             self.config["system"] = os.path.join(kaizen_dir, "system")
         if not self.config.get("downloadroot", None):
             self.config["downloadroot"] = os.path.join(kaizen_dir, "cache")
-        if not self.config.get("sessions"):
-            self.config["sessions"] = [os.path.join(kaizen_dir, "session")]
+        if not self.config.get("rules"):
+            self.config["rules"] = [os.path.join(kaizen_dir, "rules")]
         if not self.config.get("destroot", None):
             self.config["destroot"] = os.path.join(kaizen_dir, "destroot")
         if not self.config.get("buildroot", None):
@@ -156,7 +156,7 @@ class Config(object):
 
     def get(self, value):
         if value not in self.config:
-            raise JamRuntimeError("Value for '%s' not found in config." % value)
+            raise KaizenRuntimeError("Value for '%s' not found in config." % value)
         return self.config[value]
 
     def __str__(self):

@@ -1,6 +1,6 @@
 # vim: fileencoding=utf-8 et sw=4 ts=4 tw=80:
 
-# kaizen - Continously improve, build and manage free software
+# kaizen - Continuously improve, build and manage free software
 #
 # Copyright (C) 2011  Björn Ricks <bjoern.ricks@gmail.com>
 #
@@ -23,17 +23,17 @@ import os.path
 
 import kaizen.logging
 
-from kaizen.session.error import SessionError
-from kaizen.session.handler import SessionHandler
-from kaizen.session.depend import DependencyAnalyser, Dependency, \
+from kaizen.rules.error import RulesError
+from kaizen.rules.handler import RulesHandler
+from kaizen.rules.depend import DependencyAnalyser, Dependency, \
                                UnresolvedDependencies, RuntimeDependencyAnalyser
 from kaizen.phase.phase import phases_list
 from kaizen.db.db import Db
-from kaizen.db.objects import Installed, SessionPhase
+from kaizen.db.objects import Installed, RulesPhase
 from kaizen.utils.signals import ForwardSignal
 
 
-class SessionManager(object):
+class RulesManager(object):
 
     url = []
     patches = []
@@ -41,9 +41,9 @@ class SessionManager(object):
     def __init__(self, config, name, version=None, force=False):
         self.config = config
         self.force = force
-        self.session_name = name
+        self.rules_name = name
         self.log = kaizen.logging.getLogger(self)
-        self.handler = SessionHandler(config, name, version, force)
+        self.handler = RulesHandler(config, name, version, force)
         self.db = Db(config)
         self._init_signals()
         self.init_sequences()
@@ -87,13 +87,13 @@ class SessionManager(object):
         dependencies = depanalyzer.analyse()
         missing = depanalyzer.get_missing()
         if missing:
-            raise UnresolvedDependencies(self.session_name, missing)
+            raise UnresolvedDependencies(self.rules_name, missing)
         for dependency in dependencies.itervalues():
             if not dependency.get_type() == Dependency.SESSION:
                 continue
             if not phases_list.get("Activated") in \
-                dependency.session.get_phases():
-                self.install_seq(dependency.session)
+                dependency.rules.get_phases():
+                self.install_seq(dependency.rules)
 
     def install_dependencies(self):
         depanalyzer = DependencyAnalyser(self.config, self.handler)
@@ -111,13 +111,13 @@ class SessionManager(object):
                 if not dependency.get_type() == Dependency.SESSION:
                     continue
                 if not resume_on_error:
-                    self.download_seq(dependency.session)
+                    self.download_seq(dependency.rules)
                 else:
                     try:
-                        self.download_seq(dependency.session)
+                        self.download_seq(dependency.rules)
                     except Error, e:
                         self.log.err("Error while downloading " + 
-                                     "session '%s': %s" %\
+                                     "rules '%s': %s" %\
                                      (dependency.name, e))
         self.download_seq(self.handler, self.force)
 
@@ -125,7 +125,7 @@ class SessionManager(object):
         self.extract_seq(self.handler, self.force)
 
     def archive(self):
-        self.log.info("%s:phase:archive" % self.session_name)
+        self.log.info("%s:phase:archive" % self.rules_name)
 
     def configure(self):
         self.install_dependencies()
@@ -141,25 +141,25 @@ class SessionManager(object):
 
     def install(self):
         self.install_dependencies()
-        self.log.info("%s:running install" % self.session_name)
+        self.log.info("%s:running install" % self.rules_name)
         self.install_seq(self.handler, self.force)
         self.common_activate()
 
     def uninstall(self):
-        self.log.info("%s:running uninstall" % self.session_name)
+        self.log.info("%s:running uninstall" % self.rules_name)
         self.uninstall_seq(self.handler, self.force)
         self.common_deactivate()
 
     def common_deactivate(self):
-        installed = self.db.session.query(Installed).get(self.session_name)
+        installed = self.db.session.query(Installed).get(self.rules_name)
         if installed:
             self.db.session.delete(installed)
             self.db.session.commit()
 
     def common_activate(self):
-        installed = self.db.session.query(Installed).get(self.session_name)
+        installed = self.db.session.query(Installed).get(self.rules_name)
         if not installed:
-            installed = Installed(self.session_name,
+            installed = Installed(self.rules_name,
                     self.handler.get_version())
         else:
             installed.version = self.handler.get_version()
@@ -206,31 +206,31 @@ class SessionManager(object):
     def get_installed_files(self):
         return self.handler.get_installed_files()
 
-    def get_session_phases(self):
+    def get_rules_phases(self):
         return self.handler.get_phases()
 
 
-class SessionsList(object):
+class RulesList(object):
 
     def __init__(self, config):
         self.db = Db(config)
 
-    def get_installed_sessions(self):
-        return self.db.session.query(Installed).order_by(Installed.session).all()
+    def get_installed_rules(self):
+        return self.db.session.query(Installed).order_by(Installed.rules).all()
 
-    def get_activated_sessions(self):
-        return self.db.session.query(SessionPhase).filter(
-                                     SessionPhase.phase ==
+    def get_activated_rules(self):
+        return self.db.session.query(RulesPhase).filter(
+                                     RulesPhase.phase ==
                                      phases_list.get("Activated")).order_by(
-                                             SessionPhase.session).all()
-    def get_destrooted_sessions(self):
-        return self.db.session.query(SessionPhase).filter(
-                                     SessionPhase.phase ==
+                                             RulesPhase.rules).all()
+    def get_destrooted_rules(self):
+        return self.db.session.query(RulesPhase).filter(
+                                     RulesPhase.phase ==
                                      phases_list.get("Destrooted")).order_by(
-                                             SessionPhase.session).all()
+                                             RulesPhase.rules).all()
 
-    def get_downloaded_sessions(self):
-        return self.db.session.query(SessionPhase).filter(
-                                     SessionPhase.phase ==
+    def get_downloaded_rules(self):
+        return self.db.session.query(RulesPhase).filter(
+                                     RulesPhase.phase ==
                                      phases_list.get("Downloaded")).order_by(
-                                             SessionPhase.session).all()
+                                             RulesPhase.rules).all()
