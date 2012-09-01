@@ -86,12 +86,16 @@ def extract_file(file_name, dest_dir):
         raise KaizenRuntimeError("Unable to extract file. '%s' is does not exit or \
                            is not a file." % file_name)
     if file_name.endswith(".bz2") or file_name.endswith(".tbz2"):
-        # bz2 doesn't support multiple streams therefore use bz2file module
-        import bz2file
-        bz_file = bz2file.BZ2File(file_name)
         log.debug("Extracting tar.bz2 file '%s' to '%s'" %
                       (file_name, dest_dir))
-        file = tarfile.TarFile(file_name, "r", bz_file)
+        # bz2 doesn't support multiple streams therefore use bz2file module
+        try:
+            import bz2file
+            bz_file = bz2file.BZ2File(file_name)
+            file = tarfile.TarFile(file_name, "r", bz_file)
+        except ImportError:
+            # fallback to python bz2
+            file = tarfile.open(file_name)
     elif file_name.endswith(".xz"):
         from kaizen.utils.xz import XZFile
         log.debug("Extracting xz file '%s' to '%s'" % (file_name, dest_dir))
