@@ -124,11 +124,28 @@ class Dependency(object):
     def get_type(self):
         return self.type
 
+    def get_name(self):
+        return self.name
+
+    def get_version(self):
+        return self.version
+
     def add_dependency(self, dependency):
         self.dependencies.append(dependency)
 
     def add_dependencies(self, dependencies):
         self.dependencies.extend(dependencies)
+
+    def has_dependencies(self):
+        return len(self.dependencies) > 0
+
+    def get_dependencies(self):
+        return self.dependencies
+
+    def __repr__(self):
+        return "<%s version=%r name=%r id=0x%s>" % (self.__class__.__name__,
+                                                    self.version, self.name,
+                                                    id(self))
 
 
 class RulesDependency(Dependency):
