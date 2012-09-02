@@ -22,7 +22,7 @@
 import os
 
 from kaizen.rules.manager import RulesManager, RulesList
-from kaizen.rules.depend import Dependency, SystemProvider
+from kaizen.rules.depend import Dependency, SystemProvider, DependencyEvaluator
 from kaizen.system.patch import Quilt
 from kaizen.db.update.upgrade import Upgrade
 from kaizen.logging.out import out
@@ -51,7 +51,7 @@ class Console(object):
             print "'%s' has no phase" % rulesname
 
     def _print_dependencies(self, dependencies, max_length):
-        for name, dependency in dependencies.items():
+        for dependency in dependencies:
             if dependency.get_type() == Dependency.NONE:
                 provided_by = "not available"
             elif dependency.get_type() == Dependency.SESSION:
@@ -60,6 +60,7 @@ class Console(object):
                 provided_by = "provided by system"
             else:
                 provided_by = "unknown"
+            name = dependency.get_name()
             print "--> %s%s(%s)" % (name, self._get_filler(name, max_length),
                                     provided_by)
 
@@ -69,15 +70,17 @@ class Console(object):
         if not build and not runtime:
             print "%s has no dependencies" % rulesname
             return
+        build_deps = DependencyEvaluator(build).list()
+        runtime_deps = DependencyEvaluator(runtime).list()
         print "Rules %s depends on:" % rulesname
-        max_length = max([len(name) for name in build.keys()] + \
-            [len(name) for name in runtime.keys()])
+        max_length = max([len(dep.get_name()) for dep in build_deps + \
+                              runtime_deps])
         if runtime:
             print "\nRuntime dependencies:"
-            self._print_dependencies(runtime, max_length)
+            self._print_dependencies(runtime_deps, max_length)
         if build:
             print "\nBuild dependencies:"
-            self._print_dependencies(build, max_length)
+            self._print_dependencies(build_deps, max_length)
 
     def list_installed_rules(self):
         slist = RulesList(self.config)
