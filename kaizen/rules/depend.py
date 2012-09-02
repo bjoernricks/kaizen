@@ -218,3 +218,27 @@ class SystemProvider(object):
         if not self.configparser:
             return []
         return self.configparser.items("provides")
+
+
+class DependencyEvaluator(object):
+
+    def __init__(self, dependencies):
+        self.dependencies = dependencies
+        self.knowndeps = dict()
+        self.deps = []
+
+    def _evaluate_dependencies(self, dependencies):
+        for dependency in dependencies:
+            if not dependency.has_dependencies():
+                if not dependency.get_name() in self.knowndeps:
+                    self.deps.append(dependency)
+                    self.knowndeps[dependency.get_name()] = dependency
+            else:
+                self._evaluate_dependencies(dependency.get_dependencies())
+                if not dependency.get_name() in self.knowndeps:
+                    self.deps.append(dependency)
+                    self.knowndeps[dependency.get_name()] = dependency
+
+    def list(self):
+        self._evaluate_dependencies(self.dependencies)
+        return self.deps
