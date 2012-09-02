@@ -45,6 +45,7 @@ class UnresolvedDependencies(RulesError):
 class DependencyAnalyser(object):
 
     dependency_field = "depends"
+    dependency_fields = ["depends"]
 
     def __init__(self, config, rules):
         self.config = config
@@ -55,9 +56,11 @@ class DependencyAnalyser(object):
         self.log = kaizen.logging.getLogger(self)
         self.systemprovider.load()
 
-    def analyse_rules(self, rules):
+    def analyse_rules(self, rules, dependency_fields):
         dependencies = []
-        depends = getattr(rules.rules, self.dependency_field)
+        depends = []
+        for dependency_field in dependency_fields:
+            depends.extend(getattr(rules.rules, dependency_field, []))
         if not depends:
             return dependencies
         for depend in depends:
@@ -83,7 +86,8 @@ class DependencyAnalyser(object):
                     depend_rules = RulesHandler(self.config, name)
                     dependency = RulesDependency(depend_rules, name, version)
                     self.dependencies[name] = dependency
-                    cur_deps = self.analyse_rules(depend_rules)
+                    cur_deps = self.analyse_rules(depend_rules,
+                                                  self.dependency_fields)
                     dependency.add_dependencies(cur_deps)
                 except RulesError, e:
                     self.log.error("Error while loading dependency '%s': %s" % \
@@ -95,8 +99,7 @@ class DependencyAnalyser(object):
         return dependencies
 
     def analyse(self):
-        self.analyse_rules(self.rules)
-        return self.dependencies
+        return self.analyse_rules(self.rules, [self.dependency_field])
 
     def get_missing(self):
         return self.missing
@@ -105,6 +108,7 @@ class DependencyAnalyser(object):
 class RuntimeDependencyAnalyser(DependencyAnalyser):
 
     dependency_field = "runtime_depends"
+    dependency_fields = ["runtime_depends", "depends"]
 
 
 class Dependency(object):
