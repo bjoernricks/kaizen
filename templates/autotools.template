@@ -21,7 +21,7 @@ class ${sessionname}(kaizen.session.ConfigureSession):
     # uncomment to pass additional parameters to make
     # build_args = [""]
 
-    # uncomment to add additonal patches 
+    # uncomment to add additonal patches
     # all patches will be copied to %(downloadroot)s/%(session)s/patches
     # e.g. patches = ["01-patch.diff", "http://url.com/remotepatch.diff",
     #                ["http://url.com/abc.diff", "localname.diff"]]
