@@ -26,7 +26,8 @@ import kaizen.logging
 from kaizen.rules.error import RulesError
 from kaizen.rules.handler import RulesHandler
 from kaizen.rules.depend import DependencyAnalyser, Dependency, \
-                               UnresolvedDependencies, RuntimeDependencyAnalyser
+                               UnresolvedDependencies, DependencyEvaluator, \
+                               RuntimeDependencyAnalyser
 from kaizen.phase.phase import phases_list
 from kaizen.db.db import Db
 from kaizen.db.objects import Installed, RulesPhase
@@ -88,7 +89,7 @@ class RulesManager(object):
         missing = depanalyzer.get_missing()
         if missing:
             raise UnresolvedDependencies(self.rules_name, missing)
-        for dependency in dependencies.itervalues():
+        for dependency in DependencyEvaluator(dependencies).list():
             if not dependency.get_type() == Dependency.SESSION:
                 continue
             if not phases_list.get("Activated") in \
