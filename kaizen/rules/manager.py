@@ -50,7 +50,7 @@ class RulesManager(object):
         self.init_sequences()
 
     def init_sequences(self):
-        self.downlood_seq = self.handler.download_seq
+        self.download_seq = self.handler.download_seq
         self.extract_seq = self.handler.extract_seq
         self.patch_seq = self.handler.patch_seq
         self.configure_seq = self.handler.configure_seq
