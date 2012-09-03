@@ -41,6 +41,11 @@ class BaseCommand(object):
     def set_env(self, key, value):
         self.env[key] = value
 
+    def update_env(self, values):
+        """ Update the env with dict values
+        """
+        self.env.update(values)
+
     def run(self):
         raise NotImplementedError()
 
