@@ -25,6 +25,6 @@ from kaizen.rules.error import RulesError
 
 from kaizen.rules.systems import MakeRules, ConfigureRules, \
                                 CMakeRules, PythonRules, \
-                                PythonDevelopRules
+                                PythonDevelopRules, PerlRules
 
 from kaizen.rules.create import RulesCreator
