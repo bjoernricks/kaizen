@@ -48,6 +48,8 @@ class MakeCmd(RulesCmd):
             build_args = self.rules.build_args
 
         make = Make(self.rules.build_path, self.rules.debug)
+        if self.rules.build_env:
+            make.update_env(self.rules.build_env)
         if self.rules.build_cc:
             make.set_cc(self.rules.build_cc)
         if self.rules.build_cpp:
@@ -97,6 +99,9 @@ class ConfigureCmd(RulesCmd):
         args.append("--srcdir=" + self.rules.configure_path)
         configure = Configure(args, self.rules.configure_path,
                               self.rules.build_path, self.rules.debug)
+
+        if self.rules.configure_env:
+            configure.update_env(self.rules.configure_env)
         if self.rules.configure_cc:
             configure.set_cc(self.rules.configure_cc)
         if self.rules.configure_cpp:
