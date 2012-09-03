@@ -215,6 +215,10 @@ class SystemProvider(object):
         self.configparser.write(f)
         f.close()
 
+    def is_empty(self):
+        return self.configparser is None and \
+               len(self.configparser.items("provides")) == 0
+
     def list(self):
         if not self.configparser:
             return []
