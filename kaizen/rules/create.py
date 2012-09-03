@@ -70,15 +70,20 @@ class FileDetector(TypeDetector):
         return self.name
 
 
-class PythonDetector(FileDetector):
+class NameDetector(FileDetector):
+
+    def __init__(self, prefix, filename, templatename):
+        super(NameDetector, self).__init__(filename, templatename)
+        self.prefix = prefix
 
     def get_name(self):
-        return "python-" + self.name
+        return self.prefix + "-" + self.name
 
 
 detectors = [FileDetector("CMakeLists.txt", "cmake"),
-             PythonDetector("setup.py", "python"),
-             FileDetector("configure", "autotools"),]
+             NameDetector("python", "setup.py", "python"),
+             FileDetector("configure", "autotools"),
+             NameDetector("perl", "Makefile.PL", "perl")]
 
 
 class RulesCreator(object):
