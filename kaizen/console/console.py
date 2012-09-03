@@ -193,6 +193,9 @@ class Console(object):
     def list_system_provides(self):
         provider = SystemProvider(self.config)
         provider.load()
+        if provider.is_empty():
+            print "System provides no dependencies"
+            return
         max_length = max([len(rules) for rules, version in provider.list()])
         for rules, version in sorted(provider.list()):
             print "%s%s%s" % (rules, self._get_filler(rules,
