@@ -1,6 +1,6 @@
-import kaizen.session
+import kaizen.rulesrules
 
-class ${sessionname}(kaizen.session.Session):
+class ${rulesname}(kaizen.rules.Rules):
 
     url = "${url}"
     hash = { "md5" : "${md5}",
@@ -22,10 +22,10 @@ class ${sessionname}(kaizen.session.Session):
     # build_args = [""]
 
     # uncomment to add additonal patches
-    # all patches will be copied to %(downloadroot)s/%(session)s/patches
+    # all patches will be copied to %(downloadroot)s/%(rules)s/patches
     # e.g. patches = ["01-patch.diff", "http://url.com/remotepatch.diff",
     #                ["http://url.com/abc.diff", "localname.diff"]]
     # patches = [""]
 
-    # uncomment to add a dependency on an other session
+    # uncomment to add a dependency on an other rules
     # depends = [""]
