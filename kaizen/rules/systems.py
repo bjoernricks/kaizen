@@ -211,7 +211,7 @@ class Python(object):
                 self.rules.debug).run()
 
     def destroot(self):
-        Command("python", ["setup.py", "install", 
+        Command("python", ["setup.py", "install",
                 "--prefix="+ self.rules.prefix,
                 "--root=" + self.rules.dest_dir,
                 # root implies single-version-externally-managed
