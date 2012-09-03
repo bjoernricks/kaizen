@@ -1,0 +1,27 @@
+import kaizen.rules
+
+class ${rulesname}(kaizen.rules.PerlRules):
+
+    url = "${url}"
+    hash = { "md5" : "${md5}",
+             "sha1" : "${sha1}" }
+    version = "${version}"
+    name = "${detectedname}"
+
+    # kaizen.rules.PythonRules already depends on python
+    # depends = ["perl"]
+
+    # uncomment to set path to source directory
+    # default is %(src_dir)s/%(name)s-%(version)s
+    # src_path = ""
+
+    # uncomment to set path to build directory (normally not necessary)
+    # build_path = ""
+
+    # uncomment to pass additional parameters to setup.py script
+    # build_args = [""]
+
+    # uncomment to add additonal patches
+    # all patches will be copied to %(downloadroot)s/%(rules)s/patches
+    # e.g. patches = ["01-patch.diff", "http://url.com/remotepatch.diff"]
+    # patches = [""]
