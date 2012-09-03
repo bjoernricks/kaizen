@@ -179,6 +179,7 @@ class SystemProvider(object):
                            "dependencies. Config file %r will be created" % \
                            filename)
         else:
+            self.log.debug("Reading system provide file %s" % filename)
             self.configparser.read(filename)
         if not self.configparser.has_section("provides"):
             self.log.debug("system config file '%s' has to provides section. "\
