@@ -48,15 +48,15 @@ class Rules(object):
     version = ""
     revision = "0"
     hash = {}
-    configure_args = []
-    build_args = []
     name = ""
     src_path = None
     build_path = None
     patch_path = None
     parallel = True
 
+    configure_args = []
     configure_path = None
+    configure_env = dict()
     configure_cflags = []
     configure_ldflags = []
     configure_cc = None
@@ -68,6 +68,8 @@ class Rules(object):
     configure_cpath = []
     configure_library_path = []
 
+    build_args = []
+    build_env = dict()
     build_cflags = []
     build_ldflags = []
     build_cc = None
