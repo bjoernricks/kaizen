@@ -168,6 +168,32 @@ class CMakeRules(MakeRules):
     distclean_cmd = CMakeCmd
 
 
+class PerlCmd(RulesCmd):
+
+    depends = ["perl"]
+
+    def configure(self):
+        Copy(self.rules.src_path + "/*", self.rules.build_path).run()
+        args = ["Makefile.PL"]
+        if self.rules.configure_args:
+            args.extend(self.rules.configure_args)
+        args.append("PREFIX=" + self.rules.prefix)
+
+        Command("perl", args, self.rules.build_path, self.rules.debug).run()
+
+    def distclean(self):
+        if self.rules.src_path != self.rules.build_path:
+            Delete(self.rules.build_dir).run()
+        else:
+            Make(self.rules.build_path, self.rules.debug).distclean()
+
+
+class PerlRules(MakeRules):
+
+    configure_cmd = PerlCmd
+    distclean_cmd = PerlCmd
+
+
 class Python(object):
 
     depends = ["python"]
