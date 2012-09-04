@@ -1,4 +1,4 @@
-import kaizen.rulesrules
+import kaizen.rules
 
 class ${rulesname}(kaizen.rules.Rules):
 
