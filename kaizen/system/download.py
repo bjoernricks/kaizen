@@ -63,130 +63,19 @@ class Downloader(object):
 
     depends = []
 
-    def copy(self, filename, overwrite=False):
+    def __init__(self, rules, urlstr):
+        self.rules = rules
+        self.urlstr = urlstr
+        self.log = kaizen.logging.getLogger(self)
+
+    def copy(self, destination, overwrite=False):
         raise NotImplementedError()
 
     def verify(self, hashes):
         pass
 
 
-class FtpDownloader(Downloader):
-
-    def __init__(self, url):
-        self.url = url
-        self.log = kaizen.logging.getLogger(self)
-
-    def copy(self, filename, overwrite=False):
-        ftp = ftplib.FTP(self.url.netloc)
-        ftp.login()
-        f = open(filename, 'w')
-        try:
-            filesize = ftp.size(self.url.path)
-        except ftplib.all_errors:
-            filesize = 0
-        if filesize:
-            self.log.info("downloading %s to %s (%.2f KiB)" % \
-                          (self.url.geturl(), filename, filesize / 1024))
-        else:
-            self.log.info("downloading %s to %s" % \
-                          (self.url.geturl(), filename))
-        try:
-            ftp.retrbinary("RETR " + self.url.path, f.write)
-            ftp.quit()
-        finally:
-            f.close()
-
-
-class HttpDownloader(Downloader):
-
-    def __init__(self, url):
-        self.url = url
-        self.log = kaizen.logging.getLogger(self)
-
-    def copy(self, filename, overwrite=False):
-        u = urllib2.urlopen(self.url)
-        f = open(filename, 'w')
-        meta = u.info()
-        content_length_header = meta.getheaders("Content-Length")
-        if content_length_header:
-            filesize = int(content_length_header[0])
-            self.log.info("downloading %s to %s (%.2f KiB)" % (self.url,
-                                                               filename,
-                                                               filesize / 1024))
-        else:
-            self.log.info("downloading %s to %s" % (self.url, filename))
-        filesizedl = 0
-        while True:
-            buffer = u.read(8192)
-            if not buffer:
-                break
-            filesizedl += len(buffer)
-            f.write(buffer)
-            #status = r"[%3.2f%%]" % (filesizedl * 100. / filesize)
-            #print status
-        f.close()
-
-
-class LocalFileDownloader(Downloader):
-
-    def __init__(self, url, root_dir=None):
-        self.url = url
-        self.root_dir = root_dir
-        self.log = kaizen.logging.getLogger(self)
-
-    def copy(self, filename, overwrite=False):
-        path = self.url.path
-        if not self.url.scheme and self.root_dir:
-            path = os.path.join(self.root_dir, path)
-        self.log.debug("copying '%s' to '%s'" % (path, filename))
-        shutil.copy(path, filename)
-
-
-class GitDownloader(Downloader):
-
-    def __init__(self, url, branch):
-        self.url = url
-        self.branch = branch
-
-    def copy(self, filename, overwrite=False):
-        pass
-
-
-class UrlDownloader(Downloader):
-
-    def __init__(self, rules, urlstr):
-        self.url = urlstr
-        self.rules = rules
-        self.log = kaizen.logging.getLogger(self)
-
-        if self.url.startswith("git"):
-            self.downloader = GitDownloader(self.url, rules.branch if
-                                            hasattr(rules, "branch") else None)
-            self.filename = ""
-            return
-
-        url = urlparse(urlstr)
-        self.filename = os.path.basename(urlstr)
-        if url.scheme == 'http' or url.scheme == 'https':
-            self.downloader = HttpDownloader(urlstr)
-        elif url.scheme == "file" or not url.scheme:
-            self.downloader = LocalFileDownloader(url, rules.rules_path)
-        elif url.scheme == "ftp":
-            self.downloader = FtpDownloader(url)
-        else:
-            raise UnkownUrlScheme(url.scheme, self.url)
-
-    def copy(self, destination, overwrite=False):
-        if os.path.isdir(destination):
-            filename = os.path.join(destination, self.filename)
-        else:
-            filename = destination
-        self.filename = filename
-        if not os.path.exists(filename) or overwrite:
-            self.downloader.copy(filename)
-        else:
-            self.log.info("'%s' has been downloaded already" % self.filename)
-        return filename
+class FileDownloader(Downloader):
 
     def verify(self, hashes):
         hashcalc = Hash(self.filename)
@@ -208,3 +97,139 @@ class UrlDownloader(Downloader):
             else:
                 self.log.debug("%s hash '%s' is valid for '%s'" % (type, value,
                                                            self.filename))
+    def get_filename(self, destination):
+        filename = os.path.basename(self.urlstr)
+        if os.path.isdir(destination):
+            return os.path.join(destination, filename)
+        return destination
+
+
+class FtpDownloader(FileDownloader):
+
+    def __init__(self, rules, urlstr):
+        super(FtpDownloader, self).__init__(rules, urlstr)
+        self.url = urlparse(self.urlstr)
+
+    def copy(self, destination, overwrite=False):
+        filename = self.get_filename(destination)
+        self.filename = filename
+
+        if os.path.exists(filename) and not overwrite:
+            self.log.info("'%s' has been downloaded already" % filename)
+            return
+
+        ftp = ftplib.FTP(self.url.netloc)
+        ftp.login()
+
+        with open(filename, 'w') as f:
+            try:
+                filesize = ftp.size(self.url.path)
+            except ftplib.all_errors:
+                filesize = 0
+            if filesize:
+                self.log.info("downloading %s to %s (%.2f KiB)" % \
+                            (self.url.geturl(), filename, filesize / 1024))
+            else:
+                self.log.info("downloading %s to %s" % \
+                             (self.url.geturl(), filename))
+            ftp.retrbinary("RETR " + self.url.path, f.write)
+            ftp.quit()
+        return filename
+
+
+class HttpDownloader(FileDownloader):
+
+    def copy(self, destination, overwrite=False):
+        filename = self.get_filename(destination)
+        self.filename = filename
+
+        if os.path.exists(filename) and not overwrite:
+            self.log.info("'%s' has been downloaded already" % filename)
+            return
+
+        u = urllib2.urlopen(self.urlstr)
+        f = open(filename, 'w')
+        meta = u.info()
+        content_length_header = meta.getheaders("Content-Length")
+        if content_length_header:
+            filesize = int(content_length_header[0])
+            self.log.info("downloading %s to %s (%.2f KiB)" % (self.urlstr,
+                                                               filename,
+                                                               filesize / 1024))
+        else:
+            self.log.info("downloading %s to %s" % (self.url, filename))
+        filesizedl = 0
+        while True:
+            buffer = u.read(8192)
+            if not buffer:
+                break
+            filesizedl += len(buffer)
+            f.write(buffer)
+            #status = r"[%3.2f%%]" % (filesizedl * 100. / filesize)
+            #print status
+        f.close()
+
+        return filename
+
+
+class LocalFileDownloader(Downloader):
+
+    def __init__(self, url, root_dir=None):
+        self.url = url
+        self.root_dir = root_dir
+        self.log = kaizen.logging.getLogger(self)
+
+    def copy(self, filename, overwrite=False):
+        path = self.url.path
+        if not self.url.scheme and self.root_dir:
+            path = os.path.join(self.root_dir, path)
+        self.log.debug("copying '%s' to '%s'" % (path, filename))
+        shutil.copy(path, filename)
+
+
+class GitDownloader(Downloader):
+
+    def __init__(self, rules, urlstr):
+        super(GitDownloader, self).__init__(rules, urlstr)
+        self.branch = getattr(rules, "branch", None)
+
+    def copy(self, path, overwrite=False):
+        from dulwich.repo import Repo
+        from dulwich.client import get_transport_and_path
+        r = Repo.init(path)
+        client, host_path = get_transport_and_path(self.url)
+        remote_refs = client.fetch(host_path, r,
+            determine_wants=r.object_store.determine_wants_all,
+            progress=sys.stdout.write)
+        if self.branch:
+            r["HEAD"] = remote_refs[branch]
+        else:
+            r["HEAD"] = remote_refs["HEAD"]
+
+
+class UrlDownloader(Downloader):
+
+    def __init__(self, rules, urlstr):
+        super(UrlDownloader, self).__init__(rules, urlstr)
+        urltype = getattr(rules, "download_type", None)
+
+        if urlstr.startswith("git") or urltype == "git":
+            self.downloader = GitDownloader(rules, urlstr)
+            return
+
+        url = urlparse(urlstr)
+        if url.scheme == 'http' or url.scheme == 'https' or urltype == "http" \
+            or urltype == "https":
+            self.downloader = HttpDownloader(rules, urlstr)
+        elif url.scheme == "file" or not url.scheme or urltype == "file":
+            self.downloader = LocalFileDownloader(url, rules.rules_path)
+        elif url.scheme == "ftp" or urltype == "ftp":
+            self.downloader = FtpDownloader(url)
+        else:
+            raise UnkownUrlScheme(url.scheme, self.url)
+
+    def copy(self, destination, overwrite=False):
+        return self.downloader.copy(destination, overwrite)
+
+    def verify(self, hashes):
+        self.downloader.verify(hashes)
