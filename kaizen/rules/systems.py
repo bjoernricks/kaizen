@@ -73,8 +73,11 @@ class MakeCmd(RulesCmd):
         make.run(build_args)
 
     def destroot(self):
-        Make(self.rules.build_path,
-             self.rules.debug).install(self.rules.dest_dir)
+        make = Make(self.rules.build_path, self.rules.debug)
+        if self.rules.destroot_env:
+            make.update_env(self.rules.destroot_env)
+
+        make.install(self.rules.dest_dir)
 
     def clean(self):
         Make(self.rules.build_path, self.rules.debug).clean()
