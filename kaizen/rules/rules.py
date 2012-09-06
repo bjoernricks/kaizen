@@ -97,6 +97,8 @@ class Rules(object):
     configure_seq = None
     destroot_seq = None
 
+    destroot_env = dict()
+
     delete_destroot_seq = None
     delete_build_seq = None
     distclean_seq = None
