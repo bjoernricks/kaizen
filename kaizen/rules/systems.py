@@ -99,7 +99,11 @@ class ConfigureCmd(RulesCmd):
     def configure(self):
         args = self.rules.configure_args
         args.append("--prefix=" + self.rules.prefix)
-        args.append("--srcdir=" + self.rules.configure_path)
+
+        # add --srcdir parameter if configure is not run in the source directory
+        if self.rules.configure_path != self.rules.src_path:
+            args.append("--srcdir=" + self.rules.configure_path)
+
         configure = Configure(args, self.rules.configure_path,
                               self.rules.build_path, self.rules.debug)
 
