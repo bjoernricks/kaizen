@@ -110,7 +110,7 @@ class Simple(PatchSystem):
 
 class Quilt(PatchSystem):
 
-    depends = ["quilt"]
+    depends = ["python-quilt"]
 
     def __init__(self, work_dir, patch_dir, patches, verbose=False):
         super(Quilt, self).__init__(work_dir, patch_dir, patches, verbose)
@@ -119,49 +119,70 @@ class Quilt(PatchSystem):
 
     def push(self):
         """ Apply next patch """
-        self.quilt.set_args(["push"])
-        self.quilt.run()
+
+        from quilt.push import Push
+        from quilt.error import NoPatchesInSeries, AllPatchesApplied
+
+        push = Push(self.work_dir, ".pc", self.patch_dir)
+        try:
+            push.apply_next_patch()
+        except NoPatchesInSeries, e:
+            print e
+        except AllPatchesApplied, e:
+            print e
 
     def pop(self):
         """ Revert last patch """
-        self.quilt.set_args(["pop"])
-        self.quilt.run()
+        from quilt.pop import Pop
+        from quilt.error import NoAppliedPatch
+
+        pop = Pop(self.work_dir, ".pc")
+        try:
+            pop.unapply_top_patch()
+        except NoPatchesInSeries, e:
+            print e
 
     def apply(self):
         """ Apply all patches """
-        self.quilt.set_args(["push", "-a"])
-        self.quilt.run()
+
+        from quilt.push import Push
+        from quilt.error import NoPatchesInSeries, AllPatchesApplied
+
+        push = Push(self.work_dir, ".pc", self.patch_dir)
+        try:
+            push.apply_all()
+        except NoPatchesInSeries, e:
+            print e
+        except AllPatchesApplied, e:
+            print e
 
     def unapply(self):
         """ Revert all patches"""
-        self.quilt.set_args(["pop", "-a"])
-        self.quilt.run()
+        from quilt.pop import Pop
+        from quilt.error import NoAppliedPatch
+
+        pop = Pop(self.work_dir, ".pc")
+        try:
+            pop.unapply_all()
+        except NoPatchesInSeries, e:
+            print e
 
     def refresh(self):
         """ Refresh current patch """
-        self.quilt.set_args(["refresh"])
-        self.quilt.run()
+        pass
 
     def new(self, patch_name):
         """ Create a new patch """
-        self.quilt.set_args(["new", patch_name])
-        self.quilt.run()
+        pass
 
     def delete(self):
         """ Delete the current patch """
-        self.quilt.set_args(["delete"])
-        self.quilt.run()
+        pass
 
     def import_patches(self, patches):
         """ Import list of patches """
-        args = ["import"]
-        args.extend(patches)
-        self.quilt.set_args(args)
-        self.quilt.run()
+        pass
 
     def edit(self, file_names):
         """ Edit file(s) to create patch """
-        args = ["edit"]
-        args.extend(file_names)
-        self.quilt.set_args(args)
-        self.quilt.run()
+        pass
