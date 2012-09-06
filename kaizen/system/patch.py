@@ -46,19 +46,19 @@ class PatchSystem(object):
 
     def push(self):
         """ Apply next patch """
-        pass
+        raise NotImplementedError()
 
     def pop(self):
         """ Revert last patch """
-        pass
+        raise NotImplementedError()
 
     def apply(self):
         """ Apply all patches """
-        pass
+        raise NotImplementedError()
 
     def unapply(self):
         """ Revert all patches"""
-        pass
+        raise NotImplementedError()
 
 
 class Simple(PatchSystem):
