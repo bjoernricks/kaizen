@@ -139,7 +139,7 @@ class Quilt(PatchSystem):
         pop = Pop(self.work_dir, ".pc")
         try:
             pop.unapply_top_patch()
-        except NoPatchesInSeries, e:
+        except NoAppliedPatch, e:
             print e
 
     def apply(self):
@@ -164,7 +164,7 @@ class Quilt(PatchSystem):
         pop = Pop(self.work_dir, ".pc")
         try:
             pop.unapply_all()
-        except NoPatchesInSeries, e:
+        except NoAppliedPatch, e:
             print e
 
     def refresh(self):
