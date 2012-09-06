@@ -224,7 +224,7 @@ class UrlDownloader(Downloader):
         elif url.scheme == "file" or not url.scheme or urltype == "file":
             self.downloader = LocalFileDownloader(url, rules.rules_path)
         elif url.scheme == "ftp" or urltype == "ftp":
-            self.downloader = FtpDownloader(url)
+            self.downloader = FtpDownloader(rules, urlstr)
         else:
             raise UnkownUrlScheme(url.scheme, self.url)
 
