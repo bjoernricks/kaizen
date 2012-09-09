@@ -25,9 +25,9 @@ import shutil
 import re
 import glob
 
-import kaizen.run
 import kaizen.logging
 
+from kaizen.system.process import Process
 from kaizen.utils import real_path
 
 class BaseCommand(object):
@@ -105,8 +105,8 @@ class Configure(BuildSystem):
         cmd.extend(self.args)
         self.log.debug("Configure run '%s' in '%s' with env '%s'" % (cmd,
                         self.cwd_dir, self.env))
-        kaizen.run.call(cmd, not self.verbose, extra_env=self.env,
-                     cwd=self.cwd_dir)
+        process = Process(cmd)
+        process.run(not self.verbose, env=self.env, cwd=self.cwd_dir)
 
 
 class CMake(BuildSystem):
@@ -117,8 +117,8 @@ class CMake(BuildSystem):
         cmd.append(real_path(self.src_dir))
         self.log.debug("CMake run '%s' in '%s' with env '%s'" % (cmd,
                        self.cwd_dir, self.env))
-        kaizen.run.call(cmd, not self.verbose, extra_env=self.env,
-                     cwd=self.cwd_dir)
+        process = Process(cmd)
+        process.run(not self.verbose, env=self.env, cwd=self.cwd_dir)
 
 
 class Make(BuildCommand):
@@ -135,7 +135,8 @@ class Make(BuildCommand):
         cmd.extend(args)
         self.log.debug("Make run '%s' in '%s' with env '%s'" % (cmd,
                        self.cwd_dir, self.env))
-        kaizen.run.call(cmd, not self.verbose, extra_env=self.env, cwd=self.cwd_dir)
+        process = Process(cmd)
+        process.run(not self.verbose, env=self.env, cwd=self.cwd_dir)
 
     def install(self, dest_dir=None):
         args = []
@@ -168,7 +169,8 @@ class Command(BaseCommand):
             cmd.extend(new_arg)
         self.log.debug("Running command '%s' in '%s' with env %s" % (cmd,
             self.cwd_dir, self.env))
-        kaizen.run.call(cmd, not self.verbose, cwd=self.cwd_dir, extra_env=self.env)
+        process = Process(cmd)
+        process.run(not self.verbose, env=self.env, cwd=self.cwd_dir)
 
     def set_args(self, args):
         self.args = args
@@ -298,4 +300,3 @@ class Mkdirs(BaseCommand):
             return
         self.log.debug("creating directory '%s'." % self.path)
         os.makedirs(self.path)
-
