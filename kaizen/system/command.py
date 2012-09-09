@@ -109,7 +109,7 @@ class Configure(BuildSystem):
         self.log.debug("Configure run '%s' in '%s' with env '%s'" % (cmd,
                         self.cwd_dir, self.env))
         process = Process(cmd)
-        process.run(not self.verbose, env=self.env, cwd=self.cwd_dir)
+        process.run(not self.verbose, extra_env=self.env, cwd=self.cwd_dir)
 
 
 class CMake(BuildSystem):
@@ -122,6 +122,7 @@ class CMake(BuildSystem):
                        self.cwd_dir, self.env))
         process = Process(cmd)
         process.run(not self.verbose, env=self.env, cwd=self.cwd_dir)
+        process.run(not self.verbose, extra_env=self.env, cwd=self.cwd_dir)
 
 
 class Make(BuildCommand):
@@ -139,7 +140,7 @@ class Make(BuildCommand):
         self.log.debug("Make run '%s' in '%s' with env '%s'" % (cmd,
                        self.cwd_dir, self.env))
         process = Process(cmd)
-        process.run(not self.verbose, env=self.env, cwd=self.cwd_dir)
+        process.run(not self.verbose, extra_env=self.env, cwd=self.cwd_dir)
 
     def install(self, dest_dir=None):
         args = []
@@ -173,7 +174,7 @@ class Command(BaseCommand):
         self.log.debug("Running command '%s' in '%s' with env %s" % (cmd,
             self.cwd_dir, self.env))
         process = Process(cmd)
-        process.run(not self.verbose, env=self.env, cwd=self.cwd_dir)
+        process.run(not self.verbose, extra_env=self.env, cwd=self.cwd_dir)
 
     def set_args(self, args):
         self.args = args
