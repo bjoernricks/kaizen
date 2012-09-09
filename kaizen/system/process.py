@@ -50,7 +50,7 @@ class Process(object):
     def __init__(self, cmd):
         self.cmd = cmd
 
-    def run(self, suppress_output=False, inputdata=None, **kw):
+    def run(self, suppress_output=False, inputdata=None, extra_env=None, **kw):
         """Run command as a subprocess and wait until it is finished.
 
         The command should be given as a list of strings to avoid problems
@@ -62,6 +62,10 @@ class Process(object):
         if suppress_output:
             kw["stdout"] = open(os.devnull, "w")
             kw["stderr"] = open(os.devnull, "w")
+        if extra_env:
+            env = kw.get("env", os.environ).copy()
+            env.update(extra_env)
+            kw["env"] = env
         try:
             process = subprocess.Popen(self.cmd, **kw)
         except OSError, e:
