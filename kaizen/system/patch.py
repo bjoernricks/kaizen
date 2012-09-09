@@ -179,7 +179,10 @@ class Quilt(PatchSystem):
 
     def import_patches(self, patches):
         """ Import list of patches """
-        pass
+        from quilt.patchimport import Import
+
+        pimport = Import(self.work_dir, ".pc", self.patch_dir)
+        pimport.import_patches(patches)
 
     def edit(self, file_names):
         """ Edit file(s) to create patch """
