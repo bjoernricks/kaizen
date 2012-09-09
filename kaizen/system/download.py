@@ -116,7 +116,7 @@ class FtpDownloader(FileDownloader):
 
         if os.path.exists(filename) and not overwrite:
             self.log.info("'%s' has been downloaded already" % filename)
-            return
+            return filename
 
         ftp = ftplib.FTP(self.url.netloc)
         ftp.login()
@@ -145,7 +145,7 @@ class HttpDownloader(FileDownloader):
 
         if os.path.exists(filename) and not overwrite:
             self.log.info("'%s' has been downloaded already" % filename)
-            return
+            return filename
 
         u = urllib2.urlopen(self.urlstr)
         f = open(filename, 'w')
