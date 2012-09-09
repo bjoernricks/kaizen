@@ -210,6 +210,9 @@ class RulesManager(object):
     def get_rules_phases(self):
         return self.handler.get_phases()
 
+    def get_rules(self):
+        return self.handler.rules
+
 
 class RulesList(object):
 
