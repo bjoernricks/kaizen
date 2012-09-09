@@ -32,7 +32,7 @@ class PatchSystem(object):
 
     def __init__(self, work_dir, patch_dir, patches=None, verbose=False):
         """ work_dir  - path to the directory where the patches should
-                        be apllied 
+                        be apllied
             patch_dir - path to the directory where the patches can be found
             patches   - list of patches
         """
@@ -114,8 +114,6 @@ class Quilt(PatchSystem):
 
     def __init__(self, work_dir, patch_dir, patches, verbose=False):
         super(Quilt, self).__init__(work_dir, patch_dir, patches, verbose)
-        self.quilt = Command("quilt", [], self.work_dir, self.verbose)
-        self.quilt.set_env("QUILT_PATCHES", self.patch_dir)
 
     def push(self):
         """ Apply next patch """
