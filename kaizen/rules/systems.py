@@ -54,6 +54,8 @@ class MakeCmd(RulesCmd):
             make.set_cc(self.rules.build_cc)
         if self.rules.build_cpp:
             make.set_cpp(self.rules.build_cpp)
+        if self.rules.build_cxx:
+            make.set_cxx(self.rules.build_cxx)
         if self.rules.build_cflags:
             make.set_cflags(self.rules.build_cflags)
         if self.rules.build_cppflags:
@@ -113,6 +115,8 @@ class ConfigureCmd(RulesCmd):
             configure.set_cc(self.rules.configure_cc)
         if self.rules.configure_cpp:
             configure.set_cpp(self.rules.configure_cpp)
+        if self.rules.configure_cxx:
+            configure.set_cxx(self.rules.configure_cxx)
         if self.rules.configure_cflags:
             configure.set_cflags(self.rules.configure_cflags)
         if self.rules.configure_cppflags:

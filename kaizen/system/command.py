@@ -58,6 +58,9 @@ class BuildCommand(BaseCommand):
     def set_cpp(self, cpp):
         self.env["CPP"] = cpp
 
+    def set_cxx(self, cxx):
+        self.env["CXX"] = cxx
+
     def set_cflags(self, cflags=[]):
         self.env["CFLAGS"] = " ".join(cflags)
 
