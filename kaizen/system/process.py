@@ -27,7 +27,7 @@ import subprocess
 from kaizen.error import KaizenRuntimeError
 
 
-class SubprocessError(QuiltError):
+class SubprocessError(KaizenRuntimeError):
 
     def __init__(self, command, returncode, output=None):
         self.command = command
