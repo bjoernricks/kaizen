@@ -228,18 +228,18 @@ class Console(object):
         quilt.new(patchname)
 
     def quilt_import(self, rulesname, patches):
-        quilt = self._quilt(rulesname, os.getcwd())
+        quilt = self._quilt(rulesname, src_path=os.getcwd(), extract=False)
         quilt.import_patches(patches)
 
     def quilt_edit(self, rulesname, filenames):
         quilt = self._quilt(rulesname)
         quilt.edit(filenames)
 
-    def _quilt(self, rulesname, src_path=None):
+    def _quilt(self, rulesname, src_path=None, extract=True):
         manager = RulesManager(self.config, rulesname)
-        # rules must be at least in phase extract
-        manager.extract()
-        rules = manager.rules_wrapper.rules
+        if extract:
+            manager.extract()
+        rules = manager.get_rules()
         if not src_path:
             src_path = rules.src_path
         return Quilt(src_path, rules.patch_path, rules.patches,
