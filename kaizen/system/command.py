@@ -121,7 +121,6 @@ class CMake(BuildSystem):
         self.log.debug("CMake run '%s' in '%s' with env '%s'" % (cmd,
                        self.cwd_dir, self.env))
         process = Process(cmd)
-        process.run(not self.verbose, env=self.env, cwd=self.cwd_dir)
         process.run(not self.verbose, extra_env=self.env, cwd=self.cwd_dir)
 
 
