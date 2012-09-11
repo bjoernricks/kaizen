@@ -25,6 +25,8 @@ from kaizen.system.command import Command
 
 class Group(object):
 
+    name = ""
+
     depends = []
     configure_args = []
     build_args = []
@@ -132,6 +134,8 @@ class Group(object):
 
 class UpdateMimeDatabase(Group):
 
+    name = "update-mime-database"
+
     depends = ["shared-mime-info"]
 
     def __init__(self, rules, config):
@@ -152,6 +156,8 @@ class UpdateMimeDatabase(Group):
 
 
 class KDE(UpdateMimeDatabase):
+
+    name = "KDE"
 
     def __init__(self, rules, config):
         super(KDE, self).__init__(rules, config)
