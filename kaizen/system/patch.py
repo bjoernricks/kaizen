@@ -121,7 +121,8 @@ class Quilt(PatchSystem):
         from quilt.push import Push
         from quilt.error import NoPatchesInSeries, AllPatchesApplied
 
-        push = Push(self.work_dir, ".pc", self.patch_dir)
+        push = Push(self.work_dir, os.path.join(self.work_dir, ".pc"),
+                    self.patch_dir)
         try:
             push.apply_next_patch()
         except NoPatchesInSeries, e:
@@ -134,7 +135,7 @@ class Quilt(PatchSystem):
         from quilt.pop import Pop
         from quilt.error import NoAppliedPatch
 
-        pop = Pop(self.work_dir, ".pc")
+        pop = Pop(self.work_dir, os.path.join(self.work_dir, ".pc"))
         try:
             pop.unapply_top_patch()
         except NoAppliedPatch, e:
@@ -146,7 +147,11 @@ class Quilt(PatchSystem):
         from quilt.push import Push
         from quilt.error import NoPatchesInSeries, AllPatchesApplied
 
-        push = Push(self.work_dir, ".pc", self.patch_dir)
+        self.log.debug("applying patches of %s in %s" % (self.patch_dir,
+                                                         self.work_dir))
+
+        push = Push(self.work_dir, os.path.join(self.work_dir, ".pc"),
+                    self.patch_dir)
         try:
             push.apply_all()
         except NoPatchesInSeries, e:
@@ -159,7 +164,7 @@ class Quilt(PatchSystem):
         from quilt.pop import Pop
         from quilt.error import NoAppliedPatch
 
-        pop = Pop(self.work_dir, ".pc")
+        pop = Pop(self.work_dir, os.path.join(self.work_dir(".pc"))
         try:
             pop.unapply_all()
         except NoAppliedPatch, e:
@@ -181,7 +186,8 @@ class Quilt(PatchSystem):
         """ Import list of patches """
         from quilt.patchimport import Import
 
-        pimport = Import(self.work_dir, ".pc", self.patch_dir)
+        pimport = Import(self.work_dir, os.path.join(self.work_dir, ".pc"),
+                         self.patch_dir)
         pimport.import_patches(patches)
 
     def edit(self, file_names):
