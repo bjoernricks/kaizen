@@ -164,7 +164,7 @@ class Quilt(PatchSystem):
         from quilt.pop import Pop
         from quilt.error import NoAppliedPatch
 
-        pop = Pop(self.work_dir, os.path.join(self.work_dir(".pc"))
+        pop = Pop(self.work_dir, os.path.join(self.work_dir, ".pc"))
         try:
             pop.unapply_all()
         except NoAppliedPatch, e:
