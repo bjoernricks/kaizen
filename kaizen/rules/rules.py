@@ -254,6 +254,8 @@ class Rules(object):
                 deps.extend(self.clean_cmd.depends)
             if self.distclean_cmd:
                 deps.extend(self.distclean_cmd.depends)
+            for group in self.groups:
+                deps.extend(group.depends)
             deps.extend(value[:])
 
             for base in type(self).__bases__:
