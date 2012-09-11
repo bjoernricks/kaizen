@@ -206,10 +206,11 @@ class Rules(object):
         except AttributeError:
             value = None
             found = False
-            for group in self.groups:
-                if hasattr(group, name):
-                    value = getattr(group, name)
-                    found = True
+            if name != "name":
+                for group in self.groups:
+                    if hasattr(group, name):
+                        value = getattr(group, name)
+                        found = True
             if not found:
                 raise
             self.__dict__[name] = value
