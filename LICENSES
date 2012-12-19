@@ -1,10 +1,7 @@
-The main license of jam should be LGPLv2.1+. All new files should
+The main license of kaizen should be LGPLv2.1+. All new files should
 use this license.
 
-Currently jam contains files under several licenses:
+Currently kaizen contains files under several licenses:
 
-jam/externals/argparse.py   PYTHON SOFTWARE FOUNDATION LICENSE VERSION 2
-jam/externals/sqlalchemy    MIT License
-jam/run.py                  GPLv2+
-jam/log.py                  GPLv2+
-
+kaizen/externals/argparse.py   PYTHON SOFTWARE FOUNDATION LICENSE VERSION 2
+kaizen/externals/sqlalchemy    MIT License
