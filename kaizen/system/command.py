@@ -19,15 +19,15 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 
 # 02110-1301 USA
 
-import os.path
-import logging
-import shutil
-import re
 import glob
+import os
+import re
+import shutil
+
+from kommons.process import Process
 
 import kaizen.logging
 
-from kaizen.system.process import Process
 from kaizen.utils import real_path
 
 class BaseCommand(object):
