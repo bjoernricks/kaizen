@@ -23,42 +23,38 @@
 
 from setuptools import setup, find_packages
 
-import os.path
-import kaizen.config
+import kaizen
 
-def read(fname):
-    return open(os.path.join(os.path.dirname(__file__),
-                             fname)).read()
-
-setup(name="kaizen",
-      version=kaizen.__version__,
-      description="",
-      author="Björn Ricks",
-      author_email="bjoern.ricks@gmail.com",
-      url="https://github.com/bjoernricks/kaizen",
-      license = "LGPLv2+, GPLv2+",
-      long_description=read("README"),
-      packages=find_packages(),
-      package_data = {"" : ["*.txt", "*.rst"],
-                     },
-      # entry_points = { "console_scripts": ["kaizen=jam.console.main:main"] },
-      classifiers=[
-          "Development Status :: 3 - Alpha",
-          "Topic :: Utilities",
-          "Topic :: Software Development",
-          "Topic :: Software Development :: Build Tools",
-          "Topic :: System :: Archiving :: Packaging",
-          "Topic :: System :: Systems Administration",
-          "Environment :: Console",
-          "Intended Audience :: Developers",
-          "Intended Audience :: System Administrators",
-          "Intended Audience :: End Users/Desktop",
-          "License :: OSI Approved :: GNU General Public License (GPL)",
-          "License :: OSI Approved :: GNU Library or Lesser General Public License (LGPL)",
-          "License :: OSI Approved :: MIT License",
-          "License :: OSI Approved :: Python Software Foundation License",
-          "Operating System :: MacOS",
-          "Operating System :: POSIX",
-          "Programming Language :: Python",
-      ]
-     )
+with open("README") as readme:
+    setup(name="kaizen",
+        version=kaizen.__version__,
+        description="",
+        author="Björn Ricks",
+        author_email="bjoern.ricks@gmail.com",
+        url="https://github.com/bjoernricks/kaizen",
+        license = "LGPLv2+, GPLv2+",
+        long_description=readme.read(),
+        packages=find_packages(),
+        package_data = {"" : ["*.txt", "*.rst"],
+            },
+        # entry_points = { "console_scripts": ["kaizen=jam.console.main:main"] },
+        classifiers=[
+            "Development Status :: 3 - Alpha",
+            "Topic :: Utilities",
+            "Topic :: Software Development",
+            "Topic :: Software Development :: Build Tools",
+            "Topic :: System :: Archiving :: Packaging",
+            "Topic :: System :: Systems Administration",
+            "Environment :: Console",
+            "Intended Audience :: Developers",
+            "Intended Audience :: System Administrators",
+            "Intended Audience :: End Users/Desktop",
+            "License :: OSI Approved :: GNU General Public License (GPL)",
+            "License :: OSI Approved :: GNU Library or Lesser General Public License (LGPL)",
+            "License :: OSI Approved :: MIT License",
+            "License :: OSI Approved :: Python Software Foundation License",
+            "Operating System :: MacOS",
+            "Operating System :: POSIX",
+            "Programming Language :: Python",
+            ]
+        )
