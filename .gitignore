@@ -1,4 +1,5 @@
 *.swp
+*.*~
 *.pyc
 tags
-jam.egg-info
+kaizen.egg-info
