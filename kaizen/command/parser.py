@@ -21,7 +21,7 @@
 
 import kaizen
 
-from kaizen.external.argparse import ArgumentParser as ArgParser, ArgumentError
+from argparse import ArgumentParser as ArgParser, ArgumentError
 
 
 class ArgumentParser(ArgParser):
