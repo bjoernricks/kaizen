@@ -23,11 +23,12 @@ import os.path
 
 import kaizen.logging
 
+from sqlalchemy import String, create_engine
+from sqlalchemy.orm import mapper, sessionmaker
+
 from kaizen.db.tables import Tables
 from kaizen.db.objects import Info, Installed, File, Directory, RulesPhase, \
         UpdateVersion, InstallDirectories, SchemaVersion
-from kaizen.external.sqlalchemy import String, create_engine
-from kaizen.external.sqlalchemy.orm import mapper, sessionmaker
 
 CURRENT_DB_SCHEMA = 0
 

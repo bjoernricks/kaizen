@@ -21,8 +21,8 @@
 
 from kaizen.phase.phase import Phases, Phase
 
-from kaizen.external.sqlalchemy import MetaData, Table, Column, String, \
-                                    ForeignKey, TypeDecorator, DateTime, Integer
+from sqlalchemy import MetaData, Table, Column, String, \
+        ForeignKey, TypeDecorator, DateTime, Integer
 
 
 class PhaseType(TypeDecorator):

@@ -24,7 +24,8 @@ import shutil
 
 import kaizen.logging
 
-from kaizen.external.sqlalchemy import and_
+from sqlalchemy import and_
+
 from kaizen.db.db import Db
 from kaizen.db.objects import File, Directory, RulesPhase, InstallDirectories
 from kaizen.phase.phase import phases_list, DOWNLOADED, EXTRACTED, PATCHED, \
