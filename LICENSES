@@ -1,7 +1,0 @@
-The main license of kaizen should be LGPLv2.1+. All new files should
-use this license.
-
-Currently kaizen contains files under several licenses:
-
-kaizen/externals/argparse.py   PYTHON SOFTWARE FOUNDATION LICENSE VERSION 2
-kaizen/externals/sqlalchemy    MIT License
