@@ -1,10 +1,13 @@
 import kaizen.rules
 
+
 class ${rulesname}(kaizen.rules.PythonRules):
 
     url = "${url}"
-    hash = { "md5" : "${md5}",
-             "sha1" : "${sha1}" }
+    hash = {
+        "md5": "${md5}",
+        "sha1": "${sha1}"
+    }
     version = "${version}"
     name = "${detectedname}"
 
