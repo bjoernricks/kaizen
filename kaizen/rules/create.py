@@ -134,15 +134,15 @@ class RulesCreator(object):
                     index = filename.rfind(suffix)
                     filename = filename[:index]
             split = filename.rsplit("-", 1)
-            computed_name = split[0]
-            name = computed_name.lower()
+            detected_name = split[0]
+            name = detected_name.lower()
             version = split[1]
-            computed_version = version
+            detected_version = version
         else:
             name = self.name
             version = self.version
-            computed_name = self.name
-            computed_version = self.version
+            detected_name = self.name
+            detected_version = self.version
 
         if not self.template:
             extract_file(source, self.tmp_dir)
@@ -159,8 +159,8 @@ class RulesCreator(object):
         else:
             template = Template(self.templatename + ".template")
 
-        self.log.debug("Computed rules name is '%s'" % computed_name)
-        self.log.debug("Computed rules version is '%s'" % computed_version)
+        self.log.debug("Detected rules name is '%s'" % detected_name)
+        self.log.debug("Detected rules version is '%s'" % detected_version)
         self.log.info("Rules name is '%s'" % name)
         self.log.info("Rules version is '%s'" % version)
 
@@ -173,8 +173,8 @@ class RulesCreator(object):
         vars["rootdir"] = self.dir
         vars["rules"] = self.rules_dir
         vars["rulesname"] = name.replace("-","").capitalize()
-        vars["computedname"] = computed_name
-        vars["computedversion"] = computed_version
+        vars["detectedname"] = detected_name
+        vars["detectedversion"] = detected_version
 
         # self.name and self.version may contain templates
         if self.name:
