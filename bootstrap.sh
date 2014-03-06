@@ -23,6 +23,10 @@ fi
 
 source $KAIZEN_ENV/bin/activate
 
+# update
+pip install --upgrade pip
+pip install --upgrade setuptools
+
 # install dependencies
 pip install argparse
 pip install sqlalchemy
