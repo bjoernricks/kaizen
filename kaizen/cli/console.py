@@ -34,6 +34,18 @@ class Console(object):
         self.config = config
         self.quiet = self.config.get("quiet")
 
+    def list_settings(self):
+        out("Version:      %r" % self.config.get("version"))
+        out("Debug:        %r" % self.config.get("debug"))
+        out("Verbose:      %r" % self.config.get("verbose"))
+        out("Rules:        %r" % self.config.get("rules"))
+        out("Root:         %r" % self.config.get("rootdir"))
+        out("Destroot:     %r" % self.config.get("destroot"))
+        out("Buildroot:    %r" % self.config.get("buildroot"))
+        out("Downloadroot: %r" % self.config.get("downloadroot"))
+        out("Buildjobs:    %r\n" % self.config.get("buildjobs"))
+
+
     def list_rules_files(self, rulesname):
         manager = RulesManager(self.config, rulesname)
         files = manager.get_installed_files()
@@ -72,7 +84,7 @@ class Console(object):
             return
         build_deps = DependencyEvaluator(build).list()
         runtime_deps = DependencyEvaluator(runtime).list()
-        print "Rules %s depends on:" % rulesname
+        print "Rule %s depends on:" % rulesname
         max_length = max([len(dep.get_name()) for dep in build_deps + \
                               runtime_deps])
         if runtime:
