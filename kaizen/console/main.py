@@ -17,7 +17,7 @@
 
 # You should have received a copy of the GNU Lesser General Public
 # License along with this library; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 USA
 
 import sys
@@ -30,17 +30,6 @@ from kaizen.command.parser import ArgumentParser
 from kaizen.logging.out import out
 
 class Main(object):
-
-    def print_settings(self):
-        out("Version:      %r" % self.config.get("version"))
-        out("Debug:        %r" % self.config.get("debug"))
-        out("Verbose:      %r" % self.config.get("verbose"))
-        out("Rules:     %r" % self.config.get("rules"))
-        out("Root:         %r" % self.config.get("rootdir"))
-        out("Destroot:     %r" % self.config.get("destroot"))
-        out("Buildroot:    %r" % self.config.get("buildroot"))
-        out("Downloadroot: %r" % self.config.get("downloadroot"))
-        out("Buildjobs:    %r\n" % self.config.get("buildjobs"))
 
     def main(self):
         if sys.version_info < (2, 4):
@@ -64,11 +53,13 @@ class Main(object):
             self.print_settings()
             return
 
-        #parse config for debug option
+        # parse config for debug option
         config = Config(KAIZEN_CONFIG_FILES, vars(options))
 
         if config.get("debug"):
             self.logger.setLevel(kaizen.logging.DEBUG)
+        else:
+            self.logger.setLevel(kaizen.loggin.ERROR)
 
         subparsers = parser.add_subparsers(dest="command", title="commands",
                                            description="valid commands",
