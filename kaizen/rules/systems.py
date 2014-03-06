@@ -252,6 +252,7 @@ class PythonDevelopRules(PythonRules):
 
     extract_cmd = None
     download_cmd = None
+    _kaizen_pth = None
 
     def init(self):
         self.python_version = ".".join(
@@ -284,7 +285,7 @@ class PythonDevelopRules(PythonRules):
         Delete(os.path.join(self.python_path, "site.pyc")).run()
         Delete(os.path.join(self.python_path, "easy-install.pth")).run()
 
-    def post_activate(self):
+    def pre_activate(self):
         self.read_kaizen_pth()
         self.add_kaizen_pth_entry()
         self.write_kaizen_pth()
@@ -294,10 +295,26 @@ class PythonDevelopRules(PythonRules):
         self.delete_kaizen_pth()
         self.write_kaizen_pth()
 
+    def get_kaizen_pth_path(self):
+        if self._kaizen_pth is None:
+            import site
+            k_site = None
+            for c_site in site.PREFIXES:
+                if os.access(c_site, os.W_OK):
+                    k_site = c_site
+                    break
+            if not k_site:
+                if hasattr(site, "getusersitepackages"):
+                    k_site = site.getusersitepackages()
+                else:
+                    k_site = site.USER_SITE
+            self._kaizen_pth = os.path.join(k_site, "kaizen-rules.pth")
+        return self._kaizen_pth
+
+
     def read_kaizen_pth(self):
         self.entries = []
-        pth_file = os.path.join(self.prefix, self.python_package_path,
-                                "kaizen-rules.pth")
+        pth_file = self.get_kaizen_pth_path()
         if not os.path.isfile(pth_file):
             return
         f = open(pth_file, "r")
@@ -315,28 +332,26 @@ class PythonDevelopRules(PythonRules):
         self.log.debug("Current kaizen-rules.pth entries are %r" % self.entries)
 
     def add_kaizen_pth_entry(self):
-        if self.build_path not in self.entries:
+        if self.python_path not in self.entries:
             self.log.debug("adding kaizen-rules.pth entry '%s'" % \
-                           self.build_path)
-            self.entries.append(self.build_path)
+                           self.python_path)
+            self.entries.append(self.python_path)
 
     def delete_kaizen_pth(self):
-        if self.build_path in self.entries:
+        if self.python_path in self.entries:
             self.log.debug("removing kaizen-rules.pth entry '%s'" % \
-                           self.build_path)
-            self.entries.remove(self.build_path)
+                           self.python_path)
+            self.entries.remove(self.python_path)
 
     def write_kaizen_pth(self):
-        f = open(os.path.join(self.prefix, self.python_package_path,
-                              "kaizen-rules.pth"), "w")
-        try:
+        self.log.debug("writing kaizen-rules.pth to '%s'" % \
+                        self.get_kaizen_pth_path())
+        with open(self.get_kaizen_pth_path(), "w") as f:
             num = len(self.entries)
             for i, entry in enumerate(self.entries):
                 f.write(entry)
                 if i+1 < num:
                     f.write("\n")
-        finally:
-            f.close()
 
 
 class GitRules(Rules):
